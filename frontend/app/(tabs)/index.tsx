@@ -92,13 +92,17 @@ export default function DashboardScreen() {
           </View>
         </View>
 
-        {/* Current Week Card */}
+        {/* Current Week / Pay Cycle Card */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <View>
-              <Text style={styles.cardTitle}>This Week</Text>
+              <Text style={styles.cardTitle}>{weekInfo?.is_pay_week ? 'This Pay Cycle' : 'This Week'}</Text>
               <Text style={styles.weekEnding}>
-                Week Ending: {weekInfo ? format(new Date(weekInfo.week_ending_date), 'MMM dd, yyyy') : '-'}
+                {weekInfo?.is_pay_week && payCycleTotals ? (
+                  'Current + Previous Week'
+                ) : (
+                  `Week Ending: ${weekInfo ? format(new Date(weekInfo.week_ending_date + 'T00:00:00'), 'MMM dd, yyyy') : '-'}`
+                )}
               </Text>
             </View>
             {weekInfo?.is_pay_week && (
@@ -113,25 +117,31 @@ export default function DashboardScreen() {
           <View style={styles.hoursContainer}>
             <View style={styles.hourBox}>
               <Text style={styles.hourLabel}>ST Hours</Text>
-              <Text style={styles.hourValue}>{weeklySummary?.total_st || 0}</Text>
-              <Text style={styles.hourSubtext}>/ 40 max</Text>
+              <Text style={styles.hourValue}>
+                {weekInfo?.is_pay_week && payCycleTotals ? payCycleTotals.total_st : (weeklySummary?.total_st || 0)}
+              </Text>
+              <Text style={styles.hourSubtext}>{weekInfo?.is_pay_week ? '2 weeks' : '/ 40 max'}</Text>
             </View>
             <View style={styles.hourBox}>
               <Text style={styles.hourLabel}>OT Hours</Text>
-              <Text style={[styles.hourValue, { color: '#dc2626' }]}>{weeklySummary?.total_ot || 0}</Text>
+              <Text style={[styles.hourValue, { color: '#dc2626' }]}>
+                {weekInfo?.is_pay_week && payCycleTotals ? payCycleTotals.total_ot : (weeklySummary?.total_ot || 0)}
+              </Text>
               <Text style={styles.hourSubtext}>Overtime</Text>
             </View>
             <View style={styles.hourBox}>
               <Text style={styles.hourLabel}>Total</Text>
-              <Text style={[styles.hourValue, { color: '#2563eb' }]}>{weeklySummary?.total_hours || 0}</Text>
-              <Text style={styles.hourSubtext}>This week</Text>
+              <Text style={[styles.hourValue, { color: '#2563eb' }]}>
+                {weekInfo?.is_pay_week && payCycleTotals ? payCycleTotals.total_hours : (weeklySummary?.total_hours || 0)}
+              </Text>
+              <Text style={styles.hourSubtext}>{weekInfo?.is_pay_week ? 'Pay cycle' : 'This week'}</Text>
             </View>
           </View>
 
-          {/* Progress Bar */}
+          {/* Progress Bar - Only for current week ST */}
           <View style={styles.progressSection}>
             <View style={styles.progressHeader}>
-              <Text style={styles.progressLabel}>ST Progress</Text>
+              <Text style={styles.progressLabel}>ST Progress {weekInfo?.is_pay_week ? '(This Week)' : ''}</Text>
               <Text style={styles.progressPercent}>{Math.min(stProgress, 100).toFixed(0)}%</Text>
             </View>
             <View style={styles.progressBarContainer}>
