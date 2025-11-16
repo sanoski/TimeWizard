@@ -118,9 +118,9 @@ export default function TimesheetScreen() {
 
   const visibleLines = lines.filter(l => l.is_visible);
   const weekDays = weekInfo ? Array.from({ length: 7 }, (_, i) => {
-    const [year, month, day] = weekInfo.week_start.split('-').map(Number);
-    const date = new Date(year, month - 1, day + i);
-    return date.toISOString().split('T')[0];
+    const startDate = new Date(weekInfo.week_start + 'T00:00:00');
+    const date = addDays(startDate, i);
+    return format(date, 'yyyy-MM-dd');
   }) : [];
 
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
