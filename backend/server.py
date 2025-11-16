@@ -154,9 +154,19 @@ async def init_db():
 # Helper functions for date calculations
 def get_week_ending(work_date: date) -> date:
     """Get the Saturday (week ending) for a given date"""
-    days_until_saturday = (5 - work_date.weekday()) % 7
-    if days_until_saturday == 0 and work_date.weekday() != 5:
-        days_until_saturday = 7
+    # weekday(): Monday=0, Tuesday=1, ..., Saturday=5, Sunday=6
+    current_weekday = work_date.weekday()
+    
+    # If it's Sunday (6), we need to go forward 6 days to Saturday
+    if current_weekday == 6:
+        days_until_saturday = 6
+    # If it's Saturday (5), return the same day
+    elif current_weekday == 5:
+        days_until_saturday = 0
+    # For Monday-Friday, calculate days to Saturday
+    else:
+        days_until_saturday = 5 - current_weekday
+    
     return work_date + timedelta(days=days_until_saturday)
 
 def is_pay_week(saturday: date, base_saturday: date) -> bool:
