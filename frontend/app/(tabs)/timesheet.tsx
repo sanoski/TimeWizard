@@ -17,8 +17,12 @@ export default function TimesheetScreen() {
     fetchWeeklySummary,
     fetchLines,
     updateEntry,
-    changeWeek
+    changeWeek,
+    addProjectLine
   } = useTimesheetStore();
+
+  const [showAddProject, setShowAddProject] = React.useState(false);
+  const [projectNumber, setProjectNumber] = React.useState('');
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
