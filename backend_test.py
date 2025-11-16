@@ -55,10 +55,10 @@ class VRSTimeWizardTester:
     def test_week_info_endpoint(self):
         """Test week info endpoint with various dates"""
         test_dates = [
-            ("2025-11-16", False, "Nov 16 should not be pay week"),
+            ("2025-11-16", True, "Nov 16 falls in week ending Nov 22 (pay week)"),
             ("2025-11-22", True, "Nov 22 should be pay week (base)"),
-            ("2025-11-23", True, "Nov 23 should be pay week (same week as Nov 22)"),
-            ("2025-11-30", False, "Nov 30 should not be pay week"),
+            ("2025-11-23", False, "Nov 23 falls in week ending Nov 29 (not pay week)"),
+            ("2025-11-30", True, "Nov 30 falls in week ending Dec 6 (pay week, 14 days after base)"),
             ("2025-12-06", True, "Dec 6 should be pay week (14 days after Nov 22)"),
             ("2025-12-20", True, "Dec 20 should be pay week (28 days after Nov 22)"),
         ]
