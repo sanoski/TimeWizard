@@ -173,6 +173,56 @@ export default function TimesheetScreen() {
         </View>
       </View>
 
+      {/* Add Project Section */}
+      <View style={styles.addProjectContainer}>
+        {!showAddProject ? (
+          <Pressable 
+            style={styles.addProjectButton}
+            onPress={() => setShowAddProject(true)}
+          >
+            <Ionicons name="add-circle" size={20} color="#2563eb" />
+            <Text style={styles.addProjectButtonText}>Add Project Line</Text>
+          </Pressable>
+        ) : (
+          <View style={styles.addProjectForm}>
+            <TextInput
+              style={styles.projectInput}
+              placeholder="Enter project number (e.g., 6545)"
+              value={projectNumber}
+              onChangeText={setProjectNumber}
+              keyboardType="numeric"
+              autoFocus
+            />
+            <Pressable 
+              style={styles.saveProjectButton}
+              onPress={async () => {
+                if (projectNumber.trim()) {
+                  try {
+                    await addProjectLine(projectNumber.trim());
+                    setProjectNumber('');
+                    setShowAddProject(false);
+                    Alert.alert('Success', `Project ${projectNumber} added`);
+                  } catch (error) {
+                    Alert.alert('Error', 'Failed to add project');
+                  }
+                }
+              }}
+            >
+              <Ionicons name="checkmark" size={20} color="#ffffff" />
+            </Pressable>
+            <Pressable 
+              style={styles.cancelProjectButton}
+              onPress={() => {
+                setProjectNumber('');
+                setShowAddProject(false);
+              }}
+            >
+              <Ionicons name="close" size={20} color="#6b7280" />
+            </Pressable>
+          </View>
+        )}
+      </View>
+
       {/* Grid */}
       <ScrollView style={styles.gridContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={true}>
