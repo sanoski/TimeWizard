@@ -144,7 +144,11 @@ export default function TimesheetScreen() {
           </Pressable>
           <View style={styles.weekInfo}>
             <Text style={styles.weekText}>
-              {weekInfo ? format(new Date(weekInfo.week_start), 'MMM dd') : ''} - {weekInfo ? format(new Date(weekInfo.week_end), 'MMM dd, yyyy') : ''}
+              {weekInfo ? (() => {
+                const [y1, m1, d1] = weekInfo.week_start.split('-').map(Number);
+                const [y2, m2, d2] = weekInfo.week_end.split('-').map(Number);
+                return `${format(new Date(y1, m1-1, d1), 'MMM dd')} - ${format(new Date(y2, m2-1, d2), 'MMM dd, yyyy')}`;
+              })() : ''}
             </Text>
           </View>
           <Pressable style={styles.navButton} onPress={() => changeWeek('next')}>
