@@ -14,8 +14,12 @@ export default function DashboardScreen() {
     loading, 
     fetchWeekInfo, 
     fetchWeeklySummary,
-    fetchLines 
+    fetchLines,
+    fetchEntries
   } = useTimesheetStore();
+
+  const [prevWeekSummary, setPrevWeekSummary] = React.useState<any>(null);
+  const [payCycleTotals, setPayCycleTotals] = React.useState<any>(null);
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -30,8 +34,37 @@ export default function DashboardScreen() {
   useEffect(() => {
     if (weekInfo) {
       fetchWeeklySummary(weekInfo.week_ending_date);
+      
+      // If it's a pay week, also fetch previous week's data
+      if (weekInfo.is_pay_week) {
+        const prevWeekEnd = new Date(weekInfo.week_ending_date + 'T00:00:00');
+        prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
+        const prevWeekEndStr = format(prevWeekEnd, 'yyyy-MM-dd');
+        
+        fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/api/weekly-summary?week_ending=${prevWeekEndStr}`)
+          .then(res => res.json())
+          .then(data => {
+            setPrevWeekSummary(data);
+          });
+      }
     }
   }, [weekInfo]);
+
+  useEffect(() => {
+    // Calculate pay cycle totals if it's a pay week
+    if (weekInfo?.is_pay_week && weeklySummary && prevWeekSummary) {
+      const totalST = weeklySummary.total_st + prevWeekSummary.total_st;
+      const totalOT = weeklySummary.total_ot + prevWeekSummary.total_ot;
+      const allLines = [...new Set([...weeklySummary.lines_used, ...prevWeekSummary.lines_used])];
+      
+      setPayCycleTotals({
+        total_st: totalST,
+        total_ot: totalOT,
+        total_hours: totalST + totalOT,
+        lines_used: allLines
+      });
+    }
+  }, [weekInfo, weeklySummary, prevWeekSummary]);
 
   if (loading && !weekInfo) {
     return (
