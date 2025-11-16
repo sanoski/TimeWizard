@@ -222,13 +222,10 @@ export default function SettingsScreen() {
             <Text style={styles.infoTitle}>About Settings</Text>
           </View>
           <Text style={styles.infoText}>
-            • Toggle line visibility to show/hide in timesheet{'
-'}
-            • Add project numbers as needed{'
-'}
-            • Export data to backup or transfer to new device{'
-'}
-            • All data stored locally on your device
+            {'\u2022'} Toggle line visibility to show/hide in timesheet{'\n'}
+            {'\u2022'} Add project numbers as needed{'\n'}
+            {'\u2022'} Export data to backup or transfer to new device{'\n'}
+            {'\u2022'} All data stored locally on your device
           </Text>
         </View>
       </ScrollView>
