@@ -429,6 +429,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  secondaryButton: {
+    flexDirection: 'row',
+    backgroundColor: '#eff6ff',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: '#2563eb',
+  },
+  secondaryButtonText: {
+    color: '#2563eb',
+    fontSize: 16,
+    fontWeight: '600',
+  },
   statsContainer: {
     marginTop: 12,
   },
