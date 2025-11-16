@@ -177,14 +177,29 @@ export default function DashboardScreen() {
             </View>
           )}
 
-          {/* Go to Timesheet Button */}
+          {/* Action Buttons */}
           <Pressable 
             style={styles.primaryButton}
             onPress={() => router.push('/(tabs)/timesheet')}
           >
             <Ionicons name="calendar" size={20} color="#ffffff" />
-            <Text style={styles.primaryButtonText}>Open Timesheet</Text>
+            <Text style={styles.primaryButtonText}>Open Timesheet (This Week)</Text>
           </Pressable>
+
+          {weekInfo && (
+            <Pressable 
+              style={styles.secondaryButton}
+              onPress={() => {
+                const prevWeekEnd = new Date(weekInfo.week_ending_date + 'T00:00:00');
+                prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
+                const prevWeekEndStr = format(prevWeekEnd, 'yyyy-MM-dd');
+                router.push(`/weekly-summary?weekEnding=${prevWeekEndStr}`);
+              }}
+            >
+              <Ionicons name="document-text" size={20} color="#2563eb" />
+              <Text style={styles.secondaryButtonText}>View Previous Week Summary</Text>
+            </Pressable>
+          )}
         </View>
 
         {/* Quick Stats */}
