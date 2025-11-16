@@ -118,8 +118,8 @@ export default function TimesheetScreen() {
 
   const visibleLines = lines.filter(l => l.is_visible);
   const weekDays = weekInfo ? Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(weekInfo.week_start);
-    date.setDate(date.getDate() + i);
+    const [year, month, day] = weekInfo.week_start.split('-').map(Number);
+    const date = new Date(year, month - 1, day + i);
     return date.toISOString().split('T')[0];
   }) : [];
 
