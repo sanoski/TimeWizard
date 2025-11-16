@@ -184,13 +184,14 @@ export default function TimesheetScreen() {
               </View>
               {weekDays.map((day, index) => {
                 const isWeekend = index === 0 || index === 6;
+                const dayDate = new Date(day + 'T00:00:00');
                 return (
                   <View key={day} style={[styles.dayHeaderCell, isWeekend && styles.weekendHeader]}>
                     <Text style={[styles.dayHeaderText, isWeekend && styles.weekendHeaderText]}>
                       {dayNames[index]}
                     </Text>
                     <Text style={[styles.dateText, isWeekend && styles.weekendHeaderText]}>
-                      {format(new Date(day), 'M/d')}
+                      {format(dayDate, 'M/d')}
                     </Text>
                   </View>
                 );
