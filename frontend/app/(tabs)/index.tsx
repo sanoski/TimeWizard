@@ -170,13 +170,10 @@ export default function DashboardScreen() {
             <Text style={styles.infoTitle}>How It Works</Text>
           </View>
           <Text style={styles.infoText}>
-            • Work week: Sunday → Saturday{'
-'}
-            • ST hours max: 8/day, 40/week{'
-'}
-            • All hours beyond 40 ST are OT{'
-'}
-            • Pay weeks are every 2 weeks
+            {'\u2022'} Work week: Sunday to Saturday{'\n'}
+            {'\u2022'} ST hours max: 8/day, 40/week{'\n'}
+            {'\u2022'} All hours beyond 40 ST are OT{'\n'}
+            {'\u2022'} Pay weeks are every 2 weeks
           </Text>
         </View>
       </ScrollView>
