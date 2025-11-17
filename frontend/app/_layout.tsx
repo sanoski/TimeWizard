@@ -3,12 +3,13 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { TamaguiProvider } from '@tamagui/core';
 import tamaguiConfig from '../tamagui.config';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Platform, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { db } from '../services/database';
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
+  const [webWarning, setWebWarning] = useState(false);
   const router = useRouter();
   const segments = useSegments();
 
@@ -18,6 +19,14 @@ export default function RootLayout() {
 
   const initializeApp = async () => {
     try {
+      // Skip SQLite initialization on web (WASM support is experimental)
+      if (Platform.OS === 'web') {
+        console.warn('⚠️ SQLite is not supported on web preview. Please test on iOS/Android device or emulator.');
+        setWebWarning(true);
+        setIsReady(true);
+        return;
+      }
+
       // Initialize the local database
       await db.initialize();
       console.log('✅ Database initialized in app');
