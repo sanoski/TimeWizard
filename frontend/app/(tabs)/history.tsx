@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTimesheetStore } from '../../store/timesheetStore';
 import { format, subWeeks } from 'date-fns';
+import { useFocusEffect } from 'expo-router';
+import { db } from '../../services/database';
 
 export default function HistoryScreen() {
   const { weekInfo, fetchWeekInfo, loading } = useTimesheetStore();
@@ -15,6 +17,15 @@ export default function HistoryScreen() {
     const today = new Date().toISOString().split('T')[0];
     fetchWeekInfo(today);
   }, []);
+
+  // Refresh data when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      if (weekInfo) {
+        loadRecentWeeks();
+      }
+    }, [weekInfo])
+  );
 
   useEffect(() => {
     if (weekInfo) {
@@ -28,18 +39,15 @@ export default function HistoryScreen() {
     setLoadingSummaries(true);
     const summaries = [];
     
-    // Load last 8 weeks
+    // Load last 8 weeks from local database
     for (let i = 0; i < 8; i++) {
-      const currentWeekEnd = new Date(weekInfo.week_ending_date);
+      const currentWeekEnd = new Date(weekInfo.week_ending_date + 'T00:00:00');
       currentWeekEnd.setDate(currentWeekEnd.getDate() - (i * 7));
-      const weekEnding = currentWeekEnd.toISOString().split('T')[0];
+      const weekEnding = format(currentWeekEnd, 'yyyy-MM-dd');
       
       try {
-        const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/api/weekly-summary?week_ending=${weekEnding}`);
-        if (response.ok) {
-          const summary = await response.json();
-          summaries.push(summary);
-        }
+        const summary = await db.getWeeklySummary(weekEnding);
+        summaries.push(summary);
       } catch (error) {
         console.error('Error loading week:', error);
       }
