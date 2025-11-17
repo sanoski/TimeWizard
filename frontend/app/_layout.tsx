@@ -5,7 +5,7 @@ import tamaguiConfig from '../tamagui.config';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, ActivityIndicator, Platform, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { db } from '../services/databaseWrapper';
+import { db } from '../services/database';
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
