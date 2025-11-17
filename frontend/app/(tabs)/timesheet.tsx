@@ -283,6 +283,10 @@ export default function TimesheetScreen() {
                 
                 return (
                   <View key={line.line_code} style={styles.dataRow}>
+                    {/* Line Name Cell */}
+                    <View style={styles.lineNameCell}>
+                      <Text style={styles.lineNameText}>{line.label}</Text>
+                    </View>
                     {weekDays.map((day, dayIndex) => {
                     const isWeekend = dayIndex === 0 || dayIndex === 6;
                     const stHours = getEntryHours(day, line.line_code, 'st');
