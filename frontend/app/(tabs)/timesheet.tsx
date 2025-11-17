@@ -261,7 +261,12 @@ export default function TimesheetScreen() {
         {/* Main Content Area */}
         <View style={styles.contentArea}>
           {/* Fixed Line Names Column */}
-          <ScrollView style={styles.lineNamesColumn} showsVerticalScrollIndicator={false}>
+          <ScrollView 
+            style={styles.lineNamesColumn} 
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={false}
+            ref={(ref) => { sideLineScroll.current = ref; }}
+          >
             {visibleLines.map((line) => (
               <View key={line.line_code} style={styles.lineNameCell}>
                 <Text style={styles.lineNameText}>{line.label}</Text>
@@ -284,7 +289,16 @@ export default function TimesheetScreen() {
               }
             }}
           >
-            <ScrollView showsVerticalScrollIndicator={true}>
+            <ScrollView 
+              showsVerticalScrollIndicator={true}
+              scrollEventThrottle={16}
+              onScroll={(e) => {
+                const offsetY = e.nativeEvent.contentOffset.y;
+                if (sideLineScroll.current) {
+                  sideLineScroll.current.scrollTo({ y: offsetY, animated: false });
+                }
+              }}
+            >
               {visibleLines.map((line) => {
                 const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
                 
