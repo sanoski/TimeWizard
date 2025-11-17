@@ -268,11 +268,14 @@ export default function TimesheetScreen() {
             scrollEnabled={false}
             ref={(ref) => { sideLineScroll.current = ref; }}
           >
-            {visibleLines.map((line) => (
-              <View key={line.line_code} style={styles.lineNameCell}>
-                <Text style={styles.lineNameText}>{line.label}</Text>
-              </View>
-            ))}
+            {visibleLines.map((line) => {
+              const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
+              return (
+                <View key={line.line_code} style={[styles.lineNameCell, isPTOOrHoliday && styles.lineNameCellShort]}>
+                  <Text style={styles.lineNameText}>{line.label}</Text>
+                </View>
+              );
+            })}
             <View style={[styles.lineNameCell, styles.totalsRow]}>
               <Text style={styles.totalLabelText}>Totals</Text>
             </View>
