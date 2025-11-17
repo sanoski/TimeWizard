@@ -9,13 +9,27 @@ export default function TabLayout() {
         tabBarActiveTintColor: '#2563eb',
         tabBarInactiveTintColor: '#6b7280',
         headerShown: false,
+        tabBarPosition: 'top',
         tabBarStyle: {
           backgroundColor: '#ffffff',
-          borderTopWidth: 1,
-          borderTopColor: '#e5e7eb',
-          height: Platform.OS === 'ios' ? 80 : 70,
-          paddingBottom: Platform.OS === 'ios' ? 24 : 16,
-          paddingTop: 8,
+          borderBottomWidth: 1,
+          borderBottomColor: '#e5e7eb',
+          height: 60,
+          paddingTop: Platform.OS === 'ios' ? 40 : 8,
+          elevation: 4,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+        },
+        tabBarLabelStyle: {
+          fontSize: 13,
+          fontWeight: '600',
+          textTransform: 'none',
+        },
+        tabBarIndicatorStyle: {
+          backgroundColor: '#2563eb',
+          height: 3,
         },
       }}
     >
