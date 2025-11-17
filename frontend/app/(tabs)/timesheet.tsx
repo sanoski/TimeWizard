@@ -28,6 +28,9 @@ export default function TimesheetScreen() {
   const mainContentScroll = React.useRef<any>(null);
   const headerDayScroll = React.useRef<any>(null);
   const sideLineScroll = React.useRef<any>(null);
+  
+  // Flag to prevent scroll feedback loop
+  const isScrolling = React.useRef(false);
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
