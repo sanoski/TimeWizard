@@ -1,639 +1,654 @@
-diff --git a/frontend/app/(tabs)/timesheet.tsx b/frontend/app/(tabs)/timesheet.tsx
-index 7adcf67..c79f2b8 100644
---- a/frontend/app/(tabs)/timesheet.tsx
-+++ b/frontend/app/(tabs)/timesheet.tsx
+diff --git a/frontend/services/migration.ts b/frontend/services/migration.ts
+index 7ae1e63..2c1b2dd 100644
+--- a/frontend/services/migration.ts
++++ b/frontend/services/migration.ts
 @@ -1,4 +1,4 @@
--import React, { useEffect, useState } from 'react';
-+import React, { useEffect, useState, useRef } from 'react';
- import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Pressable, Alert, TextInput } from 'react-native';
- import { SafeAreaView } from 'react-native-safe-area-context';
- import { Ionicons } from '@expo/vector-icons';
-@@ -21,11 +21,12 @@ export default function TimesheetScreen() {
-     addProjectLine
-   } = useTimesheetStore();
+-import { db } from './database';
++import { db } from './databaseWrapper';
+ import Constants from 'expo-constants';
  
--  const [showAddProject, setShowAddProject] = React.useState(false);
--  const [projectNumber, setProjectNumber] = React.useState('');
-+  const [showAddProject, setShowAddProject] = useState(false);
-+  const [projectNumber, setProjectNumber] = useState('');
- 
-   // Refs for synchronized scrolling
--  const headerDayScroll = React.useRef<any>(null);
-+  const headerDayScroll = useRef<any>(null);
-+  const sideLineScroll = useRef<any>(null);
- 
-   useEffect(() => {
-     const today = new Date().toISOString().split('T')[0];
-@@ -554,12 +555,6 @@ const styles = StyleSheet.create({
-   totalsRow: {
-     backgroundColor: '#f9fafb',
-   },
--  dayHeaderContainer: {
--    flexDirection: 'row',
--    backgroundColor: '#f9fafb',
--    borderBottomWidth: 2,
--    borderBottomColor: '#e5e7eb',
--  },
-   contentArea: {
-     flex: 1,
-     flexDirection: 'row',
+ const BACKEND_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_PUBLIC_BACKEND_URL || '';
 diff --git a/model.patch b/model.patch
-index 338a674..e69de29 100644
+index 85b95d9..e69de29 100644
 --- a/model.patch
 +++ b/model.patch
-@@ -1,595 +0,0 @@
+@@ -1,639 +0,0 @@
 -diff --git a/frontend/app/(tabs)/timesheet.tsx b/frontend/app/(tabs)/timesheet.tsx
--index d66446c..9ba473c 100644
+-index 7adcf67..c79f2b8 100644
 ---- a/frontend/app/(tabs)/timesheet.tsx
 -+++ b/frontend/app/(tabs)/timesheet.tsx
--@@ -25,13 +25,7 @@ export default function TimesheetScreen() {
--   const [projectNumber, setProjectNumber] = React.useState('');
+-@@ -1,4 +1,4 @@
+--import React, { useEffect, useState } from 'react';
+-+import React, { useEffect, useState, useRef } from 'react';
+- import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Pressable, Alert, TextInput } from 'react-native';
+- import { SafeAreaView } from 'react-native-safe-area-context';
+- import { Ionicons } from '@expo/vector-icons';
+-@@ -21,11 +21,12 @@ export default function TimesheetScreen() {
+-     addProjectLine
+-   } = useTimesheetStore();
+- 
+--  const [showAddProject, setShowAddProject] = React.useState(false);
+--  const [projectNumber, setProjectNumber] = React.useState('');
+-+  const [showAddProject, setShowAddProject] = useState(false);
+-+  const [projectNumber, setProjectNumber] = useState('');
 - 
 -   // Refs for synchronized scrolling
---  const mainHorizontalScroll = React.useRef<any>(null);
---  const mainVerticalScroll = React.useRef<any>(null);
--   const headerDayScroll = React.useRef<any>(null);
---  const sideLineScroll = React.useRef<any>(null);
---  
---  // Flag to prevent scroll feedback loop
---  const isScrolling = React.useRef(false);
+--  const headerDayScroll = React.useRef<any>(null);
+-+  const headerDayScroll = useRef<any>(null);
+-+  const sideLineScroll = useRef<any>(null);
 - 
 -   useEffect(() => {
 -     const today = new Date().toISOString().split('T')[0];
--@@ -236,15 +230,11 @@ export default function TimesheetScreen() {
-- 
--       {/* Grid with Sticky Headers */}
--       <View style={styles.gridContainer}>
---        {/* Fixed Top-Left Corner */}
---        <View style={styles.fixedCorner}>
--+        {/* Fixed Day Headers */}
--+        <View style={styles.dayHeaderContainer}>
--           <View style={styles.cornerCell}>
--             <Text style={styles.lineHeaderText}>Line</Text>
--           </View>
---        </View>
---
---        {/* Fixed Day Headers (Top Row) */}
---        <View style={styles.fixedDayHeaders}>
--           <ScrollView 
--             horizontal 
--             showsHorizontalScrollIndicator={false}
--@@ -268,76 +258,29 @@ export default function TimesheetScreen() {
--           </ScrollView>
--         </View>
-- 
---        {/* Scrollable Content Area */}
---        <View style={styles.scrollableArea}>
---          {/* Fixed Line Names (Left Column) */}
---          <View style={styles.fixedLineNames}>
---            <ScrollView 
---              showsVerticalScrollIndicator={false}
---              scrollEnabled={true}
---              scrollEventThrottle={16}
---              onScroll={(e) => {
---                // Sync main content when user scrolls line names
---                const offsetY = e.nativeEvent.contentOffset.y;
---                if (mainVerticalScroll.current && mainVerticalScroll.current.scrollTo) {
---                  mainVerticalScroll.current.scrollTo({ y: offsetY, animated: false });
---                }
---              }}
---              ref={(ref) => { sideLineScroll.current = ref; }}
---            >
---              {visibleLines.map((line) => (
---                <View key={line.line_code} style={styles.lineNameCell}>
---                  <Text style={styles.lineNameText}>{line.label}</Text>
---                </View>
---              ))}
---              <View style={[styles.lineNameCell, styles.totalsRow]}>
---                <Text style={styles.totalLabelText}>Totals</Text>
---              </View>
---            </ScrollView>
---          </View>
---
---          {/* Main Scrollable Grid */}
--+        {/* Main Scrollable Grid with Line Names */}
--+        <ScrollView style={styles.mainScroll} showsVerticalScrollIndicator={true}>
--           <ScrollView
--             horizontal
--             showsHorizontalScrollIndicator={true}
--             scrollEventThrottle={16}
--             onScroll={(e) => {
---              if (!isScrolling.current) {
---                isScrolling.current = true;
---                const offsetX = e.nativeEvent.contentOffset.x;
---                if (headerDayScroll.current) {
---                  headerDayScroll.current.scrollTo({ x: offsetX, animated: false });
---                }
---                requestAnimationFrame(() => {
---                  isScrolling.current = false;
---                });
--+              const offsetX = e.nativeEvent.contentOffset.x;
--+              if (headerDayScroll.current) {
--+                headerDayScroll.current.scrollTo({ x: offsetX, animated: false });
--               }
--             }}
---            ref={(ref) => { mainHorizontalScroll.current = ref; }}
--           >
---            <ScrollView
---              showsVerticalScrollIndicator={true}
---              scrollEventThrottle={16}
---              onScroll={(e) => {
---                if (!isScrolling.current) {
---                  isScrolling.current = true;
---                  const offsetY = e.nativeEvent.contentOffset.y;
---                  if (sideLineScroll.current) {
---                    sideLineScroll.current.scrollTo({ y: offsetY, animated: false });
---                  }
---                  requestAnimationFrame(() => {
---                    isScrolling.current = false;
---                  });
---                }
---              }}
---              ref={(ref) => { mainVerticalScroll.current = ref; }}
---            >
---
--+            <View>
--               {visibleLines.map((line) => {
--                 const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
--                 
--                 return (
--                   <View key={line.line_code} style={styles.dataRow}>
--+                    {/* Line Name Cell */}
--+                    <View style={styles.lineNameCell}>
--+                      <Text style={styles.lineNameText}>{line.label}</Text>
--+                    </View>
--                     {weekDays.map((day, dayIndex) => {
--                     const isWeekend = dayIndex === 0 || dayIndex === 6;
--                     const stHours = getEntryHours(day, line.line_code, 'st');
--@@ -397,6 +340,10 @@ export default function TimesheetScreen() {
-- 
--               {/* Daily Totals Row */}
--               <View style={[styles.dataRow, styles.totalsRow]}>
--+                {/* Totals Label Cell */}
--+                <View style={[styles.lineNameCell, styles.totalsRow]}>
--+                  <Text style={styles.totalLabelText}>Totals</Text>
--+                </View>
--                 {weekDays.map((day, dayIndex) => {
--                   const isWeekend = dayIndex === 0 || dayIndex === 6;
--                   const dayST = getDayTotal(day, 'st');
--@@ -513,46 +460,24 @@ const styles = StyleSheet.create({
--     flex: 1,
--     position: 'relative',
+-@@ -554,12 +555,6 @@ const styles = StyleSheet.create({
+-   totalsRow: {
+-     backgroundColor: '#f9fafb',
 -   },
---  fixedCorner: {
---    position: 'absolute',
---    top: 0,
---    left: 0,
---    zIndex: 3,
+--  dayHeaderContainer: {
+--    flexDirection: 'row',
 --    backgroundColor: '#f9fafb',
 --    borderBottomWidth: 2,
---    borderRightWidth: 1,
 --    borderBottomColor: '#e5e7eb',
---    borderRightColor: '#e5e7eb',
 --  },
--   cornerCell: {
--     width: 100,
--     height: 60,
--     padding: 12,
--     justifyContent: 'center',
--     alignItems: 'center',
--+    borderRightWidth: 1,
--+    borderRightColor: '#e5e7eb',
--   },
---  fixedDayHeaders: {
---    position: 'absolute',
---    top: 0,
---    left: 100,
---    right: 0,
---    height: 60,
---    zIndex: 2,
--+  dayHeaderContainer: {
--+    flexDirection: 'row',
--     backgroundColor: '#f9fafb',
--     borderBottomWidth: 2,
--     borderBottomColor: '#e5e7eb',
--+    zIndex: 2,
--   },
---  scrollableArea: {
--+  mainScroll: {
+-   contentArea: {
 -     flex: 1,
---    marginTop: 60, // Height of day headers
---    flexDirection: 'row',
---  },
---  fixedLineNames: {
---    width: 100,
---    zIndex: 1,
---    backgroundColor: '#ffffff',
---    borderRightWidth: 1,
---    borderRightColor: '#e5e7eb',
--   },
--   dataRow: {
 -     flexDirection: 'row',
 -diff --git a/model.patch b/model.patch
--index 204ee33..1a40f1e 100644
+-index 338a674..e69de29 100644
 ---- a/model.patch
 -+++ b/model.patch
--@@ -1,403 +0,0 @@
+-@@ -1,595 +0,0 @@
 --diff --git a/frontend/app/(tabs)/timesheet.tsx b/frontend/app/(tabs)/timesheet.tsx
---index 9be9bdf..41a9b98 100644
+--index d66446c..9ba473c 100644
 ----- a/frontend/app/(tabs)/timesheet.tsx
 --+++ b/frontend/app/(tabs)/timesheet.tsx
---@@ -504,6 +504,7 @@ const styles = StyleSheet.create({
---   },
---   gridContainer: {
+--@@ -25,13 +25,7 @@ export default function TimesheetScreen() {
+--   const [projectNumber, setProjectNumber] = React.useState('');
+-- 
+--   // Refs for synchronized scrolling
+---  const mainHorizontalScroll = React.useRef<any>(null);
+---  const mainVerticalScroll = React.useRef<any>(null);
+--   const headerDayScroll = React.useRef<any>(null);
+---  const sideLineScroll = React.useRef<any>(null);
+---  
+---  // Flag to prevent scroll feedback loop
+---  const isScrolling = React.useRef(false);
+-- 
+--   useEffect(() => {
+--     const today = new Date().toISOString().split('T')[0];
+--@@ -236,15 +230,11 @@ export default function TimesheetScreen() {
+-- 
+--       {/* Grid with Sticky Headers */}
+--       <View style={styles.gridContainer}>
+---        {/* Fixed Top-Left Corner */}
+---        <View style={styles.fixedCorner}>
+--+        {/* Fixed Day Headers */}
+--+        <View style={styles.dayHeaderContainer}>
+--           <View style={styles.cornerCell}>
+--             <Text style={styles.lineHeaderText}>Line</Text>
+--           </View>
+---        </View>
+---
+---        {/* Fixed Day Headers (Top Row) */}
+---        <View style={styles.fixedDayHeaders}>
+--           <ScrollView 
+--             horizontal 
+--             showsHorizontalScrollIndicator={false}
+--@@ -268,76 +258,29 @@ export default function TimesheetScreen() {
+--           </ScrollView>
+--         </View>
+-- 
+---        {/* Scrollable Content Area */}
+---        <View style={styles.scrollableArea}>
+---          {/* Fixed Line Names (Left Column) */}
+---          <View style={styles.fixedLineNames}>
+---            <ScrollView 
+---              showsVerticalScrollIndicator={false}
+---              scrollEnabled={true}
+---              scrollEventThrottle={16}
+---              onScroll={(e) => {
+---                // Sync main content when user scrolls line names
+---                const offsetY = e.nativeEvent.contentOffset.y;
+---                if (mainVerticalScroll.current && mainVerticalScroll.current.scrollTo) {
+---                  mainVerticalScroll.current.scrollTo({ y: offsetY, animated: false });
+---                }
+---              }}
+---              ref={(ref) => { sideLineScroll.current = ref; }}
+---            >
+---              {visibleLines.map((line) => (
+---                <View key={line.line_code} style={styles.lineNameCell}>
+---                  <Text style={styles.lineNameText}>{line.label}</Text>
+---                </View>
+---              ))}
+---              <View style={[styles.lineNameCell, styles.totalsRow]}>
+---                <Text style={styles.totalLabelText}>Totals</Text>
+---              </View>
+---            </ScrollView>
+---          </View>
+---
+---          {/* Main Scrollable Grid */}
+--+        {/* Main Scrollable Grid with Line Names */}
+--+        <ScrollView style={styles.mainScroll} showsVerticalScrollIndicator={true}>
+--           <ScrollView
+--             horizontal
+--             showsHorizontalScrollIndicator={true}
+--             scrollEventThrottle={16}
+--             onScroll={(e) => {
+---              if (!isScrolling.current) {
+---                isScrolling.current = true;
+---                const offsetX = e.nativeEvent.contentOffset.x;
+---                if (headerDayScroll.current) {
+---                  headerDayScroll.current.scrollTo({ x: offsetX, animated: false });
+---                }
+---                requestAnimationFrame(() => {
+---                  isScrolling.current = false;
+---                });
+--+              const offsetX = e.nativeEvent.contentOffset.x;
+--+              if (headerDayScroll.current) {
+--+                headerDayScroll.current.scrollTo({ x: offsetX, animated: false });
+--               }
+--             }}
+---            ref={(ref) => { mainHorizontalScroll.current = ref; }}
+--           >
+---            <ScrollView
+---              showsVerticalScrollIndicator={true}
+---              scrollEventThrottle={16}
+---              onScroll={(e) => {
+---                if (!isScrolling.current) {
+---                  isScrolling.current = true;
+---                  const offsetY = e.nativeEvent.contentOffset.y;
+---                  if (sideLineScroll.current) {
+---                    sideLineScroll.current.scrollTo({ y: offsetY, animated: false });
+---                  }
+---                  requestAnimationFrame(() => {
+---                    isScrolling.current = false;
+---                  });
+---                }
+---              }}
+---              ref={(ref) => { mainVerticalScroll.current = ref; }}
+---            >
+---
+--+            <View>
+--               {visibleLines.map((line) => {
+--                 const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
+--                 
+--                 return (
+--                   <View key={line.line_code} style={styles.dataRow}>
+--+                    {/* Line Name Cell */}
+--+                    <View style={styles.lineNameCell}>
+--+                      <Text style={styles.lineNameText}>{line.label}</Text>
+--+                    </View>
+--                     {weekDays.map((day, dayIndex) => {
+--                     const isWeekend = dayIndex === 0 || dayIndex === 6;
+--                     const stHours = getEntryHours(day, line.line_code, 'st');
+--@@ -397,6 +340,10 @@ export default function TimesheetScreen() {
+-- 
+--               {/* Daily Totals Row */}
+--               <View style={[styles.dataRow, styles.totalsRow]}>
+--+                {/* Totals Label Cell */}
+--+                <View style={[styles.lineNameCell, styles.totalsRow]}>
+--+                  <Text style={styles.totalLabelText}>Totals</Text>
+--+                </View>
+--                 {weekDays.map((day, dayIndex) => {
+--                   const isWeekend = dayIndex === 0 || dayIndex === 6;
+--                   const dayST = getDayTotal(day, 'st');
+--@@ -513,46 +460,24 @@ const styles = StyleSheet.create({
 --     flex: 1,
---+    position: 'relative',
+--     position: 'relative',
 --   },
---   fixedCorner: {
---     position: 'absolute',
---@@ -518,6 +519,7 @@ const styles = StyleSheet.create({
---   },
+---  fixedCorner: {
+---    position: 'absolute',
+---    top: 0,
+---    left: 0,
+---    zIndex: 3,
+---    backgroundColor: '#f9fafb',
+---    borderBottomWidth: 2,
+---    borderRightWidth: 1,
+---    borderBottomColor: '#e5e7eb',
+---    borderRightColor: '#e5e7eb',
+---  },
 --   cornerCell: {
 --     width: 100,
---+    height: 60,
+--     height: 60,
 --     padding: 12,
 --     justifyContent: 'center',
 --     alignItems: 'center',
---@@ -527,6 +529,7 @@ const styles = StyleSheet.create({
---     top: 0,
---     left: 100,
---     right: 0,
---+    height: 60,
---     zIndex: 2,
+--+    borderRightWidth: 1,
+--+    borderRightColor: '#e5e7eb',
+--   },
+---  fixedDayHeaders: {
+---    position: 'absolute',
+---    top: 0,
+---    left: 100,
+---    right: 0,
+---    height: 60,
+---    zIndex: 2,
+--+  dayHeaderContainer: {
+--+    flexDirection: 'row',
 --     backgroundColor: '#f9fafb',
 --     borderBottomWidth: 2,
+--     borderBottomColor: '#e5e7eb',
+--+    zIndex: 2,
+--   },
+---  scrollableArea: {
+--+  mainScroll: {
+--     flex: 1,
+---    marginTop: 60, // Height of day headers
+---    flexDirection: 'row',
+---  },
+---  fixedLineNames: {
+---    width: 100,
+---    zIndex: 1,
+---    backgroundColor: '#ffffff',
+---    borderRightWidth: 1,
+---    borderRightColor: '#e5e7eb',
+--   },
+--   dataRow: {
+--     flexDirection: 'row',
 --diff --git a/model.patch b/model.patch
---index 6a5feb8..e69de29 100644
+--index 204ee33..1a40f1e 100644
 ----- a/model.patch
 --+++ b/model.patch
---@@ -1,370 +0,0 @@
+--@@ -1,403 +0,0 @@
 ---diff --git a/frontend/app/(tabs)/timesheet.tsx b/frontend/app/(tabs)/timesheet.tsx
----index 9b71f59..2df0914 100644
+---index 9be9bdf..41a9b98 100644
 ------ a/frontend/app/(tabs)/timesheet.tsx
 ---+++ b/frontend/app/(tabs)/timesheet.tsx
----@@ -24,6 +24,11 @@ export default function TimesheetScreen() {
----   const [showAddProject, setShowAddProject] = React.useState(false);
----   const [projectNumber, setProjectNumber] = React.useState('');
---- 
----+  // Refs for synchronized scrolling
----+  const mainScrollRef = React.useRef(null);
----+  const dayHeaderScrollRef = React.useRef(null);
----+  const lineNameScrollRef = React.useRef(null);
----+
----   useEffect(() => {
----     const today = new Date().toISOString().split('T')[0];
----     fetchLines();
----@@ -227,39 +232,102 @@ export default function TimesheetScreen() {
---- 
----       {/* Grid with Sticky Headers */}
----       <View style={styles.gridContainer}>
-----        {/* Sticky Day Headers */}
-----        <View style={styles.stickyDayHeaders}>
-----          <View style={styles.lineHeaderCell}>
----+        {/* Fixed Top-Left Corner */}
----+        <View style={styles.fixedCorner}>
----+          <View style={styles.cornerCell}>
----             <Text style={styles.lineHeaderText}>Line</Text>
----           </View>
-----          <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={false} style={styles.dayHeaderScroll}>
-----            <View style={styles.dayHeaderRow}>
-----              {weekDays.map((day, index) => {
-----                const isWeekend = index === 0 || index === 6;
-----                const dayDate = new Date(day + 'T00:00:00');
-----                return (
-----                  <View key={day} style={[styles.dayHeaderCell, isWeekend && styles.weekendHeader]}>
-----                    <Text style={[styles.dayHeaderText, isWeekend && styles.weekendHeaderText]}>
-----                      {dayNames[index]}
-----                    </Text>
-----                    <Text style={[styles.dateText, isWeekend && styles.weekendHeaderText]}>
-----                      {format(dayDate, 'M/d')}
-----                    </Text>
-----                  </View>
-----                );
-----              })}
-----            </View>
----+        </View>
---- 
-----            {/* Line Rows */}
-----            {visibleLines.map((line) => {
-----              const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
-----              
----+        {/* Fixed Day Headers (Top Row) */}
----+        <View style={styles.fixedDayHeaders}>
----+          <ScrollView 
----+            horizontal 
----+            showsHorizontalScrollIndicator={false}
----+            scrollEventThrottle={16}
----+            onScroll={(e) => {
----+              // Sync with main content scroll
----+              const offsetX = e.nativeEvent.contentOffset.x;
----+              if (mainScrollRef.current) {
----+                mainScrollRef.current.scrollTo({ x: offsetX, animated: false });
----+              }
----+            }}
----+            ref={(ref) => { dayHeaderScrollRef.current = ref; }}
----+          >
----+            {weekDays.map((day, index) => {
----+              const isWeekend = index === 0 || index === 6;
----+              const dayDate = new Date(day + 'T00:00:00');
----               return (
-----                <View key={line.line_code} style={styles.lineRow}>
-----                  <View style={styles.lineNameCell}>
-----                    <Text style={styles.lineNameText}>{line.label}</Text>
-----                  </View>
-----                  {weekDays.map((day, dayIndex) => {
----+                <View key={day} style={[styles.dayHeaderCell, isWeekend && styles.weekendHeader]}>
----+                  <Text style={[styles.dayHeaderText, isWeekend && styles.weekendHeaderText]}>
----+                    {dayNames[index]}
----+                  </Text>
----+                  <Text style={[styles.dateText, isWeekend && styles.weekendHeaderText]}>
----+                    {format(dayDate, 'M/d')}
----+                  </Text>
----+                </View>
----+              );
----+            })}
----+          </ScrollView>
----+        </View>
----+
----+        {/* Scrollable Content Area */}
----+        <View style={styles.scrollableArea}>
----+          {/* Fixed Line Names (Left Column) */}
----+          <View style={styles.fixedLineNames}>
----+            <ScrollView 
----+              showsVerticalScrollIndicator={false}
----+              scrollEventThrottle={16}
----+              onScroll={(e) => {
----+                // Sync with main content scroll
----+                const offsetY = e.nativeEvent.contentOffset.y;
----+                if (mainScrollRef.current) {
----+                  mainScrollRef.current.scrollTo({ y: offsetY, animated: false });
----+                }
----+              }}
----+              ref={(ref) => { lineNameScrollRef.current = ref; }}
----+            >
----+              {visibleLines.map((line) => (
----+                <View key={line.line_code} style={styles.lineNameCell}>
----+                  <Text style={styles.lineNameText}>{line.label}</Text>
----+                </View>
----+              ))}
----+              <View style={[styles.lineNameCell, styles.totalsRow]}>
----+                <Text style={styles.totalLabelText}>Totals</Text>
----+              </View>
----+            </ScrollView>
----+          </View>
----+
----+          {/* Main Scrollable Grid */}
----+          <ScrollView
----+            horizontal
----+            showsHorizontalScrollIndicator={true}
----+            scrollEventThrottle={16}
----+            onScroll={(e) => {
----+              const offsetX = e.nativeEvent.contentOffset.x;
----+              if (dayHeaderScrollRef.current) {
----+                dayHeaderScrollRef.current.scrollTo({ x: offsetX, animated: false });
----+              }
----+            }}
----+            ref={(ref) => { mainScrollRef.current = ref; }}
----+          >
----+            <ScrollView
----+              showsVerticalScrollIndicator={true}
----+              scrollEventThrottle={16}
----+              onScroll={(e) => {
----+                const offsetY = e.nativeEvent.contentOffset.y;
----+                if (lineNameScrollRef.current) {
----+                  lineNameScrollRef.current.scrollTo({ y: offsetY, animated: false });
----+                }
----+              }}
----+            >
----+
----+              {visibleLines.map((line) => {
----+                const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
----+                
----+                return (
----+                  <View key={line.line_code} style={styles.dataRow}>
----+                    {weekDays.map((day, dayIndex) => {
----                     const isWeekend = dayIndex === 0 || dayIndex === 6;
----                     const stHours = getEntryHours(day, line.line_code, 'st');
----                     const otHours = getEntryHours(day, line.line_code, 'ot');
----@@ -316,11 +384,8 @@ export default function TimesheetScreen() {
----               );
----             })}
---- 
-----            {/* Daily Totals Row */}
-----            <View style={[styles.lineRow, styles.totalsRow]}>
-----              <View style={styles.lineNameCell}>
-----                <Text style={styles.totalLabelText}>Daily Totals</Text>
-----              </View>
----+              {/* Daily Totals Row */}
----+              <View style={[styles.dataRow, styles.totalsRow]}>
----               {weekDays.map((day, dayIndex) => {
----                 const isWeekend = dayIndex === 0 || dayIndex === 6;
----                 const dayST = getDayTotal(day, 'st');
----@@ -334,10 +399,10 @@ export default function TimesheetScreen() {
----                   </View>
----                 );
----               })}
-----            </View>
-----          </View>
-----        </ScrollView>
-----      </ScrollView>
----+            </ScrollView>
----+          </ScrollView>
----+        </View>
----+      </View>
----     </SafeAreaView>
----   );
---- }
----@@ -435,6 +500,50 @@ const styles = StyleSheet.create({
+---@@ -504,6 +504,7 @@ const styles = StyleSheet.create({
+---   },
 ---   gridContainer: {
 ---     flex: 1,
+---+    position: 'relative',
 ---   },
----+  fixedCorner: {
----+    position: 'absolute',
----+    top: 0,
----+    left: 0,
----+    zIndex: 3,
----+    backgroundColor: '#f9fafb',
----+    borderBottomWidth: 2,
----+    borderRightWidth: 1,
----+    borderBottomColor: '#e5e7eb',
----+    borderRightColor: '#e5e7eb',
----+  },
----+  cornerCell: {
----+    width: 100,
----+    padding: 12,
----+    justifyContent: 'center',
----+    alignItems: 'center',
----+  },
----+  fixedDayHeaders: {
----+    position: 'absolute',
----+    top: 0,
----+    left: 100,
----+    right: 0,
----+    zIndex: 2,
----+    backgroundColor: '#f9fafb',
----+    borderBottomWidth: 2,
----+    borderBottomColor: '#e5e7eb',
----+  },
----+  scrollableArea: {
----+    flex: 1,
----+    marginTop: 60, // Height of day headers
----+    flexDirection: 'row',
----+  },
----+  fixedLineNames: {
----+    width: 100,
----+    zIndex: 1,
----+    backgroundColor: '#ffffff',
----+    borderRightWidth: 1,
----+    borderRightColor: '#e5e7eb',
----+  },
----+  dataRow: {
----+    flexDirection: 'row',
----+    borderBottomWidth: 1,
----+    borderBottomColor: '#e5e7eb',
----+  },
----   headerRow: {
----     flexDirection: 'row',
+---   fixedCorner: {
+---     position: 'absolute',
+---@@ -518,6 +519,7 @@ const styles = StyleSheet.create({
+---   },
+---   cornerCell: {
+---     width: 100,
+---+    height: 60,
+---     padding: 12,
+---     justifyContent: 'center',
+---     alignItems: 'center',
+---@@ -527,6 +529,7 @@ const styles = StyleSheet.create({
+---     top: 0,
+---     left: 100,
+---     right: 0,
+---+    height: 60,
+---     zIndex: 2,
 ---     backgroundColor: '#f9fafb',
+---     borderBottomWidth: 2,
 ---diff --git a/model.patch b/model.patch
----index 37717e6..a1d6264 100644
+---index 6a5feb8..e69de29 100644
 ------ a/model.patch
 ---+++ b/model.patch
----@@ -1,137 +0,0 @@
-----diff --git a/backend/timesheet.db b/backend/timesheet.db
-----index 66d6a43..776bbea 100644
-----Binary files a/backend/timesheet.db and b/backend/timesheet.db differ
-----diff --git a/test_result.md b/test_result.md
-----index 320c181..e54f46d 100644
-------- a/test_result.md
-----+++ b/test_result.md
-----@@ -107,75 +107,93 @@ user_problem_statement: "Build VRS Time Wizard - A mobile railroad timesheet tra
----- backend:
-----   - task: "SQLite database setup with time_entries, line_codes, and settings tables"
-----     implemented: true
------    working: "NA"
-----+    working: true
-----     file: "server.py"
-----     stuck_count: 0
-----     priority: "high"
------    needs_retesting: true
-----+    needs_retesting: false
-----     status_history:
-----       - working: "NA"
-----         agent: "main"
-----         comment: "Created SQLite database with proper schema for time entries, line codes, and settings. Initialized default line codes and pay week settings."
-----+      - working: true
-----+        agent: "testing"
-----+        comment: "✅ Database initialization working correctly. All 10 default line codes created (VTR, GMRC, CLP, WACR, WACR-CRD, NEGS, NHC, NYOG, PTO, HOLIDAY). Settings table initialized with base_pay_week_ending=2025-11-22 and pay_frequency_days=14."
-----   
-----   - task: "Week ending and pay week calculation endpoints"
-----     implemented: true
------    working: "NA"
-----+    working: true
-----     file: "server.py"
-----     stuck_count: 0
-----     priority: "high"
------    needs_retesting: true
-----+    needs_retesting: false
-----     status_history:
-----       - working: "NA"
-----         agent: "main"
-----         comment: "Implemented /api/week-info endpoint that calculates week ending Saturday and determines if it's a pay week based on Nov 22, 2025 base date."
-----+      - working: true
-----+        agent: "testing"
-----+        comment: "✅ Week calculation logic working perfectly. Tested multiple dates: Nov 16 (week ending Nov 22, pay week), Nov 23 (week ending Nov 29, not pay week), Nov 30 (week ending Dec 6, pay week), Dec 6 (pay week), Dec 20 (pay week). All calculations correct with 14-day pay cycle."
-----   
-----   - task: "Time entries CRUD endpoints"
-----     implemented: true
------    working: "NA"
-----+    working: true
-----     file: "server.py"
-----     stuck_count: 0
-----     priority: "high"
------    needs_retesting: true
-----+    needs_retesting: false
-----     status_history:
-----       - working: "NA"
-----         agent: "main"
-----         comment: "Created POST /api/entries for create/update, GET /api/entries for fetching by week or date range. Automatically calculates week ending and pay week status."
-----+      - working: true
-----+        agent: "testing"
-----+        comment: "✅ Time entries CRUD fully functional. POST creates new entries and updates existing ones (same work_date + line_code). GET retrieves by week_ending correctly. All entries have proper week_ending_date and is_pay_week calculations. Tested with multiple entries across different days and lines."
-----   
-----   - task: "Weekly summary endpoint"
-----     implemented: true
------    working: "NA"
-----+    working: true
-----     file: "server.py"
-----     stuck_count: 0
-----     priority: "high"
------    needs_retesting: true
-----+    needs_retesting: false
-----     status_history:
-----       - working: "NA"
-----         agent: "main"
-----         comment: "Implemented GET /api/weekly-summary to calculate total ST/OT, lines used, daily totals, and line totals for a given week."
-----+      - working: true
-----+        agent: "testing"
-----+        comment: "✅ Weekly summary calculations working correctly. Tested with populated week (29 ST, 7 OT, 36 total hours, 3 lines used) and empty week (all zeros). Daily totals and line totals properly aggregated. All required fields present in response."
-----   
-----   - task: "Line codes management endpoints"
-----     implemented: true
------    working: "NA"
-----+    working: true
-----     file: "server.py"
-----     stuck_count: 0
-----     priority: "medium"
------    needs_retesting: true
-----+    needs_retesting: false
-----     status_history:
-----       - working: "NA"
-----         agent: "main"
-----         comment: "Created GET/POST/PUT/DELETE /api/lines endpoints for managing line codes and project lines. Supports visibility toggling and project line addition/deletion."
-----+      - working: true
-----+        agent: "testing"
-----+        comment: "✅ Line codes management fully working. GET returns all lines with proper sorting. POST creates project lines successfully. PUT toggles visibility correctly. DELETE removes project lines but correctly prevents deletion of standard lines (returns 400 error). All CRUD operations validated."
-----   
-----   - task: "Data export/import endpoints"
-----     implemented: true
------    working: "NA"
-----+    working: true
-----     file: "server.py"
-----     stuck_count: 0
-----     priority: "medium"
------    needs_retesting: true
-----+    needs_retesting: false
-----     status_history:
-----       - working: "NA"
-----         agent: "main"
-----         comment: "Implemented GET /api/export and POST /api/import for JSON data export/import functionality."
-----+      - working: true
-----+        agent: "testing"
-----+        comment: "✅ Export/import functionality working perfectly. Export returns complete JSON with entries, line_codes, settings, and export_date. Import successfully processes and stores all data. Tested full export-import cycle with data persistence verified."
+---@@ -1,370 +0,0 @@
+----diff --git a/frontend/app/(tabs)/timesheet.tsx b/frontend/app/(tabs)/timesheet.tsx
+----index 9b71f59..2df0914 100644
+------- a/frontend/app/(tabs)/timesheet.tsx
+----+++ b/frontend/app/(tabs)/timesheet.tsx
+----@@ -24,6 +24,11 @@ export default function TimesheetScreen() {
+----   const [showAddProject, setShowAddProject] = React.useState(false);
+----   const [projectNumber, setProjectNumber] = React.useState('');
 ---- 
----- frontend:
-----   - task: "Dashboard screen with week overview and pay week indicator"
-----@@ -245,16 +263,13 @@ metadata:
-----   run_ui: false
+----+  // Refs for synchronized scrolling
+----+  const mainScrollRef = React.useRef(null);
+----+  const dayHeaderScrollRef = React.useRef(null);
+----+  const lineNameScrollRef = React.useRef(null);
+----+
+----   useEffect(() => {
+----     const today = new Date().toISOString().split('T')[0];
+----     fetchLines();
+----@@ -227,39 +232,102 @@ export default function TimesheetScreen() {
 ---- 
----- test_plan:
------  current_focus:
------    - "Week ending and pay week calculation endpoints"
------    - "Time entries CRUD endpoints"
------    - "Weekly summary endpoint"
------    - "Line codes management endpoints"
------    - "Data export/import endpoints"
-----+  current_focus: []
-----   stuck_tasks: []
------  test_all: true
-----+  test_all: false
-----   test_priority: "high_first"
+----       {/* Grid with Sticky Headers */}
+----       <View style={styles.gridContainer}>
+-----        {/* Sticky Day Headers */}
+-----        <View style={styles.stickyDayHeaders}>
+-----          <View style={styles.lineHeaderCell}>
+----+        {/* Fixed Top-Left Corner */}
+----+        <View style={styles.fixedCorner}>
+----+          <View style={styles.cornerCell}>
+----             <Text style={styles.lineHeaderText}>Line</Text>
+----           </View>
+-----          <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={false} style={styles.dayHeaderScroll}>
+-----            <View style={styles.dayHeaderRow}>
+-----              {weekDays.map((day, index) => {
+-----                const isWeekend = index === 0 || index === 6;
+-----                const dayDate = new Date(day + 'T00:00:00');
+-----                return (
+-----                  <View key={day} style={[styles.dayHeaderCell, isWeekend && styles.weekendHeader]}>
+-----                    <Text style={[styles.dayHeaderText, isWeekend && styles.weekendHeaderText]}>
+-----                      {dayNames[index]}
+-----                    </Text>
+-----                    <Text style={[styles.dateText, isWeekend && styles.weekendHeaderText]}>
+-----                      {format(dayDate, 'M/d')}
+-----                    </Text>
+-----                  </View>
+-----                );
+-----              })}
+-----            </View>
+----+        </View>
 ---- 
----- agent_communication:
-----   - agent: "main"
------    message: "Completed initial implementation of VRS Time Wizard mobile app. Backend uses SQLite with all core functionality: time entry tracking, week calculations, pay week detection (Nov 22, 2025 base), line management, and data export/import. Frontend has 4 tabs: Dashboard (week overview), Timesheet (grid with +/- controls), History (past 8 weeks), and Settings (line visibility, projects). Ready for backend testing."
-----\ No newline at end of file
-----+    message: "Completed initial implementation of VRS Time Wizard mobile app. Backend uses SQLite with all core functionality: time entry tracking, week calculations, pay week detection (Nov 22, 2025 base), line management, and data export/import. Frontend has 4 tabs: Dashboard (week overview), Timesheet (grid with +/- controls), History (past 8 weeks), and Settings (line visibility, projects). Ready for backend testing."
-----+  - agent: "testing"
-----+    message: "✅ BACKEND TESTING COMPLETE - All 6 backend tasks tested and working perfectly! Comprehensive testing performed: 26 test cases with 100% success rate. All API endpoints functional: week-info calculations, time entries CRUD, weekly summaries, line codes management, settings, and export/import. Pay week logic validated with multiple date scenarios. Database operations, error handling, and edge cases all working correctly. Backend is production-ready."
-----\ No newline at end of file
+-----            {/* Line Rows */}
+-----            {visibleLines.map((line) => {
+-----              const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
+-----              
+----+        {/* Fixed Day Headers (Top Row) */}
+----+        <View style={styles.fixedDayHeaders}>
+----+          <ScrollView 
+----+            horizontal 
+----+            showsHorizontalScrollIndicator={false}
+----+            scrollEventThrottle={16}
+----+            onScroll={(e) => {
+----+              // Sync with main content scroll
+----+              const offsetX = e.nativeEvent.contentOffset.x;
+----+              if (mainScrollRef.current) {
+----+                mainScrollRef.current.scrollTo({ x: offsetX, animated: false });
+----+              }
+----+            }}
+----+            ref={(ref) => { dayHeaderScrollRef.current = ref; }}
+----+          >
+----+            {weekDays.map((day, index) => {
+----+              const isWeekend = index === 0 || index === 6;
+----+              const dayDate = new Date(day + 'T00:00:00');
+----               return (
+-----                <View key={line.line_code} style={styles.lineRow}>
+-----                  <View style={styles.lineNameCell}>
+-----                    <Text style={styles.lineNameText}>{line.label}</Text>
+-----                  </View>
+-----                  {weekDays.map((day, dayIndex) => {
+----+                <View key={day} style={[styles.dayHeaderCell, isWeekend && styles.weekendHeader]}>
+----+                  <Text style={[styles.dayHeaderText, isWeekend && styles.weekendHeaderText]}>
+----+                    {dayNames[index]}
+----+                  </Text>
+----+                  <Text style={[styles.dateText, isWeekend && styles.weekendHeaderText]}>
+----+                    {format(dayDate, 'M/d')}
+----+                  </Text>
+----+                </View>
+----+              );
+----+            })}
+----+          </ScrollView>
+----+        </View>
+----+
+----+        {/* Scrollable Content Area */}
+----+        <View style={styles.scrollableArea}>
+----+          {/* Fixed Line Names (Left Column) */}
+----+          <View style={styles.fixedLineNames}>
+----+            <ScrollView 
+----+              showsVerticalScrollIndicator={false}
+----+              scrollEventThrottle={16}
+----+              onScroll={(e) => {
+----+                // Sync with main content scroll
+----+                const offsetY = e.nativeEvent.contentOffset.y;
+----+                if (mainScrollRef.current) {
+----+                  mainScrollRef.current.scrollTo({ y: offsetY, animated: false });
+----+                }
+----+              }}
+----+              ref={(ref) => { lineNameScrollRef.current = ref; }}
+----+            >
+----+              {visibleLines.map((line) => (
+----+                <View key={line.line_code} style={styles.lineNameCell}>
+----+                  <Text style={styles.lineNameText}>{line.label}</Text>
+----+                </View>
+----+              ))}
+----+              <View style={[styles.lineNameCell, styles.totalsRow]}>
+----+                <Text style={styles.totalLabelText}>Totals</Text>
+----+              </View>
+----+            </ScrollView>
+----+          </View>
+----+
+----+          {/* Main Scrollable Grid */}
+----+          <ScrollView
+----+            horizontal
+----+            showsHorizontalScrollIndicator={true}
+----+            scrollEventThrottle={16}
+----+            onScroll={(e) => {
+----+              const offsetX = e.nativeEvent.contentOffset.x;
+----+              if (dayHeaderScrollRef.current) {
+----+                dayHeaderScrollRef.current.scrollTo({ x: offsetX, animated: false });
+----+              }
+----+            }}
+----+            ref={(ref) => { mainScrollRef.current = ref; }}
+----+          >
+----+            <ScrollView
+----+              showsVerticalScrollIndicator={true}
+----+              scrollEventThrottle={16}
+----+              onScroll={(e) => {
+----+                const offsetY = e.nativeEvent.contentOffset.y;
+----+                if (lineNameScrollRef.current) {
+----+                  lineNameScrollRef.current.scrollTo({ y: offsetY, animated: false });
+----+                }
+----+              }}
+----+            >
+----+
+----+              {visibleLines.map((line) => {
+----+                const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
+----+                
+----+                return (
+----+                  <View key={line.line_code} style={styles.dataRow}>
+----+                    {weekDays.map((day, dayIndex) => {
+----                     const isWeekend = dayIndex === 0 || dayIndex === 6;
+----                     const stHours = getEntryHours(day, line.line_code, 'st');
+----                     const otHours = getEntryHours(day, line.line_code, 'ot');
+----@@ -316,11 +384,8 @@ export default function TimesheetScreen() {
+----               );
+----             })}
+---- 
+-----            {/* Daily Totals Row */}
+-----            <View style={[styles.lineRow, styles.totalsRow]}>
+-----              <View style={styles.lineNameCell}>
+-----                <Text style={styles.totalLabelText}>Daily Totals</Text>
+-----              </View>
+----+              {/* Daily Totals Row */}
+----+              <View style={[styles.dataRow, styles.totalsRow]}>
+----               {weekDays.map((day, dayIndex) => {
+----                 const isWeekend = dayIndex === 0 || dayIndex === 6;
+----                 const dayST = getDayTotal(day, 'st');
+----@@ -334,10 +399,10 @@ export default function TimesheetScreen() {
+----                   </View>
+----                 );
+----               })}
+-----            </View>
+-----          </View>
+-----        </ScrollView>
+-----      </ScrollView>
+----+            </ScrollView>
+----+          </ScrollView>
+----+        </View>
+----+      </View>
+----     </SafeAreaView>
+----   );
+---- }
+----@@ -435,6 +500,50 @@ const styles = StyleSheet.create({
+----   gridContainer: {
+----     flex: 1,
+----   },
+----+  fixedCorner: {
+----+    position: 'absolute',
+----+    top: 0,
+----+    left: 0,
+----+    zIndex: 3,
+----+    backgroundColor: '#f9fafb',
+----+    borderBottomWidth: 2,
+----+    borderRightWidth: 1,
+----+    borderBottomColor: '#e5e7eb',
+----+    borderRightColor: '#e5e7eb',
+----+  },
+----+  cornerCell: {
+----+    width: 100,
+----+    padding: 12,
+----+    justifyContent: 'center',
+----+    alignItems: 'center',
+----+  },
+----+  fixedDayHeaders: {
+----+    position: 'absolute',
+----+    top: 0,
+----+    left: 100,
+----+    right: 0,
+----+    zIndex: 2,
+----+    backgroundColor: '#f9fafb',
+----+    borderBottomWidth: 2,
+----+    borderBottomColor: '#e5e7eb',
+----+  },
+----+  scrollableArea: {
+----+    flex: 1,
+----+    marginTop: 60, // Height of day headers
+----+    flexDirection: 'row',
+----+  },
+----+  fixedLineNames: {
+----+    width: 100,
+----+    zIndex: 1,
+----+    backgroundColor: '#ffffff',
+----+    borderRightWidth: 1,
+----+    borderRightColor: '#e5e7eb',
+----+  },
+----+  dataRow: {
+----+    flexDirection: 'row',
+----+    borderBottomWidth: 1,
+----+    borderBottomColor: '#e5e7eb',
+----+  },
+----   headerRow: {
+----     flexDirection: 'row',
+----     backgroundColor: '#f9fafb',
+----diff --git a/model.patch b/model.patch
+----index 37717e6..a1d6264 100644
+------- a/model.patch
+----+++ b/model.patch
+----@@ -1,137 +0,0 @@
+-----diff --git a/backend/timesheet.db b/backend/timesheet.db
+-----index 66d6a43..776bbea 100644
+-----Binary files a/backend/timesheet.db and b/backend/timesheet.db differ
+-----diff --git a/test_result.md b/test_result.md
+-----index 320c181..e54f46d 100644
+-------- a/test_result.md
+-----+++ b/test_result.md
+-----@@ -107,75 +107,93 @@ user_problem_statement: "Build VRS Time Wizard - A mobile railroad timesheet tra
+----- backend:
+-----   - task: "SQLite database setup with time_entries, line_codes, and settings tables"
+-----     implemented: true
+------    working: "NA"
+-----+    working: true
+-----     file: "server.py"
+-----     stuck_count: 0
+-----     priority: "high"
+------    needs_retesting: true
+-----+    needs_retesting: false
+-----     status_history:
+-----       - working: "NA"
+-----         agent: "main"
+-----         comment: "Created SQLite database with proper schema for time entries, line codes, and settings. Initialized default line codes and pay week settings."
+-----+      - working: true
+-----+        agent: "testing"
+-----+        comment: "✅ Database initialization working correctly. All 10 default line codes created (VTR, GMRC, CLP, WACR, WACR-CRD, NEGS, NHC, NYOG, PTO, HOLIDAY). Settings table initialized with base_pay_week_ending=2025-11-22 and pay_frequency_days=14."
+-----   
+-----   - task: "Week ending and pay week calculation endpoints"
+-----     implemented: true
+------    working: "NA"
+-----+    working: true
+-----     file: "server.py"
+-----     stuck_count: 0
+-----     priority: "high"
+------    needs_retesting: true
+-----+    needs_retesting: false
+-----     status_history:
+-----       - working: "NA"
+-----         agent: "main"
+-----         comment: "Implemented /api/week-info endpoint that calculates week ending Saturday and determines if it's a pay week based on Nov 22, 2025 base date."
+-----+      - working: true
+-----+        agent: "testing"
+-----+        comment: "✅ Week calculation logic working perfectly. Tested multiple dates: Nov 16 (week ending Nov 22, pay week), Nov 23 (week ending Nov 29, not pay week), Nov 30 (week ending Dec 6, pay week), Dec 6 (pay week), Dec 20 (pay week). All calculations correct with 14-day pay cycle."
+-----   
+-----   - task: "Time entries CRUD endpoints"
+-----     implemented: true
+------    working: "NA"
+-----+    working: true
+-----     file: "server.py"
+-----     stuck_count: 0
+-----     priority: "high"
+------    needs_retesting: true
+-----+    needs_retesting: false
+-----     status_history:
+-----       - working: "NA"
+-----         agent: "main"
+-----         comment: "Created POST /api/entries for create/update, GET /api/entries for fetching by week or date range. Automatically calculates week ending and pay week status."
+-----+      - working: true
+-----+        agent: "testing"
+-----+        comment: "✅ Time entries CRUD fully functional. POST creates new entries and updates existing ones (same work_date + line_code). GET retrieves by week_ending correctly. All entries have proper week_ending_date and is_pay_week calculations. Tested with multiple entries across different days and lines."
+-----   
+-----   - task: "Weekly summary endpoint"
+-----     implemented: true
+------    working: "NA"
+-----+    working: true
+-----     file: "server.py"
+-----     stuck_count: 0
+-----     priority: "high"
+------    needs_retesting: true
+-----+    needs_retesting: false
+-----     status_history:
+-----       - working: "NA"
+-----         agent: "main"
+-----         comment: "Implemented GET /api/weekly-summary to calculate total ST/OT, lines used, daily totals, and line totals for a given week."
+-----+      - working: true
+-----+        agent: "testing"
+-----+        comment: "✅ Weekly summary calculations working correctly. Tested with populated week (29 ST, 7 OT, 36 total hours, 3 lines used) and empty week (all zeros). Daily totals and line totals properly aggregated. All required fields present in response."
+-----   
+-----   - task: "Line codes management endpoints"
+-----     implemented: true
+------    working: "NA"
+-----+    working: true
+-----     file: "server.py"
+-----     stuck_count: 0
+-----     priority: "medium"
+------    needs_retesting: true
+-----+    needs_retesting: false
+-----     status_history:
+-----       - working: "NA"
+-----         agent: "main"
+-----         comment: "Created GET/POST/PUT/DELETE /api/lines endpoints for managing line codes and project lines. Supports visibility toggling and project line addition/deletion."
+-----+      - working: true
+-----+        agent: "testing"
+-----+        comment: "✅ Line codes management fully working. GET returns all lines with proper sorting. POST creates project lines successfully. PUT toggles visibility correctly. DELETE removes project lines but correctly prevents deletion of standard lines (returns 400 error). All CRUD operations validated."
+-----   
+-----   - task: "Data export/import endpoints"
+-----     implemented: true
+------    working: "NA"
+-----+    working: true
+-----     file: "server.py"
+-----     stuck_count: 0
+-----     priority: "medium"
+------    needs_retesting: true
+-----+    needs_retesting: false
+-----     status_history:
+-----       - working: "NA"
+-----         agent: "main"
+-----         comment: "Implemented GET /api/export and POST /api/import for JSON data export/import functionality."
+-----+      - working: true
+-----+        agent: "testing"
+-----+        comment: "✅ Export/import functionality working perfectly. Export returns complete JSON with entries, line_codes, settings, and export_date. Import successfully processes and stores all data. Tested full export-import cycle with data persistence verified."
+----- 
+----- frontend:
+-----   - task: "Dashboard screen with week overview and pay week indicator"
+-----@@ -245,16 +263,13 @@ metadata:
+-----   run_ui: false
+----- 
+----- test_plan:
+------  current_focus:
+------    - "Week ending and pay week calculation endpoints"
+------    - "Time entries CRUD endpoints"
+------    - "Weekly summary endpoint"
+------    - "Line codes management endpoints"
+------    - "Data export/import endpoints"
+-----+  current_focus: []
+-----   stuck_tasks: []
+------  test_all: true
+-----+  test_all: false
+-----   test_priority: "high_first"
+----- 
+----- agent_communication:
+-----   - agent: "main"
+------    message: "Completed initial implementation of VRS Time Wizard mobile app. Backend uses SQLite with all core functionality: time entry tracking, week calculations, pay week detection (Nov 22, 2025 base), line management, and data export/import. Frontend has 4 tabs: Dashboard (week overview), Timesheet (grid with +/- controls), History (past 8 weeks), and Settings (line visibility, projects). Ready for backend testing."
+-----\ No newline at end of file
+-----+    message: "Completed initial implementation of VRS Time Wizard mobile app. Backend uses SQLite with all core functionality: time entry tracking, week calculations, pay week detection (Nov 22, 2025 base), line management, and data export/import. Frontend has 4 tabs: Dashboard (week overview), Timesheet (grid with +/- controls), History (past 8 weeks), and Settings (line visibility, projects). Ready for backend testing."
+-----+  - agent: "testing"
+-----+    message: "✅ BACKEND TESTING COMPLETE - All 6 backend tasks tested and working perfectly! Comprehensive testing performed: 26 test cases with 100% success rate. All API endpoints functional: week-info calculations, time entries CRUD, weekly summaries, line codes management, settings, and export/import. Pay week logic validated with multiple date scenarios. Database operations, error handling, and edge cases all working correctly. Backend is production-ready."
+-----\ No newline at end of file
