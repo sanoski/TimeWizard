@@ -73,12 +73,11 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
   fetchLines: async () => {
     try {
       set({ loading: true, error: null });
-      const response = await fetch(`${BACKEND_URL}/api/lines`);
-      if (!response.ok) throw new Error('Failed to fetch lines');
-      const lines = await response.json();
+      const lines = await db.getAllLines();
       set({ lines, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
+      console.error('Error fetching lines:', error);
     }
   },
 
