@@ -139,6 +139,102 @@ export default function WeeklySummaryScreen() {
           </View>
         </View>
 
+        {/* Paper Timesheet Helper */}
+        <View style={styles.card}>
+          <View style={styles.timesheetHeader}>
+            <Ionicons name="clipboard-outline" size={24} color="#2563eb" />
+            <Text style={styles.sectionTitle}>Paper Timesheet Helper</Text>
+          </View>
+          <Text style={styles.helperSubtitle}>Copy these values to your paper timesheet</Text>
+          
+          <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.timesheetScroll}>
+            <View style={styles.timesheetTable}>
+              {/* Header Row */}
+              <View style={styles.timesheetRow}>
+                <View style={styles.lineNameCell}>
+                  <Text style={styles.headerText}></Text>
+                </View>
+                {weekDates.map((date) => {
+                  const dateObj = new Date(date + 'T00:00:00');
+                  const dayName = format(dateObj, 'EEE');
+                  const dateStr = format(dateObj, 'M/d');
+                  
+                  return (
+                    <View key={date} style={styles.dayHeaderCell}>
+                      <Text style={styles.dayHeaderText}>{dayName}</Text>
+                      <Text style={styles.dateHeaderText}>{dateStr}</Text>
+                    </View>
+                  );
+                })}
+                <View style={styles.totalHeaderCell}>
+                  <Text style={styles.headerText}>ST</Text>
+                </View>
+                <View style={styles.totalHeaderCell}>
+                  <Text style={styles.headerText}>OT</Text>
+                </View>
+              </View>
+
+              {/* Data Rows - One row per line */}
+              {allLines.map((lineCode) => {
+                const stHours = getLineTotal(lineCode, 'st');
+                const otHours = getLineTotal(lineCode, 'ot');
+                
+                return (
+                  <View key={lineCode} style={styles.timesheetRow}>
+                    <View style={styles.lineNameCell}>
+                      <Text style={styles.lineNameText}>{lineCode}</Text>
+                    </View>
+                    {weekDates.map((date) => {
+                      const dayEntries = entries.filter(e => e.work_date === date && e.line_code === lineCode);
+                      const dayST = dayEntries.reduce((sum, e) => sum + e.st_hours, 0);
+                      const dayOT = dayEntries.reduce((sum, e) => sum + e.ot_hours, 0);
+                      
+                      return (
+                        <View key={date} style={styles.dataCell}>
+                          {dayST > 0 && <Text style={styles.stText}>{dayST}</Text>}
+                          {dayOT > 0 && <Text style={styles.otText}>{dayOT} OT</Text>}
+                          {dayST === 0 && dayOT === 0 && <Text style={styles.emptyCell}>-</Text>}
+                        </View>
+                      );
+                    })}
+                    <View style={styles.totalCell}>
+                      <Text style={styles.totalCellText}>{stHours}</Text>
+                    </View>
+                    <View style={styles.totalCell}>
+                      <Text style={styles.totalCellText}>{otHours}</Text>
+                    </View>
+                  </View>
+                );
+              })}
+
+              {/* Totals Row */}
+              <View style={[styles.timesheetRow, styles.totalsRowBorder]}>
+                <View style={styles.lineNameCell}>
+                  <Text style={styles.totalRowLabel}>TOTALS</Text>
+                </View>
+                {weekDates.map((date) => {
+                  const dayST = getDayTotal(date, 'st');
+                  const dayOT = getDayTotal(date, 'ot');
+                  
+                  return (
+                    <View key={date} style={styles.dataCell}>
+                      {dayST > 0 && <Text style={styles.stText}>{dayST}</Text>}
+                      {dayOT > 0 && <Text style={styles.otText}>{dayOT} OT</Text>}
+                      {dayST === 0 && dayOT === 0 && <Text style={styles.emptyCell}>-</Text>}
+                    </View>
+                  );
+                })}
+                <View style={styles.totalCell}>
+                  <Text style={styles.grandTotalText}>{summary.total_st}</Text>
+                </View>
+                <View style={styles.totalCell}>
+                  <Text style={styles.grandTotalText}>{summary.total_ot}</Text>
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+
         {/* Hours by Line */}
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Hours by Line Code</Text>
