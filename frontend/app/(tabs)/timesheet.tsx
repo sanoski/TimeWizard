@@ -322,15 +322,11 @@ export default function TimesheetScreen() {
               }}
             >
 
-            {/* Line Rows */}
-            {visibleLines.map((line) => {
-              const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
-              
-              return (
-                <View key={line.line_code} style={styles.lineRow}>
-                  <View style={styles.lineNameCell}>
-                    <Text style={styles.lineNameText}>{line.label}</Text>
-                  </View>
+              {visibleLines.map((line) => {
+                const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
+                
+                return (
+                  <View key={line.line_code} style={styles.dataRow}>
                   {weekDays.map((day, dayIndex) => {
                     const isWeekend = dayIndex === 0 || dayIndex === 6;
                     const stHours = getEntryHours(day, line.line_code, 'st');
