@@ -519,6 +519,7 @@ const styles = StyleSheet.create({
   },
   cornerCell: {
     width: 100,
+    height: 60,
     padding: 12,
     justifyContent: 'center',
     alignItems: 'center',
