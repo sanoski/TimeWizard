@@ -185,8 +185,17 @@ class DatabaseService {
   // Week calculation functions
   getWeekEnding(workDate: string): string {
     const date = new Date(workDate + 'T00:00:00');
-    const dayOfWeek = date.getDay();
-    const daysUntilSaturday = (6 - dayOfWeek + 7) % 7;
+    const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
+    
+    // Calculate days until Saturday
+    // If today is Saturday (6), we want this Saturday (0 days)
+    // If today is Sunday (0), we want next Saturday (6 days)
+    let daysUntilSaturday;
+    if (dayOfWeek === 6) {
+      daysUntilSaturday = 0; // Already Saturday
+    } else {
+      daysUntilSaturday = (6 - dayOfWeek + 7) % 7;
+    }
     
     const saturday = new Date(date);
     saturday.setDate(date.getDate() + daysUntilSaturday);
