@@ -506,6 +506,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',
+    height: 100,
+  },
+  dataRowShort: {
+    height: 60,
   },
   headerRow: {
     flexDirection: 'row',
