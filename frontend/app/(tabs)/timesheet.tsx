@@ -279,8 +279,8 @@ export default function TimesheetScreen() {
               onScroll={(e) => {
                 // Sync main content when user scrolls line names
                 const offsetY = e.nativeEvent.contentOffset.y;
-                if (mainContentScroll.current && mainContentScroll.current.scrollTo) {
-                  mainContentScroll.current.scrollTo({ y: offsetY, animated: false });
+                if (mainVerticalScroll.current && mainVerticalScroll.current.scrollTo) {
+                  mainVerticalScroll.current.scrollTo({ y: offsetY, animated: false });
                 }
               }}
               ref={(ref) => { sideLineScroll.current = ref; }}
