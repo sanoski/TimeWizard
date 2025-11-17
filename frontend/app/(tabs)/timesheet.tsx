@@ -386,19 +386,20 @@ export default function TimesheetScreen() {
 
               {/* Daily Totals Row */}
               <View style={[styles.dataRow, styles.totalsRow]}>
-              {weekDays.map((day, dayIndex) => {
-                const isWeekend = dayIndex === 0 || dayIndex === 6;
-                const dayST = getDayTotal(day, 'st');
-                const dayOT = getDayTotal(day, 'ot');
-                
-                return (
-                  <View key={day} style={[styles.totalCell, isWeekend && styles.weekendCell]}>
-                    <Text style={styles.totalValue}>ST: {dayST}</Text>
-                    <Text style={[styles.totalValue, { color: '#dc2626' }]}>OT: {dayOT}</Text>
-                    <Text style={styles.totalValue}>= {dayST + dayOT}</Text>
-                  </View>
-                );
-              })}
+                {weekDays.map((day, dayIndex) => {
+                  const isWeekend = dayIndex === 0 || dayIndex === 6;
+                  const dayST = getDayTotal(day, 'st');
+                  const dayOT = getDayTotal(day, 'ot');
+                  
+                  return (
+                    <View key={day} style={[styles.totalCell, isWeekend && styles.weekendCell]}>
+                      <Text style={styles.totalValue}>ST: {dayST}</Text>
+                      <Text style={[styles.totalValue, { color: '#dc2626' }]}>OT: {dayOT}</Text>
+                      <Text style={styles.totalValue}>= {dayST + dayOT}</Text>
+                    </View>
+                  );
+                })}
+              </View>
             </ScrollView>
           </ScrollView>
         </View>
