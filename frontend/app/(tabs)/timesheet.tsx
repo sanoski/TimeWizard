@@ -25,9 +25,9 @@ export default function TimesheetScreen() {
   const [projectNumber, setProjectNumber] = React.useState('');
 
   // Refs for synchronized scrolling
-  const mainScrollRef = React.useRef<any>(null);
-  const dayHeaderScrollRef = React.useRef<any>(null);
-  const lineNameScrollRef = React.useRef<any>(null);
+  const mainContentScroll = React.useRef<any>(null);
+  const headerDayScroll = React.useRef<any>(null);
+  const sideLineScroll = React.useRef<any>(null);
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
