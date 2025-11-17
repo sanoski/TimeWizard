@@ -247,14 +247,7 @@ export default function TimesheetScreen() {
           <ScrollView 
             horizontal 
             showsHorizontalScrollIndicator={false}
-            scrollEventThrottle={16}
-            onScroll={(e) => {
-              // Sync with main content scroll
-              const offsetX = e.nativeEvent.contentOffset.x;
-              if (mainContentScroll.current) {
-                mainContentScroll.current.scrollTo({ x: offsetX, animated: false });
-              }
-            }}
+            scrollEnabled={false}
             ref={(ref) => { headerDayScroll.current = ref; }}
           >
             {weekDays.map((day, index) => {
