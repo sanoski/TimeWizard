@@ -293,9 +293,15 @@ export default function TimesheetScreen() {
             showsHorizontalScrollIndicator={true}
             scrollEventThrottle={16}
             onScroll={(e) => {
-              const offsetX = e.nativeEvent.contentOffset.x;
-              if (headerDayScroll.current) {
-                headerDayScroll.current.scrollTo({ x: offsetX, animated: false });
+              if (!isScrolling.current) {
+                isScrolling.current = true;
+                const offsetX = e.nativeEvent.contentOffset.x;
+                if (headerDayScroll.current) {
+                  headerDayScroll.current.scrollTo({ x: offsetX, animated: false });
+                }
+                requestAnimationFrame(() => {
+                  isScrolling.current = false;
+                });
               }
             }}
             ref={(ref) => { mainContentScroll.current = ref; }}
@@ -304,9 +310,15 @@ export default function TimesheetScreen() {
               showsVerticalScrollIndicator={true}
               scrollEventThrottle={16}
               onScroll={(e) => {
-                const offsetY = e.nativeEvent.contentOffset.y;
-                if (sideLineScroll.current) {
-                  sideLineScroll.current.scrollTo({ y: offsetY, animated: false });
+                if (!isScrolling.current) {
+                  isScrolling.current = true;
+                  const offsetY = e.nativeEvent.contentOffset.y;
+                  if (sideLineScroll.current) {
+                    sideLineScroll.current.scrollTo({ y: offsetY, animated: false });
+                  }
+                  requestAnimationFrame(() => {
+                    isScrolling.current = false;
+                  });
                 }
               }}
             >
