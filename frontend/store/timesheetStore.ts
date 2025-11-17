@@ -133,12 +133,16 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
   updateEntry: async (workDate: string, lineCode: string, stHours: number, otHours: number) => {
     try {
       set({ error: null });
-      const response = await fetch(`${BACKEND_URL}/api/entries`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ work_date: workDate, line_code: lineCode, st_hours: stHours, ot_hours: otHours }),
+      
+      // Update local database
+      await db.upsertEntry({
+        work_date: workDate,
+        line_code: lineCode,
+        st_hours: stHours,
+        ot_hours: otHours,
+        week_ending_date: '', // Will be calculated by db.upsertEntry
+        is_pay_week: false,  // Will be calculated by db.upsertEntry
       });
-      if (!response.ok) throw new Error('Failed to update entry');
       
       // Refresh entries and summary
       const { currentWeekEnding } = get();
@@ -148,6 +152,7 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
       }
     } catch (error: any) {
       set({ error: error.message });
+      console.error('Error updating entry:', error);
       throw error;
     }
   },
@@ -155,16 +160,11 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
   addProjectLine: async (projectNumber: string) => {
     try {
       set({ error: null });
-      const lineCode = `PROJECT ${projectNumber}`;
-      const response = await fetch(`${BACKEND_URL}/api/lines`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ line_code: lineCode, label: lineCode, is_project: true }),
-      });
-      if (!response.ok) throw new Error('Failed to add project line');
+      await db.addProjectLine(projectNumber);
       await get().fetchLines();
     } catch (error: any) {
       set({ error: error.message });
+      console.error('Error adding project line:', error);
       throw error;
     }
   },
@@ -172,15 +172,11 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
   toggleLineVisibility: async (lineCode: string, visible: boolean) => {
     try {
       set({ error: null });
-      const response = await fetch(`${BACKEND_URL}/api/lines/${encodeURIComponent(lineCode)}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_visible: visible }),
-      });
-      if (!response.ok) throw new Error('Failed to update line visibility');
+      await db.toggleLineVisibility(lineCode);
       await get().fetchLines();
     } catch (error: any) {
       set({ error: error.message });
+      console.error('Error toggling line visibility:', error);
       throw error;
     }
   },
@@ -188,13 +184,11 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
   deleteProjectLine: async (lineCode: string) => {
     try {
       set({ error: null });
-      const response = await fetch(`${BACKEND_URL}/api/lines/${encodeURIComponent(lineCode)}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) throw new Error('Failed to delete project line');
+      await db.deleteProjectLine(lineCode);
       await get().fetchLines();
     } catch (error: any) {
       set({ error: error.message });
+      console.error('Error deleting project line:', error);
       throw error;
     }
   },
@@ -202,11 +196,10 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
   exportData: async () => {
     try {
       set({ error: null });
-      const response = await fetch(`${BACKEND_URL}/api/export`);
-      if (!response.ok) throw new Error('Failed to export data');
-      return await response.json();
+      return await db.exportData();
     } catch (error: any) {
       set({ error: error.message });
+      console.error('Error exporting data:', error);
       throw error;
     }
   },
@@ -214,12 +207,7 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
   importData: async (data: any) => {
     try {
       set({ error: null });
-      const response = await fetch(`${BACKEND_URL}/api/import`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) throw new Error('Failed to import data');
+      await db.importData(data);
       await get().fetchLines();
       const { currentWeekEnding } = get();
       if (currentWeekEnding) {
@@ -228,6 +216,7 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
       }
     } catch (error: any) {
       set({ error: error.message });
+      console.error('Error importing data:', error);
       throw error;
     }
   },
