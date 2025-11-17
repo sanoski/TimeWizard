@@ -40,11 +40,38 @@ export interface WeeklySummary {
 
 class DatabaseService {
   private db: SQLite.SQLiteDatabase | null = null;
+  private isInitialized: boolean = false;
+  private initPromise: Promise<void> | null = null;
 
   async initialize(): Promise<void> {
+    // Return existing initialization promise if already initializing
+    if (this.initPromise) {
+      return this.initPromise;
+    }
+
+    // Return immediately if already initialized
+    if (this.isInitialized && this.db) {
+      console.log('✅ Database already initialized');
+      return;
+    }
+
+    // Create new initialization promise
+    this.initPromise = this.doInitialize();
+    
     try {
+      await this.initPromise;
+    } finally {
+      this.initPromise = null;
+    }
+  }
+
+  private async doInitialize(): Promise<void> {
+    try {
+      console.log('🔄 Initializing database...');
+      
       // Open or create database
       this.db = await SQLite.openDatabaseAsync('vrs_time_wizard.db');
+      console.log('✅ Database connection opened');
       
       // Create tables
       await this.createTables();
@@ -52,9 +79,12 @@ class DatabaseService {
       // Initialize default data
       await this.initializeDefaultData();
       
+      this.isInitialized = true;
       console.log('✅ Database initialized successfully');
     } catch (error) {
       console.error('❌ Database initialization failed:', error);
+      this.db = null;
+      this.isInitialized = false;
       throw error;
     }
   }
