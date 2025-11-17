@@ -21,8 +21,8 @@ export default function TimesheetScreen() {
     addProjectLine
   } = useTimesheetStore();
 
-  const [showAddProject, setShowAddProject] = React.useState(false);
-  const [projectNumber, setProjectNumber] = React.useState('');
+  const [showAddProject, setShowAddProject] = useState(false);
+  const [projectNumber, setProjectNumber] = useState('');
 
   // Refs for synchronized scrolling
   const headerDayScroll = React.useRef<any>(null);
