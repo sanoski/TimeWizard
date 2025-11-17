@@ -26,6 +26,7 @@ export default function TimesheetScreen() {
 
   // Refs for synchronized scrolling
   const headerDayScroll = useRef<any>(null);
+  const sideLineScroll = useRef<any>(null);
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
