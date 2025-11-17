@@ -476,16 +476,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  fixedDayHeaders: {
-    position: 'absolute',
-    top: 0,
-    left: 100,
-    right: 0,
-    height: 60,
-    zIndex: 2,
+  dayHeaderContainer: {
+    flexDirection: 'row',
     backgroundColor: '#f9fafb',
     borderBottomWidth: 2,
     borderBottomColor: '#e5e7eb',
+    zIndex: 2,
   },
   scrollableArea: {
     flex: 1,
