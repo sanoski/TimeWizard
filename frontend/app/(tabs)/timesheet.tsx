@@ -305,11 +305,11 @@ export default function TimesheetScreen() {
             scrollEventThrottle={16}
             onScroll={(e) => {
               const offsetX = e.nativeEvent.contentOffset.x;
-              if (dayHeaderScrollRef.current) {
-                dayHeaderScrollRef.current.scrollTo({ x: offsetX, animated: false });
+              if (headerDayScroll.current) {
+                headerDayScroll.current.scrollTo({ x: offsetX, animated: false });
               }
             }}
-            ref={(ref) => { mainScrollRef.current = ref; }}
+            ref={(ref) => { mainContentScroll.current = ref; }}
           >
             <ScrollView
               showsVerticalScrollIndicator={true}
