@@ -189,8 +189,13 @@ export default function DashboardScreen() {
           {weekInfo && (
             <Pressable 
               style={styles.secondaryButton}
-              onPress={() => {
-                const prevWeekEnd = new Date(weekInfo.week_ending_date + 'T00:00:00');
+              onPress={async () => {
+                // Always calculate from today's date, not from the current timesheet week
+                const today = new Date().toISOString().split('T')[0];
+                const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/api/week-info?work_date=${today}`);
+                const currentWeekInfo = await response.json();
+                
+                const prevWeekEnd = new Date(currentWeekInfo.week_ending_date + 'T00:00:00');
                 prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
                 const prevWeekEndStr = format(prevWeekEnd, 'yyyy-MM-dd');
                 router.push(`/weekly-summary?weekEnding=${prevWeekEndStr}`);
