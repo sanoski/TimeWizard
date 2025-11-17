@@ -111,12 +111,11 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
   fetchEntries: async (weekEnding: string) => {
     try {
       set({ loading: true, error: null });
-      const response = await fetch(`${BACKEND_URL}/api/entries?week_ending=${weekEnding}`);
-      if (!response.ok) throw new Error('Failed to fetch entries');
-      const entries = await response.json();
+      const entries = await db.getEntriesByWeek(weekEnding);
       set({ entries, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
+      console.error('Error fetching entries:', error);
     }
   },
 
