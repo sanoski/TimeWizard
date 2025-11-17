@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { db } from '../services/database';
+import { db } from '../services/databaseWrapper';
 import { format, addDays } from 'date-fns';
 
 interface TimeEntry {
