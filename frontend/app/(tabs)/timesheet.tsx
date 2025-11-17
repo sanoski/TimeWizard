@@ -236,15 +236,11 @@ export default function TimesheetScreen() {
 
       {/* Grid with Sticky Headers */}
       <View style={styles.gridContainer}>
-        {/* Fixed Top-Left Corner */}
-        <View style={styles.fixedCorner}>
+        {/* Fixed Day Headers */}
+        <View style={styles.dayHeaderContainer}>
           <View style={styles.cornerCell}>
             <Text style={styles.lineHeaderText}>Line</Text>
           </View>
-        </View>
-
-        {/* Fixed Day Headers (Top Row) */}
-        <View style={styles.fixedDayHeaders}>
           <ScrollView 
             horizontal 
             showsHorizontalScrollIndicator={false}
@@ -268,71 +264,20 @@ export default function TimesheetScreen() {
           </ScrollView>
         </View>
 
-        {/* Scrollable Content Area */}
-        <View style={styles.scrollableArea}>
-          {/* Fixed Line Names (Left Column) */}
-          <View style={styles.fixedLineNames}>
-            <ScrollView 
-              showsVerticalScrollIndicator={false}
-              scrollEnabled={true}
-              scrollEventThrottle={16}
-              onScroll={(e) => {
-                // Sync main content when user scrolls line names
-                const offsetY = e.nativeEvent.contentOffset.y;
-                if (mainVerticalScroll.current && mainVerticalScroll.current.scrollTo) {
-                  mainVerticalScroll.current.scrollTo({ y: offsetY, animated: false });
-                }
-              }}
-              ref={(ref) => { sideLineScroll.current = ref; }}
-            >
-              {visibleLines.map((line) => (
-                <View key={line.line_code} style={styles.lineNameCell}>
-                  <Text style={styles.lineNameText}>{line.label}</Text>
-                </View>
-              ))}
-              <View style={[styles.lineNameCell, styles.totalsRow]}>
-                <Text style={styles.totalLabelText}>Totals</Text>
-              </View>
-            </ScrollView>
-          </View>
-
-          {/* Main Scrollable Grid */}
+        {/* Main Scrollable Grid with Line Names */}
+        <ScrollView style={styles.mainScroll} showsVerticalScrollIndicator={true}>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={true}
             scrollEventThrottle={16}
             onScroll={(e) => {
-              if (!isScrolling.current) {
-                isScrolling.current = true;
-                const offsetX = e.nativeEvent.contentOffset.x;
-                if (headerDayScroll.current) {
-                  headerDayScroll.current.scrollTo({ x: offsetX, animated: false });
-                }
-                requestAnimationFrame(() => {
-                  isScrolling.current = false;
-                });
+              const offsetX = e.nativeEvent.contentOffset.x;
+              if (headerDayScroll.current) {
+                headerDayScroll.current.scrollTo({ x: offsetX, animated: false });
               }
             }}
-            ref={(ref) => { mainHorizontalScroll.current = ref; }}
           >
-            <ScrollView
-              showsVerticalScrollIndicator={true}
-              scrollEventThrottle={16}
-              onScroll={(e) => {
-                if (!isScrolling.current) {
-                  isScrolling.current = true;
-                  const offsetY = e.nativeEvent.contentOffset.y;
-                  if (sideLineScroll.current) {
-                    sideLineScroll.current.scrollTo({ y: offsetY, animated: false });
-                  }
-                  requestAnimationFrame(() => {
-                    isScrolling.current = false;
-                  });
-                }
-              }}
-              ref={(ref) => { mainVerticalScroll.current = ref; }}
-            >
-
+            <View>
               {visibleLines.map((line) => {
                 const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
                 
