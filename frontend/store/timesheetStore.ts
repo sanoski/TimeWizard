@@ -122,12 +122,11 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
   fetchWeeklySummary: async (weekEnding: string) => {
     try {
       set({ loading: true, error: null });
-      const response = await fetch(`${BACKEND_URL}/api/weekly-summary?week_ending=${weekEnding}`);
-      if (!response.ok) throw new Error('Failed to fetch summary');
-      const weeklySummary = await response.json();
+      const weeklySummary = await db.getWeeklySummary(weekEnding);
       set({ weeklySummary, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
+      console.error('Error fetching weekly summary:', error);
     }
   },
 
