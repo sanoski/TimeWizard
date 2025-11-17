@@ -580,6 +580,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',
   },
+  lineNameCellShort: {
+    height: 60,
+  },
   lineNameText: {
     fontSize: 12,
     fontWeight: '600',
