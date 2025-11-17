@@ -307,14 +307,14 @@ export default function TimesheetScreen() {
                 const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
                 
                 return (
-                  <View key={line.line_code} style={styles.dataRow}>
+                  <View key={line.line_code} style={[styles.dataRow, isPTOOrHoliday && styles.dataRowShort]}>
                     {weekDays.map((day, dayIndex) => {
                     const isWeekend = dayIndex === 0 || dayIndex === 6;
                     const stHours = getEntryHours(day, line.line_code, 'st');
                     const otHours = getEntryHours(day, line.line_code, 'ot');
                     
                     return (
-                      <View key={day} style={[styles.entryCell, isWeekend && styles.weekendCell]}>
+                      <View key={day} style={[styles.entryCell, isWeekend && styles.weekendCell, isPTOOrHoliday && styles.entryCellShort]}>
                         {/* ST Section */}
                         <View style={styles.hoursSection}>
                           <Pressable 
