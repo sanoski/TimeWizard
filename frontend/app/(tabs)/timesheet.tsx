@@ -546,8 +546,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: '#e5e7eb',
   },
-  mainScroll: {
+  contentArea: {
     flex: 1,
+    flexDirection: 'row',
+  },
+  lineNamesColumn: {
+    width: 100,
+    backgroundColor: '#ffffff',
+    borderRightWidth: 1,
+    borderRightColor: '#e5e7eb',
   },
   lineNameCell: {
     width: 100,
