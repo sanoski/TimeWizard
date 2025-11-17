@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, Pressable } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { db } from '../services/databaseWrapper';
+import { db } from '../services/database';
 import { migrateDataFromBackend } from '../services/migration';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
