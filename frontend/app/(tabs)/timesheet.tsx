@@ -281,11 +281,11 @@ export default function TimesheetScreen() {
               onScroll={(e) => {
                 // Sync with main content scroll
                 const offsetY = e.nativeEvent.contentOffset.y;
-                if (mainScrollRef.current) {
-                  mainScrollRef.current.scrollTo({ y: offsetY, animated: false });
+                if (mainContentScroll.current) {
+                  mainContentScroll.current.scrollTo({ y: offsetY, animated: false });
                 }
               }}
-              ref={(ref) => { lineNameScrollRef.current = ref; }}
+              ref={(ref) => { sideLineScroll.current = ref; }}
             >
               {visibleLines.map((line) => (
                 <View key={line.line_code} style={styles.lineNameCell}>
