@@ -258,8 +258,21 @@ export default function TimesheetScreen() {
           </ScrollView>
         </View>
 
-        {/* Main Scrollable Grid with Line Names */}
-        <ScrollView style={styles.mainScroll} showsVerticalScrollIndicator={true}>
+        {/* Main Content Area */}
+        <View style={styles.contentArea}>
+          {/* Fixed Line Names Column */}
+          <ScrollView style={styles.lineNamesColumn} showsVerticalScrollIndicator={false}>
+            {visibleLines.map((line) => (
+              <View key={line.line_code} style={styles.lineNameCell}>
+                <Text style={styles.lineNameText}>{line.label}</Text>
+              </View>
+            ))}
+            <View style={[styles.lineNameCell, styles.totalsRow]}>
+              <Text style={styles.totalLabelText}>Totals</Text>
+            </View>
+          </ScrollView>
+
+          {/* Scrollable Data Grid */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={true}
@@ -271,16 +284,12 @@ export default function TimesheetScreen() {
               }
             }}
           >
-            <View>
+            <ScrollView showsVerticalScrollIndicator={true}>
               {visibleLines.map((line) => {
                 const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
                 
                 return (
                   <View key={line.line_code} style={styles.dataRow}>
-                    {/* Line Name Cell */}
-                    <View style={styles.lineNameCell}>
-                      <Text style={styles.lineNameText}>{line.label}</Text>
-                    </View>
                     {weekDays.map((day, dayIndex) => {
                     const isWeekend = dayIndex === 0 || dayIndex === 6;
                     const stHours = getEntryHours(day, line.line_code, 'st');
