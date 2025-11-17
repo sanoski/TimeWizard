@@ -132,28 +132,96 @@ export default function TimesheetScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <Text style={styles.headerTitle}>Weekly Timesheet</Text>
-          {weekInfo?.is_pay_week && (
-            <View style={styles.payWeekBadge}>
-              <Ionicons name="cash" size={14} color="#ffffff" />
-              <Text style={styles.payWeekText}>PAY WEEK</Text>
+      <View style={styles.stickyHeader}>
+        <View style={styles.header}>
+          <View style={styles.headerTop}>
+            <Text style={styles.headerTitle}>Weekly Timesheet</Text>
+            {weekInfo?.is_pay_week && (
+              <View style={styles.payWeekBadge}>
+                <Ionicons name="cash" size={14} color="#ffffff" />
+                <Text style={styles.payWeekText}>PAY WEEK</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.weekNavigation}>
+            <Pressable style={styles.navButton} onPress={() => changeWeek('prev')}>
+              <Ionicons name="chevron-back" size={24} color="#2563eb" />
+            </Pressable>
+            <View style={styles.weekInfo}>
+              <Text style={styles.weekText}>
+                {weekInfo ? `${format(new Date(weekInfo.week_start + 'T00:00:00'), 'MMM dd')} - ${format(new Date(weekInfo.week_end + 'T00:00:00'), 'MMM dd, yyyy')}` : ''}
+              </Text>
+            </View>
+            <Pressable style={styles.navButton} onPress={() => changeWeek('next')}>
+              <Ionicons name="chevron-forward" size={24} color="#2563eb" />
+            </Pressable>
+          </View>
+        </View>
+
+        {/* Summary Bar */}
+        <View style={styles.summaryBar}>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryLabel}>ST</Text>
+            <Text style={styles.summaryValue}>{weeklySummary?.total_st || 0}/40</Text>
+          </View>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryLabel}>OT</Text>
+            <Text style={[styles.summaryValue, { color: '#dc2626' }]}>{weeklySummary?.total_ot || 0}</Text>
+          </View>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryLabel}>Total</Text>
+            <Text style={[styles.summaryValue, { color: '#2563eb' }]}>{weeklySummary?.total_hours || 0}</Text>
+          </View>
+        </View>
+
+        {/* Add Project Section */}
+        <View style={styles.addProjectContainer}>
+          {!showAddProject ? (
+            <Pressable 
+              style={styles.addProjectButton}
+              onPress={() => setShowAddProject(true)}
+            >
+              <Ionicons name="add-circle" size={20} color="#2563eb" />
+              <Text style={styles.addProjectButtonText}>Add Project Line</Text>
+            </Pressable>
+          ) : (
+            <View style={styles.addProjectForm}>
+              <TextInput
+                style={styles.projectInput}
+                placeholder="Enter project number (e.g., 6545)"
+                value={projectNumber}
+                onChangeText={setProjectNumber}
+                keyboardType="numeric"
+                autoFocus
+              />
+              <Pressable 
+                style={styles.saveProjectButton}
+                onPress={async () => {
+                  if (projectNumber.trim()) {
+                    try {
+                      await addProjectLine(projectNumber.trim());
+                      setProjectNumber('');
+                      setShowAddProject(false);
+                      Alert.alert('Success', `Project ${projectNumber} added`);
+                    } catch (error) {
+                      Alert.alert('Error', 'Failed to add project');
+                    }
+                  }
+                }}
+              >
+                <Ionicons name="checkmark" size={20} color="#ffffff" />
+              </Pressable>
+              <Pressable 
+                style={styles.cancelProjectButton}
+                onPress={() => {
+                  setProjectNumber('');
+                  setShowAddProject(false);
+                }}
+              >
+                <Ionicons name="close" size={20} color="#6b7280" />
+              </Pressable>
             </View>
           )}
-        </View>
-        <View style={styles.weekNavigation}>
-          <Pressable style={styles.navButton} onPress={() => changeWeek('prev')}>
-            <Ionicons name="chevron-back" size={24} color="#2563eb" />
-          </Pressable>
-          <View style={styles.weekInfo}>
-            <Text style={styles.weekText}>
-              {weekInfo ? `${format(new Date(weekInfo.week_start + 'T00:00:00'), 'MMM dd')} - ${format(new Date(weekInfo.week_end + 'T00:00:00'), 'MMM dd, yyyy')}` : ''}
-            </Text>
-          </View>
-          <Pressable style={styles.navButton} onPress={() => changeWeek('next')}>
-            <Ionicons name="chevron-forward" size={24} color="#2563eb" />
-          </Pressable>
         </View>
       </View>
 
