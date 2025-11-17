@@ -483,6 +483,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#e5e7eb',
     zIndex: 2,
   },
+  mainScroll: {
+    flex: 1,
+  },
   scrollableArea: {
     flex: 1,
     marginTop: 60, // Height of day headers
