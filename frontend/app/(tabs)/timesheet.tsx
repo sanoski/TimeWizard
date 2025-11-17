@@ -601,10 +601,14 @@ const styles = StyleSheet.create({
   },
   entryCell: {
     width: 140,
+    height: 100,
     padding: 8,
     borderRightWidth: 1,
     borderRightColor: '#e5e7eb',
     backgroundColor: '#ffffff',
+  },
+  entryCellShort: {
+    height: 60,
   },
   weekendCell: {
     backgroundColor: '#fffbeb',
