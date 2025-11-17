@@ -58,7 +58,8 @@ export default function HistoryScreen() {
   };
 
   const getWeekLabel = (weekEndingDate: string): string => {
-    const endDate = new Date(weekEndingDate);
+    // Add time component to prevent timezone shifting
+    const endDate = new Date(weekEndingDate + 'T00:00:00');
     const startDate = new Date(endDate);
     startDate.setDate(startDate.getDate() - 6);
     return `${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`;
