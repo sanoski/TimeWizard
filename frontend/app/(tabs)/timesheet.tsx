@@ -232,28 +232,95 @@ export default function TimesheetScreen() {
 
       {/* Grid with Sticky Headers */}
       <View style={styles.gridContainer}>
-        {/* Sticky Day Headers */}
-        <View style={styles.stickyDayHeaders}>
-          <View style={styles.lineHeaderCell}>
+        {/* Fixed Top-Left Corner */}
+        <View style={styles.fixedCorner}>
+          <View style={styles.cornerCell}>
             <Text style={styles.lineHeaderText}>Line</Text>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={false} style={styles.dayHeaderScroll}>
-            <View style={styles.dayHeaderRow}>
-              {weekDays.map((day, index) => {
-                const isWeekend = index === 0 || index === 6;
-                const dayDate = new Date(day + 'T00:00:00');
-                return (
-                  <View key={day} style={[styles.dayHeaderCell, isWeekend && styles.weekendHeader]}>
-                    <Text style={[styles.dayHeaderText, isWeekend && styles.weekendHeaderText]}>
-                      {dayNames[index]}
-                    </Text>
-                    <Text style={[styles.dateText, isWeekend && styles.weekendHeaderText]}>
-                      {format(dayDate, 'M/d')}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
+        </View>
+
+        {/* Fixed Day Headers (Top Row) */}
+        <View style={styles.fixedDayHeaders}>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            scrollEventThrottle={16}
+            onScroll={(e) => {
+              // Sync with main content scroll
+              const offsetX = e.nativeEvent.contentOffset.x;
+              if (mainScrollRef.current) {
+                mainScrollRef.current.scrollTo({ x: offsetX, animated: false });
+              }
+            }}
+            ref={(ref) => { dayHeaderScrollRef.current = ref; }}
+          >
+            {weekDays.map((day, index) => {
+              const isWeekend = index === 0 || index === 6;
+              const dayDate = new Date(day + 'T00:00:00');
+              return (
+                <View key={day} style={[styles.dayHeaderCell, isWeekend && styles.weekendHeader]}>
+                  <Text style={[styles.dayHeaderText, isWeekend && styles.weekendHeaderText]}>
+                    {dayNames[index]}
+                  </Text>
+                  <Text style={[styles.dateText, isWeekend && styles.weekendHeaderText]}>
+                    {format(dayDate, 'M/d')}
+                  </Text>
+                </View>
+              );
+            })}
+          </ScrollView>
+        </View>
+
+        {/* Scrollable Content Area */}
+        <View style={styles.scrollableArea}>
+          {/* Fixed Line Names (Left Column) */}
+          <View style={styles.fixedLineNames}>
+            <ScrollView 
+              showsVerticalScrollIndicator={false}
+              scrollEventThrottle={16}
+              onScroll={(e) => {
+                // Sync with main content scroll
+                const offsetY = e.nativeEvent.contentOffset.y;
+                if (mainScrollRef.current) {
+                  mainScrollRef.current.scrollTo({ y: offsetY, animated: false });
+                }
+              }}
+              ref={(ref) => { lineNameScrollRef.current = ref; }}
+            >
+              {visibleLines.map((line) => (
+                <View key={line.line_code} style={styles.lineNameCell}>
+                  <Text style={styles.lineNameText}>{line.label}</Text>
+                </View>
+              ))}
+              <View style={[styles.lineNameCell, styles.totalsRow]}>
+                <Text style={styles.totalLabelText}>Totals</Text>
+              </View>
+            </ScrollView>
+          </View>
+
+          {/* Main Scrollable Grid */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={true}
+            scrollEventThrottle={16}
+            onScroll={(e) => {
+              const offsetX = e.nativeEvent.contentOffset.x;
+              if (dayHeaderScrollRef.current) {
+                dayHeaderScrollRef.current.scrollTo({ x: offsetX, animated: false });
+              }
+            }}
+            ref={(ref) => { mainScrollRef.current = ref; }}
+          >
+            <ScrollView
+              showsVerticalScrollIndicator={true}
+              scrollEventThrottle={16}
+              onScroll={(e) => {
+                const offsetY = e.nativeEvent.contentOffset.y;
+                if (lineNameScrollRef.current) {
+                  lineNameScrollRef.current.scrollTo({ y: offsetY, animated: false });
+                }
+              }}
+            >
 
             {/* Line Rows */}
             {visibleLines.map((line) => {
