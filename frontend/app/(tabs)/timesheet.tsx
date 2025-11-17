@@ -248,11 +248,11 @@ export default function TimesheetScreen() {
             onScroll={(e) => {
               // Sync with main content scroll
               const offsetX = e.nativeEvent.contentOffset.x;
-              if (mainScrollRef.current) {
-                mainScrollRef.current.scrollTo({ x: offsetX, animated: false });
+              if (mainContentScroll.current) {
+                mainContentScroll.current.scrollTo({ x: offsetX, animated: false });
               }
             }}
-            ref={(ref) => { dayHeaderScrollRef.current = ref; }}
+            ref={(ref) => { headerDayScroll.current = ref; }}
           >
             {weekDays.map((day, index) => {
               const isWeekend = index === 0 || index === 6;
