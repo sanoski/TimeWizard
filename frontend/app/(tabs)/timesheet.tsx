@@ -273,7 +273,15 @@ export default function TimesheetScreen() {
           <View style={styles.fixedLineNames}>
             <ScrollView 
               showsVerticalScrollIndicator={false}
-              scrollEnabled={false}
+              scrollEnabled={true}
+              scrollEventThrottle={16}
+              onScroll={(e) => {
+                // Sync main content when user scrolls line names
+                const offsetY = e.nativeEvent.contentOffset.y;
+                if (mainContentScroll.current && mainContentScroll.current.scrollTo) {
+                  mainContentScroll.current.scrollTo({ y: offsetY, animated: false });
+                }
+              }}
               ref={(ref) => { sideLineScroll.current = ref; }}
             >
               {visibleLines.map((line) => (
