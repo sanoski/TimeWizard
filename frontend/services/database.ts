@@ -62,42 +62,47 @@ class DatabaseService {
   private async createTables(): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
 
-    // Create time_entries table
-    await this.db.execAsync(`
-      CREATE TABLE IF NOT EXISTS time_entries (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        work_date TEXT NOT NULL,
-        line_code TEXT NOT NULL,
-        st_hours INTEGER DEFAULT 0,
-        ot_hours INTEGER DEFAULT 0,
-        week_ending_date TEXT NOT NULL,
-        is_pay_week INTEGER DEFAULT 0,
-        UNIQUE(work_date, line_code)
-      );
-    `);
+    try {
+      // Create time_entries table
+      await this.db.execAsync(`
+        CREATE TABLE IF NOT EXISTS time_entries (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          work_date TEXT NOT NULL,
+          line_code TEXT NOT NULL,
+          st_hours INTEGER DEFAULT 0,
+          ot_hours INTEGER DEFAULT 0,
+          week_ending_date TEXT NOT NULL,
+          is_pay_week INTEGER DEFAULT 0,
+          UNIQUE(work_date, line_code)
+        );
+      `);
 
-    // Create line_codes table
-    await this.db.execAsync(`
-      CREATE TABLE IF NOT EXISTS line_codes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        line_code TEXT UNIQUE NOT NULL,
-        label TEXT NOT NULL,
-        is_visible INTEGER DEFAULT 1,
-        is_project INTEGER DEFAULT 0,
-        sort_order INTEGER DEFAULT 0
-      );
-    `);
+      // Create line_codes table
+      await this.db.execAsync(`
+        CREATE TABLE IF NOT EXISTS line_codes (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          line_code TEXT UNIQUE NOT NULL,
+          label TEXT NOT NULL,
+          is_visible INTEGER DEFAULT 1,
+          is_project INTEGER DEFAULT 0,
+          sort_order INTEGER DEFAULT 0
+        );
+      `);
 
-    // Create settings table
-    await this.db.execAsync(`
-      CREATE TABLE IF NOT EXISTS settings (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        key TEXT UNIQUE NOT NULL,
-        value TEXT NOT NULL
-      );
-    `);
+      // Create settings table
+      await this.db.execAsync(`
+        CREATE TABLE IF NOT EXISTS settings (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          key TEXT UNIQUE NOT NULL,
+          value TEXT NOT NULL
+        );
+      `);
 
-    console.log('✅ Tables created');
+      console.log('✅ Tables created');
+    } catch (error) {
+      console.error('Error creating tables:', error);
+      throw error;
+    }
   }
 
   private async initializeDefaultData(): Promise<void> {
