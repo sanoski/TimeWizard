@@ -384,11 +384,8 @@ export default function TimesheetScreen() {
               );
             })}
 
-            {/* Daily Totals Row */}
-            <View style={[styles.lineRow, styles.totalsRow]}>
-              <View style={styles.lineNameCell}>
-                <Text style={styles.totalLabelText}>Daily Totals</Text>
-              </View>
+              {/* Daily Totals Row */}
+              <View style={[styles.dataRow, styles.totalsRow]}>
               {weekDays.map((day, dayIndex) => {
                 const isWeekend = dayIndex === 0 || dayIndex === 6;
                 const dayST = getDayTotal(day, 'st');
