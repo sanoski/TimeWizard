@@ -9,9 +9,7 @@ import { db } from '../services/database';
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
-  const [webWarning, setWebWarning] = useState(false);
-  const router = useRouter();
-  const segments = useSegments();
+  const [needsMigration, setNeedsMigration] = useState(false);
 
   useEffect(() => {
     initializeApp();
@@ -22,7 +20,6 @@ export default function RootLayout() {
       // Skip SQLite initialization on web (WASM support is experimental)
       if (Platform.OS === 'web') {
         console.warn('⚠️ SQLite is not supported on web preview. Please test on iOS/Android device or emulator.');
-        setWebWarning(true);
         setIsReady(true);
         return;
       }
@@ -35,8 +32,7 @@ export default function RootLayout() {
       const migrationCompleted = await AsyncStorage.getItem('migration_completed');
       
       if (migrationCompleted !== 'true') {
-        // Show migration screen
-        router.replace('/migrate');
+        setNeedsMigration(true);
       }
       
       setIsReady(true);
@@ -58,7 +54,14 @@ export default function RootLayout() {
     <TamaguiProvider config={tamaguiConfig}>
       <SafeAreaProvider>
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="migrate" />
+          <Stack.Screen 
+            name="migrate" 
+            options={{ 
+              headerShown: false,
+              presentation: 'card'
+            }}
+            initialParams={{ autoShow: needsMigration }}
+          />
           <Stack.Screen name="(tabs)" />
         </Stack>
       </SafeAreaProvider>
