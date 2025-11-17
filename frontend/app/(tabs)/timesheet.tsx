@@ -500,6 +500,50 @@ const styles = StyleSheet.create({
   gridContainer: {
     flex: 1,
   },
+  fixedCorner: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: 3,
+    backgroundColor: '#f9fafb',
+    borderBottomWidth: 2,
+    borderRightWidth: 1,
+    borderBottomColor: '#e5e7eb',
+    borderRightColor: '#e5e7eb',
+  },
+  cornerCell: {
+    width: 100,
+    padding: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fixedDayHeaders: {
+    position: 'absolute',
+    top: 0,
+    left: 100,
+    right: 0,
+    zIndex: 2,
+    backgroundColor: '#f9fafb',
+    borderBottomWidth: 2,
+    borderBottomColor: '#e5e7eb',
+  },
+  scrollableArea: {
+    flex: 1,
+    marginTop: 60, // Height of day headers
+    flexDirection: 'row',
+  },
+  fixedLineNames: {
+    width: 100,
+    zIndex: 1,
+    backgroundColor: '#ffffff',
+    borderRightWidth: 1,
+    borderRightColor: '#e5e7eb',
+  },
+  dataRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
   headerRow: {
     flexDirection: 'row',
     backgroundColor: '#f9fafb',
