@@ -554,12 +554,6 @@ const styles = StyleSheet.create({
   totalsRow: {
     backgroundColor: '#f9fafb',
   },
-  dayHeaderContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#f9fafb',
-    borderBottomWidth: 2,
-    borderBottomColor: '#e5e7eb',
-  },
   contentArea: {
     flex: 1,
     flexDirection: 'row',
