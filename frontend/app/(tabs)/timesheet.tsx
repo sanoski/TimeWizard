@@ -225,15 +225,15 @@ export default function TimesheetScreen() {
         </View>
       </View>
 
-      {/* Grid */}
-      <ScrollView style={styles.gridContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={true}>
-          <View>
-            {/* Day Headers */}
-            <View style={styles.headerRow}>
-              <View style={styles.lineHeaderCell}>
-                <Text style={styles.lineHeaderText}>Line</Text>
-              </View>
+      {/* Grid with Sticky Headers */}
+      <View style={styles.gridContainer}>
+        {/* Sticky Day Headers */}
+        <View style={styles.stickyDayHeaders}>
+          <View style={styles.lineHeaderCell}>
+            <Text style={styles.lineHeaderText}>Line</Text>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={false} style={styles.dayHeaderScroll}>
+            <View style={styles.dayHeaderRow}>
               {weekDays.map((day, index) => {
                 const isWeekend = index === 0 || index === 6;
                 const dayDate = new Date(day + 'T00:00:00');
