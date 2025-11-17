@@ -84,13 +84,27 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
   fetchWeekInfo: async (date: string) => {
     try {
       set({ loading: true, error: null });
-      const response = await fetch(`${BACKEND_URL}/api/week-info?work_date=${date}`);
-      if (!response.ok) throw new Error('Failed to fetch week info');
-      const weekInfo = await response.json();
+      
+      // Calculate week ending (Saturday) from work date
+      const weekEnding = db.getWeekEnding(date);
+      const isPay = await db.isPayWeek(weekEnding);
+      
+      // Calculate week start (Sunday)
+      const weekEnd = new Date(weekEnding + 'T00:00:00');
+      const weekStart = addDays(weekEnd, -6);
+      
+      const weekInfo = {
+        week_ending_date: weekEnding,
+        is_pay_week: isPay,
+        week_start: format(weekStart, 'yyyy-MM-dd'),
+        week_end: weekEnding,
+      };
+      
       set({ weekInfo, currentWeekEnding: weekInfo.week_ending_date, loading: false });
       return weekInfo;
     } catch (error: any) {
       set({ error: error.message, loading: false });
+      console.error('Error fetching week info:', error);
     }
   },
 
