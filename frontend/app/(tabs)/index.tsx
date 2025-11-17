@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Pressable, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTimesheetStore } from '../../store/timesheetStore';
 import { format } from 'date-fns';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { db } from '../../services/database';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -20,16 +22,42 @@ export default function DashboardScreen() {
 
   const [prevWeekSummary, setPrevWeekSummary] = React.useState<any>(null);
   const [payCycleTotals, setPayCycleTotals] = React.useState<any>(null);
+  const [dbReady, setDbReady] = React.useState(false);
 
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    fetchLines();
-    fetchWeekInfo(today).then(() => {
-      if (weekInfo) {
-        fetchWeeklySummary(weekInfo.week_ending_date);
-      }
-    });
+    initializeAndLoad();
   }, []);
+
+  const initializeAndLoad = async () => {
+    try {
+      // Skip database initialization on web
+      if (Platform.OS !== 'web') {
+        // Initialize database
+        await db.initialize();
+        
+        // Check if migration is needed
+        const migrationCompleted = await AsyncStorage.getItem('migration_completed');
+        if (migrationCompleted !== 'true') {
+          // Navigate to migration screen
+          router.push('/migrate');
+          return;
+        }
+      }
+      
+      setDbReady(true);
+      
+      // Load data
+      const today = new Date().toISOString().split('T')[0];
+      await fetchLines();
+      const info = await fetchWeekInfo(today);
+      if (info) {
+        await fetchWeeklySummary(info.week_ending_date);
+      }
+    } catch (error) {
+      console.error('Dashboard initialization error:', error);
+      setDbReady(true); // Continue anyway
+    }
+  };
 
   useEffect(() => {
     if (weekInfo) {
