@@ -567,12 +567,15 @@ const styles = StyleSheet.create({
   },
   lineNameCell: {
     width: 100,
+    height: 100,
     padding: 12,
     justifyContent: 'center',
     alignItems: 'center',
     borderRightWidth: 1,
     borderRightColor: '#e5e7eb',
     backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
   },
   lineNameText: {
     fontSize: 12,
