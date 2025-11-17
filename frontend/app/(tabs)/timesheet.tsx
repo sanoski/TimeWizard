@@ -479,18 +479,6 @@ const styles = StyleSheet.create({
   mainScroll: {
     flex: 1,
   },
-  scrollableArea: {
-    flex: 1,
-    marginTop: 60, // Height of day headers
-    flexDirection: 'row',
-  },
-  fixedLineNames: {
-    width: 100,
-    zIndex: 1,
-    backgroundColor: '#ffffff',
-    borderRightWidth: 1,
-    borderRightColor: '#e5e7eb',
-  },
   dataRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
