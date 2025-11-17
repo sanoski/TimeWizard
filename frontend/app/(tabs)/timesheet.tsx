@@ -363,9 +363,9 @@ export default function TimesheetScreen() {
                   );
                 })}
               </View>
-            </View>
+            </ScrollView>
           </ScrollView>
-        </ScrollView>
+        </View>
       </View>
     </SafeAreaView>
   );
