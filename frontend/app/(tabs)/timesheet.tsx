@@ -504,6 +504,7 @@ const styles = StyleSheet.create({
   },
   gridContainer: {
     flex: 1,
+    position: 'relative',
   },
   fixedCorner: {
     position: 'absolute',
