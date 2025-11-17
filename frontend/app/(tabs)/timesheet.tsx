@@ -535,6 +535,15 @@ const styles = StyleSheet.create({
   totalsRow: {
     backgroundColor: '#f9fafb',
   },
+  dayHeaderContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#f9fafb',
+    borderBottomWidth: 2,
+    borderBottomColor: '#e5e7eb',
+  },
+  mainScroll: {
+    flex: 1,
+  },
   lineNameCell: {
     width: 100,
     padding: 12,
@@ -542,6 +551,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRightWidth: 1,
     borderRightColor: '#e5e7eb',
+    backgroundColor: '#ffffff',
   },
   lineNameText: {
     fontSize: 12,
