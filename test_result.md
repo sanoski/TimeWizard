@@ -219,6 +219,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Added new 'Paper Timesheet Helper' section that displays hours in a table format mimicking the physical paper timesheet. Shows each line code as a row, days as columns, with stacked display (ST on top, OT below with 'OT' label). Includes daily totals and line totals (ST and OT columns). Uses horizontal scrolling for the table. This helps users easily copy their hours to paper timesheets."
+      - working: "NA"
+        agent: "main"
+        comment: "Fixed bug where 'View Previous Week Summary' button was calculating from the currently viewed week in timesheet instead of always from today's date. Now it always shows last week relative to current date, regardless of what week user was editing."
   
   - task: "Timesheet grid with ST/OT controls for each day/line"
     implemented: true
