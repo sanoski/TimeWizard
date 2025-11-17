@@ -1,7 +1,6 @@
 import { create } from 'zustand';
-import Constants from 'expo-constants';
-
-const BACKEND_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_PUBLIC_BACKEND_URL || '';
+import { db } from '../services/database';
+import { format, addDays } from 'date-fns';
 
 interface TimeEntry {
   id?: number;
