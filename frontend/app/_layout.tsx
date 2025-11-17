@@ -8,61 +8,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { db } from '../services/database';
 
 export default function RootLayout() {
-  const [isReady, setIsReady] = useState(false);
-  const [needsMigration, setNeedsMigration] = useState(false);
-
-  useEffect(() => {
-    initializeApp();
-  }, []);
-
-  const initializeApp = async () => {
-    try {
-      // Skip SQLite initialization on web (WASM support is experimental)
-      if (Platform.OS === 'web') {
-        console.warn('⚠️ SQLite is not supported on web preview. Please test on iOS/Android device or emulator.');
-        setIsReady(true);
-        return;
-      }
-
-      // Initialize the local database
-      await db.initialize();
-      console.log('✅ Database initialized in app');
-
-      // Check if migration is needed
-      const migrationCompleted = await AsyncStorage.getItem('migration_completed');
-      
-      if (migrationCompleted !== 'true') {
-        setNeedsMigration(true);
-      }
-      
-      setIsReady(true);
-    } catch (error) {
-      console.error('App initialization error:', error);
-      setIsReady(true); // Continue anyway to show errors to user
-    }
-  };
-
-  if (!isReady) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f4f6' }}>
-        <ActivityIndicator size="large" color="#2563eb" />
-      </View>
-    );
-  }
-
   return (
     <TamaguiProvider config={tamaguiConfig}>
       <SafeAreaProvider>
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen 
-            name="migrate" 
-            options={{ 
-              headerShown: false,
-              presentation: 'card'
-            }}
-            initialParams={{ autoShow: needsMigration }}
-          />
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="migrate" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="weekly-summary" />
         </Stack>
       </SafeAreaProvider>
     </TamaguiProvider>
