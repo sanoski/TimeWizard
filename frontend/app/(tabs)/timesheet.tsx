@@ -316,8 +316,8 @@ export default function TimesheetScreen() {
               scrollEventThrottle={16}
               onScroll={(e) => {
                 const offsetY = e.nativeEvent.contentOffset.y;
-                if (lineNameScrollRef.current) {
-                  lineNameScrollRef.current.scrollTo({ y: offsetY, animated: false });
+                if (sideLineScroll.current) {
+                  sideLineScroll.current.scrollTo({ y: offsetY, animated: false });
                 }
               }}
             >
