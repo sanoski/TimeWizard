@@ -313,7 +313,7 @@ export default function TimesheetScreen() {
                 });
               }
             }}
-            ref={(ref) => { mainContentScroll.current = ref; }}
+            ref={(ref) => { mainHorizontalScroll.current = ref; }}
           >
             <ScrollView
               showsVerticalScrollIndicator={true}
@@ -330,6 +330,7 @@ export default function TimesheetScreen() {
                   });
                 }
               }}
+              ref={(ref) => { mainVerticalScroll.current = ref; }}
             >
 
               {visibleLines.map((line) => {
