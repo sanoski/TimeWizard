@@ -208,6 +208,18 @@ frontend:
         agent: "main"
         comment: "Created beautiful dashboard with current week stats, ST/OT hours, progress bar, pay week badge, and lines worked display."
   
+  - task: "Paper Timesheet Helper section in weekly summary"
+    implemented: true
+    working: "NA"
+    file: "app/weekly-summary.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added new 'Paper Timesheet Helper' section that displays hours in a table format mimicking the physical paper timesheet. Shows each line code as a row, days as columns, with stacked display (ST on top, OT below with 'OT' label). Includes daily totals and line totals (ST and OT columns). Uses horizontal scrolling for the table. This helps users easily copy their hours to paper timesheets."
+  
   - task: "Timesheet grid with ST/OT controls for each day/line"
     implemented: true
     working: "NA"
