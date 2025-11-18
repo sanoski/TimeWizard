@@ -32,29 +32,38 @@ export default function DashboardScreen() {
     try {
       // Skip database initialization on web
       if (Platform.OS !== 'web') {
+        console.log('📱 Initializing native database...');
         // Initialize database
         await db.initialize();
+        console.log('✅ Database initialized');
         
         // Check if migration is needed
         const migrationCompleted = await AsyncStorage.getItem('migration_completed');
+        console.log('Migration status:', migrationCompleted);
+        
+        // If this is a fresh install (no migration flag), mark as completed
+        // since the database will initialize with default data
         if (migrationCompleted !== 'true') {
-          // Navigate to migration screen
-          router.push('/migrate');
-          return;
+          console.log('Setting migration as completed for fresh install');
+          await AsyncStorage.setItem('migration_completed', 'true');
         }
       }
       
       setDbReady(true);
+      console.log('🔄 Loading data...');
       
       // Load data
       const today = new Date().toISOString().split('T')[0];
       await fetchLines();
+      console.log('✅ Lines fetched');
+      
       const info = await fetchWeekInfo(today);
       if (info) {
         await fetchWeeklySummary(info.week_ending_date);
+        console.log('✅ Summary fetched');
       }
     } catch (error) {
-      console.error('Dashboard initialization error:', error);
+      console.error('❌ Dashboard initialization error:', error);
       setDbReady(true); // Continue anyway
     }
   };
