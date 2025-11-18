@@ -27,13 +27,10 @@ export default function WeeklySummaryScreen() {
   const loadWeekData = async () => {
     try {
       setLoading(true);
-      const [summaryRes, entriesRes] = await Promise.all([
-        fetch(`${BACKEND_URL}/api/weekly-summary?week_ending=${weekEnding}`),
-        fetch(`${BACKEND_URL}/api/entries?week_ending=${weekEnding}`)
-      ]);
       
-      const summaryData = await summaryRes.json();
-      const entriesData = await entriesRes.json();
+      // Load from local database
+      const summaryData = await db.getWeeklySummary(weekEnding);
+      const entriesData = await db.getEntriesByWeek(weekEnding);
       
       setSummary(summaryData);
       setEntries(entriesData);
