@@ -272,7 +272,8 @@ class DatabaseService {
     if (!this.db) throw new Error('Database not initialized');
 
     const entries = await this.getEntriesByWeek(weekEnding);
-    const isPay = entries.length > 0 ? entries[0].is_pay_week : await this.isPayWeek(weekEnding);
+    // Always recalculate pay week based on current settings, don't rely on stored value
+    const isPay = await this.isPayWeek(weekEnding);
 
     let totalST = 0;
     let totalOT = 0;
