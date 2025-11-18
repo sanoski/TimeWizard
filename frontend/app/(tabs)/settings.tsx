@@ -3,7 +3,7 @@ import { View, Text, ScrollView, StyleSheet, Pressable, TextInput, Alert, Activi
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTimesheetStore } from '../../store/timesheetStore';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 
