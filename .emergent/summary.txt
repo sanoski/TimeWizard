@@ -1,0 +1,97 @@
+<analysis>
+The trajectory documents the iterative development and significant architectural refactoring of the VRS Time Wizard mobile app. Initially built with a flawed client-server architecture (Expo frontend, FastAPI backend with SQLite), the primary focus shifted to converting it into a true offline-first application as per the core product requirement. This involved a multi-phase refactor to integrate  on the frontend, migrate the database schema and data, and replace all backend API calls in the  store with local database operations.
+
+Throughout the process, the AI engineer addressed numerous user-reported bugs and feature requests. Key challenges included:
+1.  **UI/UX Fixes:** Correcting a persistent vertical grid misalignment in the timesheet by enforcing strict row heights.
+2.  **New Features:** Implementing a Paper Timesheet Helper section on the weekly summary screen for easier manual data entry.
+3.  **Logic Bugs:** Fixing a bug where the View Previous Week button's logic was based on the currently viewed week instead of the actual current date.
+4.  **Complex Debugging:** Solving a series of critical issues related to the offline migration, including  web compatibility errors (solved with  files), native Android migration failures (solved by fixing the DB service and clearing cache), and an infinite loading loop (solved by restructuring the app's initialization logic). A major, recurring problem was a timezone/DST bug in the pay week calculation, which required multiple attempts to fix by enforcing UTC date handling.
+
+The work concluded with a final major bug fix—making the  screen use the local database instead of the old backend API, which resolved a data discrepancy. The final user request was for extensive documentation for a handoff, which the AI completed by creating several markdown files. The user's language is English.
+</analysis>
+
+<product_requirements>
+The goal is to build VRS Time Wizard, a mobile-first, offline-capable timesheet application for railroad maintenance workers to replace a paper-based system.
+
+**Core Features:**
+1.  **Offline-First:** All data must be stored locally on the device using SQLite.
+2.  **Timesheet Grid:** A weekly (Sunday-Saturday) grid for logging Straight Time (ST) and Overtime (OT) hours against specific line codes (e.g., VTR, PTO, PROJECT).
+3.  **Business Logic:** ST is capped at 8 hours/day and 40 hours/week. PTO/HOLIDAY lines are ST-only. Users can add/hide project lines.
+4.  **Pay Week Calculation:** A bi-weekly pay cycle is determined based on a configurable base date (Nov 29, 2025). The UI must indicate which weeks are pay weeks.
+5.  **Dashboard:** An overview of current week totals and a button to view the previous week's summary.
+6.  **Reporting:**
+    *   **Weekly Summary:** A screen summarizing hours for manual entry.
+    *   **Paper Timesheet Helper:** A new section on the summary screen formatted to mirror the paper timesheet, displaying a grid of ST/OT hours per line, per day, with totals to make manual copying easy.
+7.  **Data Management:** Functionality to export the local database to a file for backup and import from that file to restore data.
+</product_requirements>
+
+<key_technical_concepts>
+- **Frontend Framework:** Expo (React Native)
+- **Local Database:**  for offline-first data storage. This was the central piece of a major architectural refactor.
+- **State Management:** , refactored to interact with the local SQLite database instead of backend APIs.
+- **Navigation:**  for file-based routing with a top-tab layout.
+- **Backend Framework:** FastAPI (Python), which was originally central but is now kept only for potential future cloud-sync features.
+- **Date/Time:**  and careful UTC-based calculations to handle timezone and Daylight Saving Time (DST) bugs.
+</key_technical_concepts>
+
+<code_architecture>
+The application was refactored from a client-server model to an offline-first architecture. The frontend Expo app now contains all business and data logic, while the backend is dormant.
+
+**Directory Structure:**
+
+
+- ****
+  - **Importance:** The heart of the offline application. It handles all SQLite database interactions: schema creation, CRUD operations for time entries, and business logic calculations like .
+  - **Changes:** Created from scratch. The  function was heavily debugged and refactored multiple times to fix a critical timezone/DST bug, finally settling on a UTC-based approach. The schema creation was changed from  to  to fix Android-specific migration failures.
+
+- ****
+  - **Importance:** The central state management for the app.
+  - **Changes:** Completely refactored. All  calls to the backend API were replaced with calls to the local  service, completing the offline transition.
+
+- ****
+  - **Importance:** Displays a detailed report for a given week.
+  - **Changes:** A Paper Timesheet Helper section was added per user request. Critically, this file was one of the last to be refactored; its data fetching was switched from a direct backend API call to use the local database via  and the  service, fixing a major data discrepancy bug.
+
+- ****
+  - **Importance:** Shows a list of past weekly summaries.
+  - **Changes:** Data fetching was moved from a backend API to the local database.  was added to ensure the data refreshes when the user navigates to the tab. The week label display was fixed to correctly handle timezones.
+
+- ****
+  - **Importance:** The main user interface for entering hours.
+  - **Changes:** A persistent vertical alignment bug in the grid was fixed by adding  and  styles, enforcing explicit heights ( for regular,  for PTO/Holiday) to synchronize the fixed line-name column with the scrollable data grid.
+
+- ****
+  - **Importance:** Screen for user settings and app management.
+  - **Changes:** An Import Backup feature was added to complement the existing export function. The UI and alert dialogs were updated for clarity. The export function was fixed to use the correct FileSystem API for the Expo SDK version. A link to the new  screen was also added.
+
+- **, , **
+  - **Importance:** These files manage the app's root navigation and initialization.
+  - **Changes:** The initialization and data migration logic was moved from  to  (the Dashboard) to resolve an infinite loading loop/white screen crash on app start.
+
+- ****
+  - **Importance:** A critical workaround for development.
+  - **Summary:** This file provides a mock, non-functional database interface. It allows the app to load in a web browser preview without crashing, as 's WebAssembly (WASM) dependencies cause errors in that environment.
+</code_architecture>
+
+<pending_tasks>
+The primary development work requested by the user has been completed. The final tasks were related to documentation for a handoff. Future work, as documented in , includes:
+- **Phase 4: Testing & Polish:** Building a production APK/IPA for full offline testing.
+- **Future Enhancements:** PDF generation of timesheets, cloud sync, and an admin portal.
+</pending_tasks>
+
+<current_work>
+The most recent work was to comprehensively document the entire project for a handoff. This was explicitly requested by the user after all major features and bug fixes were completed. The AI engineer created and/or updated several markdown and text files in the root directory to ensure context would not be lost.
+
+The files created or updated are:
+-   ****: A general overview of the project, its purpose, and key features.
+-   ****: A detailed summary of the development trajectory, architectural decisions, and challenges overcome.
+-   ****: Outlines potential future phases, including production builds, testing, and feature enhancements like PDF generation.
+-   ****: A detailed guide for the next developer/AI on how to set up the environment and build the Android APK from the source code.
+-   ****: A concise, direct message intended to be given to the next AI to instruct it on the build task.
+
+This documentation phase immediately followed the resolution of the final critical bug: the Weekly Summary screen was discovered to be pulling data from the old backend instead of the local database, causing data inconsistencies. This was fixed by refactoring  to use local data sources, making the app fully and consistently offline.
+</current_work>
+
+<optional_next_step>
+Follow the instructions in  and  to set up the build environment and generate the Android APK file as requested by the user for the handoff.
+</optional_next_step>
