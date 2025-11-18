@@ -6,7 +6,7 @@ import { useTimesheetStore } from '../../store/timesheetStore';
 import { format } from 'date-fns';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { db } from '../../services/database';
+import { db } from '../../services/databaseWrapper';
 
 export default function DashboardScreen() {
   const router = useRouter();
