@@ -256,6 +256,12 @@ class DatabaseService {
   async getEntriesByWeek(weekEnding: string): Promise<TimeEntry[]> {
     if (!this.db) throw new Error('Database not initialized');
 
+    // First, let's see ALL entries to debug
+    const allEntries = await this.db.getAllAsync(
+      'SELECT work_date, line_code, week_ending_date FROM time_entries LIMIT 10'
+    );
+    console.log(`DEBUG: Sample of all entries in DB:`, allEntries);
+    
     const entries = await this.db.getAllAsync(
       'SELECT * FROM time_entries WHERE week_ending_date = ? ORDER BY work_date, line_code',
       [weekEnding]
