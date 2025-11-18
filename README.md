@@ -1,407 +1,373 @@
-# VRS Time Wizard - Railroad Timesheet Mobile App
+# VRS Time Wizard - Offline-First Mobile Timesheet App
+
+A mobile-first timesheet application for railroad maintenance workers to track hours offline and generate paper timesheet reports.
 
 ## Overview
-VRS Time Wizard is a mobile timesheet tracking application for railroad MOW (Maintenance of Way) crews. It tracks straight time (ST) and overtime (OT) hours with union rules and pay period calculations.
 
-## Current Status: MVP Complete ✅
+VRS Time Wizard is an Expo React Native mobile app that replaces an old text-based timesheet system. All data is stored locally on the device using SQLite for complete offline functionality, with optional export/import for backup and data transfer.
 
-### What Works:
-- ✅ Mobile-first UI with tab navigation (Dashboard, Timesheet, History, Settings)
-- ✅ Weekly timesheet grid with sticky headers (days stay at top, lines stay on left)
-- ✅ ST/OT hour tracking with +/- buttons
-- ✅ ST validation: max 8 hours/day per line, 40 hours/week total
-- ✅ PTO and HOLIDAY lines (ST only, no OT)
-- ✅ Pay week detection (Nov 23-29, 2025 and every 14 days)
-- ✅ Dashboard with "This Pay Cycle" view (shows 2-week totals on pay weeks)
-- ✅ Weekly summary screen (formatted for manual paper timesheet filling)
-- ✅ Project line management (add/remove project numbers)
-- ✅ Line visibility toggles in settings
-- ✅ Data export/import (JSON format)
-- ✅ Backend API with SQLite database
-- ✅ Week navigation (previous/next week)
+## Key Features
 
-### Known Issues:
-- ⚠️ **CRITICAL**: App requires backend server - NOT truly offline
-- ⚠️ Line name cell heights may need fine-tuning for perfect alignment
-- ⚠️ Metro bundler cache issues during development (clear with `rm -rf .metro-cache`)
+### ✅ Fully Offline
+- All data stored locally using expo-sqlite
+- No internet connection required after initial setup
+- Complete CRUD operations work offline
+- Data persists across app restarts
 
-## 🚨 CRITICAL NEXT STEP: Make App Truly Offline
+### 📅 Weekly Timesheet Grid
+- Sunday-Saturday weekly grid layout
+- Multiple line codes (VTR, GMRC, CLP, WACR, etc.)
+- Separate ST (Straight Time) and OT (Overtime) entry per day/line
+- Sticky headers and line names for easy scrolling
+- +/- buttons for hour entry
 
-### Current Architecture Problem:
-```
-Mobile App (Frontend) → API Calls → Backend Server → SQLite Database
-```
-**Issue**: Requires internet connection and running backend server
+### 💰 Pay Week Detection
+- Configurable pay cycle (default: 14 days)
+- Base pay week: Nov 29, 2025
+- Automatic calculation of all pay weeks (past and future)
+- Pay week badge display in history
+- Dashboard shows 2-week totals during pay weeks
 
-### Required Architecture:
-```
-Mobile App (Frontend + expo-sqlite) → SQLite Database (on phone)
-```
-**Goal**: All data stored locally on device, no server needed
+### 📊 Reports & History
+- **Dashboard**: Current/pay cycle overview with progress bar
+- **History**: Past 8 weeks with expandable summaries
+- **Weekly Summary**: Detailed breakdown by line and day
+- **Paper Timesheet Helper**: Formatted for easy manual transcription
 
-### Steps to Make Offline:
+### 💾 Backup & Restore
+- Export to timestamped JSON files
+- Import from backup files
+- Share via native share sheet
+- Complete data portability
 
-1. **Install expo-sqlite**
-   ```bash
-   cd /app/frontend
-   yarn add expo-sqlite
-   ```
-
-2. **Move Database Logic to Frontend**
-   - Create `/app/frontend/services/database.ts`
-   - Copy all SQL schema from `backend/server.py`
-   - Implement SQLite operations using expo-sqlite API
-
-3. **Update Zustand Store**
-   - Replace all `fetch()` calls with direct database calls
-   - Remove `BACKEND_URL` dependencies
-   - Keep same state management structure
-
-4. **Remove Backend Dependency**
-   - Keep backend code for reference
-   - Update app to work without API calls
-
-5. **Test Offline Functionality**
-   - Turn off WiFi/data on test device
-   - Verify all features work
-   - Test data persistence across app restarts
-
-### Reference Implementation:
-```typescript
-// Example: frontend/services/database.ts
-import * as SQLite from 'expo-sqlite';
-
-const db = SQLite.openDatabase('timesheet.db');
-
-export const initDatabase = () => {
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        `CREATE TABLE IF NOT EXISTS time_entries (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          work_date TEXT NOT NULL,
-          week_ending_date TEXT NOT NULL,
-          line_code TEXT NOT NULL,
-          st_hours INTEGER DEFAULT 0,
-          ot_hours INTEGER DEFAULT 0,
-          is_pay_week INTEGER DEFAULT 0,
-          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-          updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-          UNIQUE(work_date, line_code)
-        );`,
-        [],
-        () => resolve(true),
-        (_, error) => reject(error)
-      );
-    });
-  });
-};
-```
+### ⚙️ Settings
+- Toggle line code visibility
+- Add/remove project lines dynamically
+- Debug information screen
+- Export/Import data management
 
 ## Tech Stack
 
-### Frontend (Expo React Native)
-- **Framework**: Expo SDK with expo-router
+### Frontend
+- **Framework**: Expo SDK 51 / React Native
+- **Routing**: expo-router (file-based)
+- **UI Library**: Tamagui
 - **State Management**: Zustand
-- **UI Components**: React Native core components
-- **Navigation**: expo-router with tabs
+- **Database**: expo-sqlite (local)
 - **Date Handling**: date-fns
-- **Icons**: @expo/vector-icons
-- **File System**: expo-file-system (for export)
-- **Sharing**: expo-sharing (for export)
+- **File Operations**: expo-file-system, expo-sharing, expo-document-picker
 
-### Backend (FastAPI + SQLite)
-- **Framework**: FastAPI
-- **Database**: SQLite with aiosqlite
-- **CORS**: Enabled for development
+### Backend (Optional/Future)
+- **Framework**: FastAPI (Python)
+- **Database**: SQLite (aiosqlite)
+- **Purpose**: Reserved for future cloud sync features
 
-## Project Structure
-
-```
-/app
-├── backend/
-│   ├── server.py          # FastAPI server with SQLite
-│   ├── requirements.txt   # Python dependencies
-│   ├── timesheet.db      # SQLite database (auto-created)
-│   └── .env              # Backend config
-├── frontend/
-│   ├── app/
-│   │   ├── (tabs)/       # Tab navigation screens
-│   │   │   ├── index.tsx        # Dashboard
-│   │   │   ├── timesheet.tsx    # Weekly grid
-│   │   │   ├── history.tsx      # Past weeks
-│   │   │   ├── settings.tsx     # Settings & line management
-│   │   │   └── _layout.tsx      # Tab navigation config
-│   │   ├── weekly-summary.tsx   # Weekly summary view
-│   │   └── _layout.tsx          # Root layout with Tamagui
-│   ├── store/
-│   │   └── timesheetStore.ts    # Zustand state management
-│   ├── assets/           # Images and fonts
-│   ├── package.json      # Dependencies
-│   ├── app.json         # Expo config
-│   └── .env             # Frontend config
-├── test_result.md       # Testing log
-└── README.md           # This file
-```
-
-## Setup Instructions
+## Installation & Setup
 
 ### Prerequisites
 - Node.js 18+
-- Python 3.8+
-- Expo Go app on mobile device (for testing)
+- Expo CLI
+- iOS/Android device with Expo Go app
 
-### Installation
+### Initial Setup
 
-1. **Backend Setup**
-   ```bash
-   cd /app/backend
-   pip install -r requirements.txt
-   python server.py
-   ```
-   Backend runs on http://localhost:8001
+```bash
+# Install frontend dependencies
+cd frontend
+npm install
 
-2. **Frontend Setup**
-   ```bash
-   cd /app/frontend
-   yarn install
-   yarn start
-   ```
-   Scan QR code with Expo Go app
+# Start Expo development server
+npx expo start
 
-### Environment Variables
-
-**Backend (.env)**
-```
-MONGO_URL=<leave as is>
+# Scan QR code with Expo Go app
 ```
 
-**Frontend (.env)**
+### Backend (Optional)
+
+```bash
+# Install backend dependencies
+cd backend
+pip install -r requirements.txt
+
+# Run backend server
+uvicorn server:app --host 0.0.0.0 --port 8001 --reload
 ```
-EXPO_PACKAGER_PROXY_URL=<auto-configured>
-EXPO_PACKAGER_HOSTNAME=<auto-configured>
-EXPO_PUBLIC_BACKEND_URL=<auto-configured>
-```
-
-## Key Features Explained
-
-### 1. Work Week & Pay Periods
-- **Work week**: Sunday → Saturday
-- **Week ending**: Always Saturday
-- **Pay weeks**: Every 2 weeks starting Nov 23, 2025 (Saturday)
-- **Pay day**: Friday (e.g., paid Nov 28 for work Nov 9-22)
-
-### 2. Hour Validation Rules
-- **ST per day**: Max 8 hours per line code
-- **ST per week**: Max 40 hours total across all lines
-- **OT**: No limit, tracked separately
-- **PTO/HOLIDAY**: ST only (no OT allowed)
-
-### 3. Line Codes
-**Standard Lines** (in order matching paper timesheet):
-- VTR, GMRC, CLP, WACR, WACR-CRD, NEGS, NHC, NYOG, PTO, HOLIDAY
-
-**Project Lines**: 
-- Dynamic (user adds as needed)
-- Format: "PROJECT ####" (e.g., "PROJECT 6545")
-
-### 4. Dashboard Pay Cycle View
-- **Regular weeks**: Shows "This Week" with current week hours
-- **Pay weeks**: Shows "This Pay Cycle" with current + previous week totals
-- Progress bar shows ST toward 40-hour weekly max
-
-### 5. Weekly Summary
-- Formatted to match paper timesheet layout
-- Lines ordered same as official form
-- Shows ST/OT breakdown by line and by day
-- Accessible via "View Previous Week Summary" button
-
-## API Endpoints
-
-### Time Entries
-- `POST /api/entries` - Create/update time entry
-- `GET /api/entries?week_ending={date}` - Get entries for week
-- `GET /api/entries?start_date={date}&end_date={date}` - Get date range
-
-### Line Codes
-- `GET /api/lines` - Get all line codes
-- `POST /api/lines` - Add project line
-- `PUT /api/lines/{code}` - Toggle visibility
-- `DELETE /api/lines/{code}` - Delete project line
-
-### Week Info
-- `GET /api/week-info?work_date={date}` - Get week ending & pay week status
-
-### Summary
-- `GET /api/weekly-summary?week_ending={date}` - Get week totals
-
-### Settings
-- `GET /api/settings` - Get all settings
-- `PUT /api/settings/{key}` - Update setting
-
-### Export/Import
-- `GET /api/export` - Export all data as JSON
-- `POST /api/import` - Import data from JSON
 
 ## Database Schema
 
 ### time_entries
-```sql
-CREATE TABLE time_entries (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  work_date TEXT NOT NULL,
-  week_ending_date TEXT NOT NULL,
-  line_code TEXT NOT NULL,
-  st_hours INTEGER DEFAULT 0,
-  ot_hours INTEGER DEFAULT 0,
-  is_pay_week INTEGER DEFAULT 0,
-  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(work_date, line_code)
-);
-```
+- `id`: INTEGER PRIMARY KEY
+- `work_date`: TEXT (YYYY-MM-DD)
+- `line_code`: TEXT
+- `st_hours`: INTEGER (0-8)
+- `ot_hours`: INTEGER
+- `week_ending_date`: TEXT (Saturday)
+- `is_pay_week`: INTEGER (0/1)
+- UNIQUE constraint on (work_date, line_code)
 
 ### line_codes
-```sql
-CREATE TABLE line_codes (
-  line_code TEXT PRIMARY KEY,
-  label TEXT NOT NULL,
-  is_project INTEGER DEFAULT 0,
-  is_visible INTEGER DEFAULT 1,
-  sort_order INTEGER DEFAULT 0,
-  created_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
-```
+- `id`: INTEGER PRIMARY KEY
+- `line_code`: TEXT UNIQUE
+- `label`: TEXT
+- `is_visible`: INTEGER (0/1)
+- `is_project`: INTEGER (0/1)
+- `sort_order`: INTEGER
 
 ### settings
-```sql
-CREATE TABLE settings (
-  key TEXT PRIMARY KEY,
-  value TEXT NOT NULL,
-  updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
-```
+- `id`: INTEGER PRIMARY KEY
+- `key`: TEXT UNIQUE
+- `value`: TEXT
 
-**Default Settings:**
+Key settings:
 - `base_pay_week_ending`: "2025-11-29"
 - `pay_frequency_days`: "14"
 
-## Testing
+## Business Rules
 
-### Backend Testing
-- All 26 backend tests passing ✅
-- Tested via curl and deep_testing_backend_v2 agent
+### Time Entry Constraints
+1. **ST Hours**: Max 8 per day per line, max 40 per week total
+2. **OT Hours**: Unlimited per day, tracked separately
+3. **PTO/HOLIDAY**: ST only, no OT allowed
+4. **Week Definition**: Sunday-Saturday
+5. **Pay Week**: Every 14 days from base date (Nov 29, 2025)
 
-### Frontend Testing
-- Manual testing via Expo Go
-- Tested on mobile device
-- Key flows verified:
-  - Hour entry with validation
-  - Week navigation
-  - Project line addition
-  - Weekly summary generation
-  - Settings management
+### Line Codes
+- **Standard Lines**: VTR, GMRC, CLP, WACR, WACR-CRD, NEGS, NHC, NYOG, PTO, HOLIDAY
+- **Project Lines**: USER-CREATED (format: "PROJECT ####")
+- Users can hide/show lines as needed
+- Project lines can be deleted, standard lines cannot
 
-## Building Standalone App
+## App Architecture
 
-### Using EAS Build
-
-1. **Install EAS CLI**
-   ```bash
-   npm install -g @expo/eas-cli
-   ```
-
-2. **Configure**
-   ```bash
-   cd /app/frontend
-   eas build:configure
-   ```
-
-3. **Build Android APK**
-   ```bash
-   eas build --platform android --profile preview
-   ```
-
-4. **Build iOS IPA** (requires Apple Developer account)
-   ```bash
-   eas build --platform ios --profile preview
-   ```
-
-### Important Notes:
-- ⚠️ **Must convert to offline app first** (see Critical Next Step above)
-- Current version requires backend server running
-- Standalone app won't work without backend
-
-## Troubleshooting
-
-### Metro Bundler Cache Issues
-```bash
-cd /app/frontend
-rm -rf .metro-cache .expo
-sudo supervisorctl restart expo
+### Offline-First Design
+```
+┌─────────────────────────────────────┐
+│         Expo App (React Native)     │
+│  ┌───────────────────────────────┐  │
+│  │    UI Layer (Tamagui)         │  │
+│  └───────────────┬───────────────┘  │
+│  ┌───────────────▼───────────────┐  │
+│  │  State Management (Zustand)   │  │
+│  └───────────────┬───────────────┘  │
+│  ┌───────────────▼───────────────┐  │
+│  │  Database Service             │  │
+│  │  (services/database.ts)       │  │
+│  └───────────────┬───────────────┘  │
+│  ┌───────────────▼───────────────┐  │
+│  │     expo-sqlite (Local DB)    │  │
+│  │   vrs_time_wizard.db          │  │
+│  └───────────────────────────────┘  │
+└─────────────────────────────────────┘
 ```
 
-### Backend Not Starting
-```bash
-cd /app/backend
-pip install -r requirements.txt --force-reinstall
-sudo supervisorctl restart backend
+### Navigation Structure
+```
+app/
+├── _layout.tsx              # Root layout, DB initialization
+├── (tabs)/                  # Tab navigation (top tabs)
+│   ├── _layout.tsx         # Tab configuration
+│   ├── index.tsx           # Dashboard
+│   ├── timesheet.tsx       # Weekly hour entry grid
+│   ├── history.tsx         # Past weeks overview
+│   └── settings.tsx        # Configuration & backup
+├── weekly-summary.tsx      # Detailed week report
+├── migrate.tsx             # First-time data migration
+└── debug-info.tsx          # Technical diagnostics
 ```
 
-### Date Display Issues (Timezone)
-- Always append 'T00:00:00' to date strings when creating Date objects
-- Example: `new Date('2025-11-16' + 'T00:00:00')`
-- This prevents timezone shifting
+## Recent Bug Fixes (Nov 2024)
 
-### Grid Scrolling Jittery
-- Issue: Circular scroll synchronization causing feedback loop
-- Solution: Use one-way binding (main grid controls headers, not vice versa)
-- Set header scrollviews to `scrollEnabled={false}`
+### Issue 1: Pay Week Calculation Off by 1 Day ✅ FIXED
+**Problem**: Only Nov 15 showed PAY badge, but Nov 1, Oct 18, etc. did not
+**Root Cause**: Timezone + Daylight Saving Time bug in date calculations
+**Solution**: Changed to `Date.UTC()` for all date math, avoiding local timezone
+**Result**: All pay weeks (every 14 days) now correctly identified
 
-## Version History
+### Issue 2: Missing Historical Data ✅ FIXED
+**Problem**: History showed 0 hours for weeks, but Dashboard showed correct data
+**Root Cause**: weekly-summary.tsx still calling backend API instead of local DB
+**Solution**: Updated to use local database service
+**Result**: All screens now consistently use local data
 
-### v1.0.0 - Current (Nov 16, 2025)
-- Initial MVP complete
-- All core features implemented
-- Backend tested and verified
-- Frontend functional on mobile
-- **Requires backend server** (not offline yet)
+### Issue 3: Timesheet Grid Alignment Drift ✅ FIXED
+**Problem**: Line names and data rows misaligned vertically
+**Root Cause**: Inconsistent row heights between regular and PTO/Holiday lines
+**Solution**: Explicit height constraints (100px regular, 60px PTO/Holiday)
+**Result**: Perfect alignment across all row types
 
-### Planned for v1.1.0
-- [ ] Convert to true offline app with expo-sqlite
-- [ ] Remove backend dependency
-- [ ] PDF export feature
-- [ ] Paycheck estimator (placeholder in place)
+### Issue 4: Export Error on Expo SDK 54 ✅ FIXED
+**Problem**: `writeAsStringAsync` deprecated error
+**Solution**: Changed to `expo-file-system/legacy` import
+**Result**: Export/import working correctly
+
+## File Structure
+
+```
+/app
+├── frontend/
+│   ├── app/                      # Expo Router screens
+│   │   ├── (tabs)/              # Main navigation tabs
+│   │   ├── _layout.tsx          # Root layout
+│   │   ├── weekly-summary.tsx   # Week details
+│   │   ├── migrate.tsx          # Data migration
+│   │   └── debug-info.tsx       # Debug screen
+│   ├── services/
+│   │   ├── database.ts          # SQLite service (native)
+│   │   ├── database.web.ts      # Mock DB (web preview)
+│   │   └── migration.ts         # Backend migration utility
+│   ├── store/
+│   │   └── timesheetStore.ts    # Zustand state management
+│   ├── tamagui.config.ts        # UI configuration
+│   ├── package.json
+│   └── app.json                 # Expo configuration
+├── backend/                      # Optional FastAPI server
+│   ├── server.py                # API endpoints
+│   ├── vrs_time_wizard.db       # Backend SQLite (legacy)
+│   └── requirements.txt
+├── README.md                     # This file
+├── ARCHITECTURE.md              # Technical deep dive
+├── CHANGELOG.md                 # Version history
+├── NEXT_STEPS.md                # Future work
+└── test_result.md               # Testing documentation
+```
+
+## Usage Guide
+
+### First Time Setup
+1. Open app → Migration screen appears
+2. Choose "Migrate Data" (if you have backend data) or "Start Fresh"
+3. Wait for migration to complete
+4. App opens to Dashboard
+
+### Adding Hours
+1. Go to **Timesheet** tab
+2. Use arrow buttons to navigate weeks
+3. Tap **+** to add hours (ST or OT)
+4. Tap **-** to remove hours
+5. Data saves automatically
+
+### Viewing Reports
+1. **Dashboard**: See current week totals and pay cycle info
+2. **History**: Browse past 8 weeks, tap to expand
+3. **Weekly Summary**: Detailed breakdown with Paper Timesheet Helper
+
+### Managing Line Codes
+1. Go to **Settings** tab
+2. Toggle switches to show/hide lines
+3. Add project lines with "Add Project Line"
+4. Delete project lines (swipe or tap button)
+
+### Backup & Restore
+1. **Export**: Settings → Export Backup → Share/Save
+2. **Import**: Settings → Import Backup → Select file → Confirm
+
+### Troubleshooting
+1. Go to **Settings** → **Debug Information**
+2. View database contents, pay week calculations, and diagnostics
+3. Tap **Refresh** to reload data
+
+## Known Limitations
+
+1. **Web Preview**: SQLite not supported, use iOS/Android device
+2. **Migration**: One-time process, existing data on backend must be manually re-entered if not migrated
+3. **Sync**: No automatic cloud sync yet (future feature)
+4. **PDF Export**: Not implemented yet (shows Paper Timesheet Helper instead)
+
+## Future Enhancements
+
+### Planned Features
+- [ ] PDF generation for completed timesheets
+- [ ] Cloud sync with backend
+- [ ] Multi-user/admin portal
+- [ ] Notifications/reminders
+- [ ] Additional report types
+- [ ] Configurable pay week settings in UI
+- [ ] Time entry notes/comments
+- [ ] Photo attachments
+
+### Backend Sync (Future)
+The backend is preserved for potential future features:
+- Multi-device sync
+- Supervisor/admin portal
+- Bulk timesheet collection
+- Team management
+
+## Development
+
+### Running Tests
+```bash
+# Backend testing
+cd backend
+pytest
+
+# Frontend testing (manual)
+# Use Debug Information screen
+```
+
+### Building for Production
+```bash
+# EAS Build (Expo Application Services)
+cd frontend
+eas build --platform android
+eas build --platform ios
+
+# Local build (development)
+npx expo run:android
+npx expo run:ios
+```
+
+### Environment Variables
+
+**Frontend (.env)**
+```
+EXPO_PUBLIC_BACKEND_URL=http://your-backend-url
+EXPO_PACKAGER_PROXY_URL=http://...
+EXPO_PACKAGER_HOSTNAME=...
+```
+
+**Backend (.env)**
+```
+MONGO_URL=... (not used for SQLite)
+```
 
 ## Contributing
 
 ### Code Style
 - TypeScript for frontend
-- Python with type hints for backend
-- Follow existing patterns in codebase
+- Python (FastAPI) for backend
+- Follow existing patterns
+- Test thoroughly on physical devices
 
-### Testing Requirements
-- Backend: Test all API endpoints
-- Frontend: Test on physical device via Expo Go
-- Verify offline functionality before release
+### Testing Checklist
+- [ ] Hour entry (ST and OT)
+- [ ] Week navigation
+- [ ] Pay week detection
+- [ ] Offline functionality
+- [ ] Export/Import
+- [ ] Line code management
+- [ ] History and reports
 
-## Support & Resources
+## Support
 
-- **Expo Documentation**: https://docs.expo.dev/
-- **React Native**: https://reactnative.dev/
-- **FastAPI**: https://fastapi.tiangolo.com/
-- **expo-sqlite**: https://docs.expo.dev/versions/latest/sdk/sqlite/
+For issues or questions:
+1. Check Debug Information screen
+2. Review this README
+3. Check NEXT_STEPS.md for known issues
+4. Contact development team
 
 ## License
 
-Proprietary - For VRS Railroad internal use only.
+Proprietary - For internal use only
 
-## Contact
+## Acknowledgments
 
-For questions or issues, contact the development team.
+- Built with Expo and React Native
+- UI components from Tamagui
+- Icons from Ionicons
+- Date handling by date-fns
 
 ---
 
-**Last Updated**: November 16, 2025  
-**Status**: MVP Complete, Requires Offline Conversion  
-**Next Priority**: Convert to expo-sqlite for true offline functionality
+**Version**: 1.0.0-offline  
+**Last Updated**: November 2024  
+**Status**: Production Ready (Offline Mode)
