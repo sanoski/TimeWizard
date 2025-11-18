@@ -218,8 +218,12 @@ class DatabaseService {
     const checkDate = new Date(weekEndingDate + 'T00:00:00');
 
     const daysDiff = Math.floor((checkDate.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24));
+    const isPay = daysDiff % payFrequency === 0;
     
-    return daysDiff % payFrequency === 0;
+    // Debug logging
+    console.log(`Pay week check: ${weekEndingDate}, base=${basePayWeek}, daysDiff=${daysDiff}, isPay=${isPay}`);
+    
+    return isPay;
   }
 
   // Time Entry Operations
