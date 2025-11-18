@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTimesheetStore } from '../../store/timesheetStore';
 import { format, subWeeks } from 'date-fns';
 import { useFocusEffect } from 'expo-router';
-import { db } from '../../services/database';
+import { db } from '../../services/databaseWrapper';
 
 export default function HistoryScreen() {
   const { weekInfo, fetchWeekInfo, loading } = useTimesheetStore();
