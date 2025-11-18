@@ -242,9 +242,10 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Ionicons name="cloud-download" size={20} color="#374151" />
-            <Text style={styles.sectionTitle}>Data Management</Text>
+            <Text style={styles.sectionTitle}>Backup & Restore</Text>
           </View>
           <View style={styles.card}>
+            {/* Export Button */}
             <Pressable 
               style={styles.actionButton}
               onPress={handleExportData}
@@ -253,8 +254,27 @@ export default function SettingsScreen() {
               <View style={styles.actionButtonContent}>
                 <Ionicons name="download-outline" size={24} color="#2563eb" />
                 <View style={styles.actionButtonText}>
-                  <Text style={styles.actionButtonTitle}>Export Data</Text>
-                  <Text style={styles.actionButtonSubtitle}>Download all timesheet data as JSON</Text>
+                  <Text style={styles.actionButtonTitle}>Export Backup</Text>
+                  <Text style={styles.actionButtonSubtitle}>Save all timesheet data to a file</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+            </Pressable>
+
+            {/* Divider */}
+            <View style={styles.divider} />
+
+            {/* Import Button */}
+            <Pressable 
+              style={styles.actionButton}
+              onPress={handleImportData}
+              disabled={loading}
+            >
+              <View style={styles.actionButtonContent}>
+                <Ionicons name="cloud-upload-outline" size={24} color="#10b981" />
+                <View style={styles.actionButtonText}>
+                  <Text style={styles.actionButtonTitle}>Import Backup</Text>
+                  <Text style={styles.actionButtonSubtitle}>Restore data from backup file</Text>
                 </View>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
