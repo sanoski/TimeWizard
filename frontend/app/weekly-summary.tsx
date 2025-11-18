@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { format } from 'date-fns';
-import { db } from '../services/database';
+import { db } from '../services/databaseWrapper';
 
 // Line order matching the paper timesheet
 const LINE_ORDER = ['VTR', 'GMRC', 'CLP', 'WACR', 'WACR-CRD', 'NEGS', 'NHC', 'NYOG', 'PTO', 'HOLIDAY'];
