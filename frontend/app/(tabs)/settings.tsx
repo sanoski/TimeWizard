@@ -81,13 +81,13 @@ export default function SettingsScreen() {
 
   const handleImportData = async () => {
     Alert.alert(
-      'Import Data',
-      'This will replace all current data with the imported backup. Are you sure?',
+      'Import Backup',
+      'You will be asked to select a backup file. This will replace all current data with the data from the backup file. Continue?',
       [
         { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Import',
-          style: 'destructive',
+          text: 'Select File',
+          style: 'default',
           onPress: async () => {
             try {
               setLoading(true);
