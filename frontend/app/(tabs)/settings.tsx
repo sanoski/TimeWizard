@@ -307,7 +307,8 @@ export default function SettingsScreen() {
           <Text style={styles.infoText}>
             {'\u2022'} Toggle line visibility to show/hide in timesheet{'\n'}
             {'\u2022'} Add project numbers as needed{'\n'}
-            {'\u2022'} Export data to backup or transfer to new device{'\n'}
+            {'\u2022'} Export backup to save or share your data{'\n'}
+            {'\u2022'} Import backup to restore from a previous export{'\n'}
             {'\u2022'} All data stored locally on your device
           </Text>
         </View>
