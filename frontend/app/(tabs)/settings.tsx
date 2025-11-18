@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTimesheetStore } from '../../store/timesheetStore';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import * as DocumentPicker from 'expo-document-picker';
 
 export default function SettingsScreen() {
   const { lines, fetchLines, toggleLineVisibility, addProjectLine, deleteProjectLine, exportData, importData } = useTimesheetStore();
