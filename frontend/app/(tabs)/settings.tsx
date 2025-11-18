@@ -68,6 +68,7 @@ export default function SettingsScreen() {
       const canShare = await Sharing.isAvailableAsync();
       if (canShare) {
         await Sharing.shareAsync(fileUri);
+        Alert.alert('Success', 'Data exported successfully! You can now save or share the backup file.');
       } else {
         Alert.alert('Success', `Data exported to: ${fileUri}`);
       }
@@ -76,6 +77,67 @@ export default function SettingsScreen() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleImportData = async () => {
+    Alert.alert(
+      'Import Data',
+      'This will replace all current data with the imported backup. Are you sure?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Import',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setLoading(true);
+              
+              // Pick a JSON file
+              const result = await DocumentPicker.getDocumentAsync({
+                type: 'application/json',
+                copyToCacheDirectory: true,
+              });
+
+              if (result.canceled) {
+                setLoading(false);
+                return;
+              }
+
+              // Read the file content
+              const fileContent = await FileSystem.readAsStringAsync(result.assets[0].uri);
+              const importedData = JSON.parse(fileContent);
+
+              // Validate the data structure
+              if (!importedData.time_entries || !importedData.line_codes || !importedData.settings) {
+                throw new Error('Invalid backup file format');
+              }
+
+              // Import the data
+              await importData(importedData);
+
+              Alert.alert(
+                'Success', 
+                `Imported ${importedData.time_entries.length} time entries successfully!`,
+                [
+                  {
+                    text: 'OK',
+                    onPress: () => {
+                      // Refresh the lines
+                      fetchLines();
+                    }
+                  }
+                ]
+              );
+            } catch (error: any) {
+              console.error('Import error:', error);
+              Alert.alert('Error', error.message || 'Failed to import data. Please ensure you selected a valid backup file.');
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const standardLines = lines.filter(l => !l.is_project);
