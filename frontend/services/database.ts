@@ -260,6 +260,8 @@ class DatabaseService {
       'SELECT * FROM time_entries WHERE week_ending_date = ? ORDER BY work_date, line_code',
       [weekEnding]
     );
+    
+    console.log(`getEntriesByWeek(${weekEnding}): found ${entries.length} entries`);
 
     return entries.map(e => ({
       id: e.id,
