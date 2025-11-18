@@ -298,6 +298,25 @@ export default function SettingsScreen() {
           </View>
         </View>
 
+        {/* Debug Button */}
+        <View style={styles.section}>
+          <View style={styles.card}>
+            <Pressable 
+              style={styles.actionButton}
+              onPress={() => require('expo-router').router.push('/debug-info')}
+            >
+              <View style={styles.actionButtonContent}>
+                <Ionicons name="bug-outline" size={24} color="#f59e0b" />
+                <View style={styles.actionButtonText}>
+                  <Text style={styles.actionButtonTitle}>Debug Information</Text>
+                  <Text style={styles.actionButtonSubtitle}>View technical details and diagnostics</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+            </Pressable>
+          </View>
+        </View>
+
         {/* Info */}
         <View style={[styles.card, { backgroundColor: '#eff6ff', marginHorizontal: 16, marginBottom: 16 }]}>
           <View style={styles.infoHeader}>
