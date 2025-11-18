@@ -63,16 +63,19 @@ export default function DashboardScreen() {
     if (weekInfo) {
       fetchWeeklySummary(weekInfo.week_ending_date);
       
-      // If it's a pay week, also fetch previous week's data
+      // If it's a pay week, also fetch previous week's data from local DB
       if (weekInfo.is_pay_week) {
         const prevWeekEnd = new Date(weekInfo.week_ending_date + 'T00:00:00');
         prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
         const prevWeekEndStr = format(prevWeekEnd, 'yyyy-MM-dd');
         
-        fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/api/weekly-summary?week_ending=${prevWeekEndStr}`)
-          .then(res => res.json())
+        // Fetch from local database instead of backend API
+        db.getWeeklySummary(prevWeekEndStr)
           .then(data => {
             setPrevWeekSummary(data);
+          })
+          .catch(err => {
+            console.error('Error fetching previous week summary:', err);
           });
       }
     }
