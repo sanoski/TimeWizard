@@ -214,10 +214,11 @@ class DatabaseService {
     const basePayWeek = settings.find(s => s.key === 'base_pay_week_ending')?.value || '2025-11-29';
     const payFrequency = parseInt(settings.find(s => s.key === 'pay_frequency_days')?.value || '14');
 
-    const baseDate = new Date(basePayWeek + 'T00:00:00');
-    const checkDate = new Date(weekEndingDate + 'T00:00:00');
+    // Use UTC to avoid timezone issues
+    const baseDate = new Date(basePayWeek + 'T12:00:00Z'); // Noon UTC
+    const checkDate = new Date(weekEndingDate + 'T12:00:00Z'); // Noon UTC
 
-    const daysDiff = Math.floor((checkDate.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24));
+    const daysDiff = Math.round((checkDate.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24));
     const isPay = daysDiff % payFrequency === 0;
     
     // Debug logging
