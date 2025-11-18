@@ -514,4 +514,9 @@ const styles = StyleSheet.create({
     color: '#1e40af',
     lineHeight: 18,
   },
+  divider: {
+    height: 1,
+    backgroundColor: '#e5e7eb',
+    marginVertical: 8,
+  },
 });
