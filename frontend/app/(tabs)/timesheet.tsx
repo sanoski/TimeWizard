@@ -389,6 +389,15 @@ export default function TimesheetScreen() {
           </ScrollView>
         </View>
       </View>
+
+      {/* Daily Notes Section */}
+      {selectedDateForNotes && (
+        <DailyNotesSection 
+          workDate={selectedDateForNotes}
+          entries={entries}
+        />
+      )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
