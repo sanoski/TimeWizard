@@ -230,9 +230,20 @@ export default function DashboardScreen() {
             <Pressable 
               style={styles.secondaryButton}
               onPress={async () => {
-                // Calculate previous week from current week
-                const prevWeekEnd = new Date(weekInfo.week_ending_date + 'T00:00:00');
-                prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
+                // ALWAYS calculate from today's actual date, not from current viewed week
+                const today = new Date();
+                const dayOfWeek = today.getDay();
+                // Calculate days until Saturday (6 = Saturday, 0 = Sunday)
+                const daysUntilSaturday = dayOfWeek === 6 ? 0 : (6 - dayOfWeek + 7) % 7;
+                
+                // Get this week's Saturday
+                const thisWeekEnd = new Date(today);
+                thisWeekEnd.setDate(today.getDate() + daysUntilSaturday);
+                
+                // Get previous week's Saturday (7 days before this week's Saturday)
+                const prevWeekEnd = new Date(thisWeekEnd);
+                prevWeekEnd.setDate(thisWeekEnd.getDate() - 7);
+                
                 const prevWeekEndStr = format(prevWeekEnd, 'yyyy-MM-dd');
                 router.push(`/weekly-summary?weekEnding=${prevWeekEndStr}`);
               }}
