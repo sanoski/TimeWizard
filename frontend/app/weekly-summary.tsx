@@ -258,6 +258,33 @@ export default function WeeklySummaryScreen() {
           })}
         </View>
 
+        {/* Work Notes */}
+        {notes.length > 0 && (
+          <View style={styles.card}>
+            <View style={styles.notesHeader}>
+              <Ionicons name="document-text" size={20} color="#2563eb" />
+              <Text style={[styles.sectionTitle, { marginBottom: 0, marginLeft: 8 }]}>Work Notes</Text>
+            </View>
+            {notes.map((note) => {
+              const dateObj = new Date(note.work_date + 'T00:00:00');
+              const dayName = format(dateObj, 'EEEE');
+              const dateStr = format(dateObj, 'MMM dd');
+              
+              return (
+                <View key={`${note.work_date}-${note.line_code}`} style={styles.noteItem}>
+                  <View style={styles.noteHeader}>
+                    <Text style={styles.noteLineCode}>{note.line_code}</Text>
+                    <Text style={styles.noteDateText}>{dayName}, {dateStr}</Text>
+                  </View>
+                  <View style={styles.noteContentBox}>
+                    <Text style={styles.noteContent}>{note.note_text}</Text>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        )}
+
         {/* Daily Breakdown */}
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Daily Breakdown</Text>
