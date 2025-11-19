@@ -625,4 +625,42 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#2563eb',
   },
+  notesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  noteItem: {
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  noteHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  noteLineCode: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  noteDateText: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  noteContentBox: {
+    backgroundColor: '#f9fafb',
+    padding: 12,
+    borderRadius: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: '#2563eb',
+  },
+  noteContent: {
+    fontSize: 14,
+    color: '#374151',
+    lineHeight: 20,
+  },
 });
