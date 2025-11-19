@@ -485,6 +485,80 @@ class DatabaseService {
 
     console.log('✅ Data imported successfully');
   }
+
+  // ===== NOTES METHODS =====
+
+  async saveNote(workDate: string, lineCode: string, noteText: string): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    await this.db.runAsync(
+      `INSERT INTO work_notes (work_date, line_code, note_text, updated_at) 
+       VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+       ON CONFLICT(work_date, line_code) 
+       DO UPDATE SET note_text = ?, updated_at = CURRENT_TIMESTAMP`,
+      [workDate, lineCode, noteText, noteText]
+    );
+  }
+
+  async getNote(workDate: string, lineCode: string): Promise<WorkNote | null> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const result = await this.db.getAllAsync(
+      'SELECT * FROM work_notes WHERE work_date = ? AND line_code = ?',
+      [workDate, lineCode]
+    );
+    
+    return result.length > 0 ? result[0] as WorkNote : null;
+  }
+
+  async getNotesByDate(workDate: string): Promise<WorkNote[]> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const results = await this.db.getAllAsync(
+      'SELECT * FROM work_notes WHERE work_date = ? ORDER BY line_code',
+      [workDate]
+    );
+    
+    return results as WorkNote[];
+  }
+
+  async getNotesByWeek(weekEnding: string): Promise<WorkNote[]> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    // Calculate week start (Sunday, 6 days before Saturday)
+    const weekEnd = new Date(weekEnding + 'T00:00:00');
+    const weekStart = new Date(weekEnd);
+    weekStart.setDate(weekEnd.getDate() - 6);
+    
+    const weekStartStr = format(weekStart, 'yyyy-MM-dd');
+    
+    const results = await this.db.getAllAsync(
+      'SELECT * FROM work_notes WHERE work_date >= ? AND work_date <= ? ORDER BY work_date, line_code',
+      [weekStartStr, weekEnding]
+    );
+    
+    return results as WorkNote[];
+  }
+
+  async deleteNote(workDate: string, lineCode: string): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    await this.db.runAsync(
+      'DELETE FROM work_notes WHERE work_date = ? AND line_code = ?',
+      [workDate, lineCode]
+    );
+  }
+
+  async hasNote(workDate: string, lineCode: string): Promise<boolean> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const result = await this.db.getAllAsync(
+      'SELECT COUNT(*) as count FROM work_notes WHERE work_date = ? AND line_code = ?',
+      [workDate, lineCode]
+    );
+    
+    return result[0].count > 0;
+  }
 }
 
 // Export singleton instance
