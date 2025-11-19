@@ -53,4 +53,16 @@ export const db = {
     settings: [],
   }),
   importData: async () => {},
+  
+  // Notes methods (mock for web)
+  saveNote: async () => {
+    console.warn('⚠️ Cannot save notes on web preview. Use native app.');
+  },
+  getNote: async () => null,
+  getNotesByDate: async () => [],
+  getNotesByWeek: async () => [],
+  deleteNote: async () => {
+    console.warn('⚠️ Cannot delete notes on web preview. Use native app.');
+  },
+  hasNote: async () => false,
 };
