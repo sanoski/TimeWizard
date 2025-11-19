@@ -16,6 +16,7 @@ export default function WeeklySummaryScreen() {
   
   const [summary, setSummary] = useState<any>(null);
   const [entries, setEntries] = useState<any[]>([]);
+  const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,14 +32,20 @@ export default function WeeklySummaryScreen() {
       // Load from local database
       const summaryData = await db.getWeeklySummary(weekEnding);
       const entriesData = await db.getEntriesByWeek(weekEnding);
+      const notesData = await db.getNotesByWeek(weekEnding);
       
       setSummary(summaryData);
       setEntries(entriesData);
+      setNotes(notesData);
     } catch (error) {
       console.error('Error loading week data:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const getNoteForLine = (workDate: string, lineCode: string) => {
+    return notes.find(n => n.work_date === workDate && n.line_code === lineCode);
   };
 
   const getLineTotal = (lineCode: string, type: 'st' | 'ot') => {
