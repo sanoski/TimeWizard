@@ -24,6 +24,7 @@ export default function TimesheetScreen() {
 
   const [showAddProject, setShowAddProject] = useState(false);
   const [projectNumber, setProjectNumber] = useState('');
+  const [selectedDateForNotes, setSelectedDateForNotes] = useState<string>('');
 
   // Refs for synchronized scrolling
   const headerDayScroll = useRef<any>(null);
