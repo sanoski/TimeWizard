@@ -32,6 +32,7 @@ export default function TimesheetScreen() {
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
+    setSelectedDateForNotes(today); // Initialize notes to today
     fetchLines();
     fetchWeekInfo(today).then(() => {
       if (weekInfo) {
