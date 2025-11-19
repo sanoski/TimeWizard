@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTimesheetStore } from '../../store/timesheetStore';
 import { format, addDays } from 'date-fns';
+import DailyNotesSection from '../../components/DailyNotesSection';
 
 export default function TimesheetScreen() {
   const { 
