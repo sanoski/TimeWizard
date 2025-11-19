@@ -27,6 +27,15 @@ export interface Settings {
   value: string;
 }
 
+export interface WorkNote {
+  id?: number;
+  work_date: string;
+  line_code: string;
+  note_text: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface WeeklySummary {
   week_ending_date: string;
   is_pay_week: boolean;
