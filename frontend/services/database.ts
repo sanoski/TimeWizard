@@ -140,6 +140,20 @@ class DatabaseService {
       `);
       console.log('✅ settings table created');
 
+      // Create notes table
+      await this.db.runAsync(`
+        CREATE TABLE IF NOT EXISTS work_notes (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          work_date TEXT NOT NULL,
+          line_code TEXT NOT NULL,
+          note_text TEXT NOT NULL,
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+          updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(work_date, line_code)
+        )
+      `);
+      console.log('✅ work_notes table created');
+
       console.log('✅ All tables created');
     } catch (error) {
       console.error('Error creating tables:', error);
