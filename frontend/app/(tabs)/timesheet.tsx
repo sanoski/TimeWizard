@@ -31,7 +31,8 @@ export default function TimesheetScreen() {
   const sideLineScroll = useRef<any>(null);
 
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
+    // Use local date, not UTC
+    const today = format(new Date(), 'yyyy-MM-dd');
     setSelectedDateForNotes(today); // Initialize notes to today
     fetchLines();
     fetchWeekInfo(today).then(() => {
