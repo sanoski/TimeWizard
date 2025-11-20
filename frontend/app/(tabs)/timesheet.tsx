@@ -30,6 +30,9 @@ export default function TimesheetScreen() {
   // Refs for synchronized scrolling
   const headerDayScroll = useRef<any>(null);
   const sideLineScroll = useRef<any>(null);
+  
+  // Debounce state to prevent rapid repeated taps
+  const processingRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     // Use local date, not UTC
