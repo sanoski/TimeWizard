@@ -9,37 +9,22 @@ interface NotesFloatingButtonProps {
   entries: Array<{ work_date: string; line_code: string; st_hours: number; ot_hours: number }>;
 }
 
-export default function NotesFloatingButton({ workDate, entries }: NotesFloatingButtonProps) {
+export default function NotesFloatingButton({ weekEnding, entries }: NotesFloatingButtonProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [notesCount, setNotesCount] = useState(0);
 
   useEffect(() => {
-    console.log('🔍 NotesFloatingButton:', { 
-      workDate, 
-      totalEntries: entries.length,
-      entriesForDate: entries.filter(e => e.work_date === workDate).length,
-      firstFewEntries: entries.slice(0, 3).map(e => ({ date: e.work_date, line: e.line_code, st: e.st_hours, ot: e.ot_hours }))
-    });
     loadNotesCount();
-  }, [workDate, entries]);
+  }, [weekEnding, entries]);
 
   const loadNotesCount = async () => {
     try {
-      const dayNotes = await db.getNotesByDate(workDate);
-      setNotesCount(dayNotes.length);
+      const weekNotes = await db.getNotesByWeek(weekEnding);
+      setNotesCount(weekNotes.length);
     } catch (error) {
       console.error('Error loading notes count:', error);
     }
   };
-
-  const dayEntries = entries.filter(e => e.work_date === workDate && (e.st_hours > 0 || e.ot_hours > 0));
-
-  console.log('📝 NotesButton render:', { dayEntriesCount: dayEntries.length, willShow: dayEntries.length > 0 });
-
-  // ALWAYS show the button - let users add notes even before logging hours
-  // if (dayEntries.length === 0) {
-  //   return null;
-  // }
 
   return (
     <>
@@ -56,32 +41,16 @@ export default function NotesFloatingButton({ workDate, entries }: NotesFloating
         )}
       </Pressable>
 
-      {/* Modal with Notes */}
-      <Modal
+      {/* Weekly Notes Modal */}
+      <WeeklyNotesModal
         visible={modalVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <View>
-              <Text style={styles.modalTitle}>Daily Notes</Text>
-              <Text style={styles.modalSubtitle}>{workDate}</Text>
-            </View>
-            <Pressable onPress={() => setModalVisible(false)} style={styles.closeButton}>
-              <Ionicons name="close" size={28} color="#6b7280" />
-            </Pressable>
-          </View>
-
-          <ScrollView style={styles.modalContent}>
-            <DailyNotesSection 
-              workDate={workDate}
-              entries={entries}
-            />
-          </ScrollView>
-        </View>
-      </Modal>
+        onClose={() => {
+          setModalVisible(false);
+          loadNotesCount(); // Refresh badge count when modal closes
+        }}
+        weekEnding={weekEnding}
+        entries={entries}
+      />
     </>
   );
 }
