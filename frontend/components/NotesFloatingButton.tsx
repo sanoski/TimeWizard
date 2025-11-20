@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Modal, ScrollView } from 'react-native';
+import { StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { db } from '../services/databaseWrapper';
-import DailyNotesSection from './DailyNotesSection';
+import WeeklyNotesModal from './WeeklyNotesModal';
 
 interface NotesFloatingButtonProps {
-  workDate: string;
+  weekEnding: string;
   entries: Array<{ work_date: string; line_code: string; st_hours: number; ot_hours: number }>;
 }
 
