@@ -21,6 +21,16 @@ VRS Time Wizard is an Expo React Native mobile app that replaces an old text-bas
 - Sticky headers and line names for easy scrolling
 - +/- buttons for hour entry
 
+### 📝 Work Notes (v1.1.0)
+- **Weekly notes view** with day tabs (Sun-Sat)
+- Add notes for each line worked per day
+- Context-aware: shows hours worked with each note
+- No character limit
+- Edit/delete functionality
+- Visual indicators (green = notes, gray = hours logged)
+- Notes included in weekly summary exports
+- Floating action button for quick access
+
 ### 💰 Pay Week Detection
 - Configurable pay cycle (default: 14 days)
 - Base pay week: Nov 29, 2025
@@ -33,9 +43,10 @@ VRS Time Wizard is an Expo React Native mobile app that replaces an old text-bas
 - **History**: Past 8 weeks with expandable summaries
 - **Weekly Summary**: Detailed breakdown by line and day
 - **Paper Timesheet Helper**: Formatted for easy manual transcription
+- **Work Notes Section**: All notes organized by date and line
 
 ### 💾 Backup & Restore
-- Export to timestamped JSON files
+- Export to timestamped JSON files (includes notes)
 - Import from backup files
 - Share via native share sheet
 - Complete data portability
