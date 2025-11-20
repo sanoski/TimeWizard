@@ -3,13 +3,21 @@
 ## Issue Reported
 - Buttons for hour input weren't working in Expo web preview
 - Buttons were sluggish/unresponsive in standalone app
+- **UPDATE**: Haptic feedback worked but numbers didn't update
 
 ## Root Causes Identified
 
-### 1. Web Preview Issue
+### 1. **CRITICAL: Database Not Initialized (PRIMARY ISSUE)**
+The timesheet screen didn't initialize the database before attempting to save data. This caused:
+- Silent failures when buttons were pressed
+- Haptic feedback worked (confirming handlers were called)
+- But database operations failed with "Database not initialized" errors
+- No error messages shown to user (silent failures)
+
+### 2. Web Preview Issue
 The web preview uses a mock database (`database.web.ts`) that doesn't actually persist data. The `upsertEntry` function only logs a warning. This is **by design** - the app requires native SQLite which is only available on iOS/Android devices.
 
-### 2. Standalone App Sluggishness
+### 3. Standalone App Sluggishness
 Multiple performance issues were affecting button responsiveness:
 - No immediate tactile feedback
 - Async database operations with no visual indication
