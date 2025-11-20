@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Pressable, Alert, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { useTimesheetStore } from '../../store/timesheetStore';
 import { format, addDays } from 'date-fns';
 import NotesFloatingButton from '../../components/NotesFloatingButton';
