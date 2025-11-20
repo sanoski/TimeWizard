@@ -20,6 +20,7 @@ export default function DailyNotesSection({ workDate, entries }: DailyNotesSecti
   const dayEntries = entries.filter(e => e.work_date === workDate && (e.st_hours > 0 || e.ot_hours > 0));
 
   useEffect(() => {
+    console.log('📝 DailyNotesSection rendered:', { workDate, totalEntries: entries.length, dayEntries: dayEntries.length });
     loadNotes();
   }, [workDate]);
 
