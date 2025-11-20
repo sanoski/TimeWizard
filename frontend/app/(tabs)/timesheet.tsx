@@ -183,6 +183,14 @@ export default function TimesheetScreen() {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         await updateEntry(workDate, lineCode, currentST, currentOT - 1);
       }
+    } catch (error: any) {
+      // Show error to user
+      console.error('❌ Error updating entry:', error);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert(
+        'Database Error',
+        `Failed to save hours: ${error.message || 'Unknown error'}. Please try again.`
+      );
     } finally {
       // Always remove from processing set after a short delay
       setTimeout(() => {
