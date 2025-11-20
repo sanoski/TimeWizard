@@ -119,10 +119,18 @@ uvicorn server:app --host 0.0.0.0 --port 8001 --reload
 4. Tap **-** to remove hours
 5. Data saves automatically
 
+### Adding Notes (v1.1.0)
+1. Tap the **blue floating button** (bottom-right) on Timesheet
+2. Swipe or tap day tabs at top (Sun-Sat)
+3. Tap **+** icon next to any line to add notes
+4. Write your work notes (no character limit)
+5. Tap **Save**
+6. Notes show in Weekly Summary
+
 ### Viewing Reports
 1. **Dashboard**: See current week totals and pay cycle info
 2. **History**: Browse past 8 weeks, tap to expand
-3. **Weekly Summary**: Detailed breakdown with Paper Timesheet Helper
+3. **Weekly Summary**: Detailed breakdown with Paper Timesheet Helper and Notes
 
 ### Managing Line Codes
 1. Go to **Settings** tab
