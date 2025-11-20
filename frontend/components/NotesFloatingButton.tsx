@@ -14,6 +14,12 @@ export default function NotesFloatingButton({ workDate, entries }: NotesFloating
   const [notesCount, setNotesCount] = useState(0);
 
   useEffect(() => {
+    console.log('🔍 NotesFloatingButton:', { 
+      workDate, 
+      totalEntries: entries.length,
+      entriesForDate: entries.filter(e => e.work_date === workDate).length,
+      firstFewEntries: entries.slice(0, 3).map(e => ({ date: e.work_date, line: e.line_code, st: e.st_hours, ot: e.ot_hours }))
+    });
     loadNotesCount();
   }, [workDate, entries]);
 
@@ -28,9 +34,12 @@ export default function NotesFloatingButton({ workDate, entries }: NotesFloating
 
   const dayEntries = entries.filter(e => e.work_date === workDate && (e.st_hours > 0 || e.ot_hours > 0));
 
-  if (dayEntries.length === 0) {
-    return null; // Don't show button if no hours logged today
-  }
+  console.log('📝 NotesButton render:', { dayEntriesCount: dayEntries.length, willShow: dayEntries.length > 0 });
+
+  // ALWAYS show the button - let users add notes even before logging hours
+  // if (dayEntries.length === 0) {
+  //   return null;
+  // }
 
   return (
     <>
