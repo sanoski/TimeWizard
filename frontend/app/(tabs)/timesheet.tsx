@@ -726,10 +726,20 @@ const styles = StyleSheet.create({
   plusButton: {
     backgroundColor: '#dbeafe',
   },
+  buttonPressed: {
+    opacity: 0.6,
+    transform: [{ scale: 0.95 }],
+  },
+  buttonDisabled: {
+    opacity: 0.3,
+  },
   controlButtonText: {
     fontSize: 18,
     fontWeight: '700',
     color: '#374151',
+  },
+  buttonTextDisabled: {
+    color: '#9ca3af',
   },
   valueContainer: {
     alignItems: 'center',
