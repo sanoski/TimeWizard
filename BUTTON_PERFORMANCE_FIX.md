@@ -27,7 +27,46 @@ Multiple performance issues were affecting button responsiveness:
 
 ## Fixes Implemented
 
-### 1. Haptic Feedback (Native Only)
+### 1. **Database Initialization (CRITICAL FIX)**
+```typescript
+useEffect(() => {
+  const initializeApp = async () => {
+    try {
+      // CRITICAL: Initialize database before any operations
+      await db.initialize();
+      console.log('✅ Database initialized in timesheet screen');
+      
+      // Then proceed with data loading
+      const today = format(new Date(), 'yyyy-MM-dd');
+      await fetchLines();
+      await fetchWeekInfo(today);
+      // ... rest of initialization
+    } catch (error) {
+      console.error('❌ Failed to initialize timesheet:', error);
+      Alert.alert('Initialization Error', 'Failed to initialize database.');
+    }
+  };
+  
+  initializeApp();
+}, []);
+```
+
+### 2. Error Handling in Button Handlers
+```typescript
+try {
+  // ... button logic
+  await updateEntry(workDate, lineCode, newST, newOT);
+} catch (error: any) {
+  console.error('❌ Error updating entry:', error);
+  await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+  Alert.alert(
+    'Database Error',
+    `Failed to save hours: ${error.message}. Please try again.`
+  );
+}
+```
+
+### 3. Haptic Feedback (Native Only)
 ```typescript
 import * as Haptics from 'expo-haptics';
 
