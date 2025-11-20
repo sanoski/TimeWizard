@@ -181,11 +181,39 @@ uvicorn server:app --host 0.0.0.0 --port 8001 --reload
 
 ## 🚀 Future Enhancements
 
+### Coming in v1.2.0 (On-Call Schedule)
+- [ ] On-Call schedule calendar view
+- [ ] Import schedule from text/CSV
+- [ ] Swap system with shareable codes
+- [ ] Dashboard "on call soon" banner
+- [ ] Employee management
+
+### Future Versions
 - [ ] PDF generation for completed timesheets
 - [ ] Cloud sync with backend
+- [ ] Push notifications for on-call shifts
+- [ ] Location-based replacement suggestions
 - [ ] Multi-user/admin portal
-- [ ] Notifications/reminders
-- [ ] Configurable pay week settings in UI
+
+## 📝 Version History
+
+### v1.1.0 (November 19, 2025) - Notes Feature
+- Added weekly notes with day tabs
+- Context-aware notes per line/day
+- Notes included in weekly summary
+- Floating action button for quick access
+- Fixed timezone bug in date calculations
+
+### v1.0.1 (November 2025)
+- Fixed "View Previous Week" button logic
+- Bug fixes and improvements
+
+### v1.0.0 (November 2025) - Offline-First Release
+- Complete offline functionality with SQLite
+- Pay week detection
+- Paper Timesheet Helper
+- Export/Import backup system
+- History with auto-refresh
 
 ## 📄 License
 
@@ -193,6 +221,6 @@ Proprietary - For internal use only
 
 ---
 
-**Version**: 1.0.0-offline  
-**Last Updated**: November 17, 2024  
-**Status**: Production Ready (Offline Mode)
+**Current Version**: v1.1.0  
+**Last Updated**: November 19, 2025  
+**Status**: Production Ready (In Active Use)
