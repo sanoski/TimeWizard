@@ -391,9 +391,9 @@ export default function TimesheetScreen() {
       </View>
 
       {/* Floating Notes Button */}
-      {selectedDateForNotes && (
+      {weekInfo && (
         <NotesFloatingButton 
-          workDate={selectedDateForNotes}
+          weekEnding={weekInfo.week_ending_date}
           entries={entries}
         />
       )}
