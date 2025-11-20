@@ -6,6 +6,7 @@ import * as Haptics from 'expo-haptics';
 import { useTimesheetStore } from '../../store/timesheetStore';
 import { format, addDays } from 'date-fns';
 import NotesFloatingButton from '../../components/NotesFloatingButton';
+import { db } from '../../services/databaseWrapper';
 
 export default function TimesheetScreen() {
   const { 
