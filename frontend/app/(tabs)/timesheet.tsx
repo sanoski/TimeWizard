@@ -396,7 +396,6 @@ export default function TimesheetScreen() {
           entries={entries}
         />
       )}
-      </ScrollView>
     </SafeAreaView>
   );
 }
