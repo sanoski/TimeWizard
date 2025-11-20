@@ -138,7 +138,6 @@ export default function TimesheetScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.outerScroll} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View style={styles.stickyHeader}>
         <View style={styles.header}>
