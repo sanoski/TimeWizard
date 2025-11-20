@@ -88,39 +88,85 @@ export default function TimesheetScreen() {
     return true;
   };
 
-  const handleIncrement = async (workDate: string, lineCode: string, type: 'st' | 'ot') => {
-    const currentST = getEntryHours(workDate, lineCode, 'st');
-    const currentOT = getEntryHours(workDate, lineCode, 'ot');
+  const handleIncrement = useCallback(async (workDate: string, lineCode: string, type: 'st' | 'ot') => {
+    // Create unique key for this operation to prevent duplicate taps
+    const operationKey = `${workDate}-${lineCode}-${type}-inc`;
     
-    if (type === 'st') {
-      if (!canIncrementST(workDate, lineCode, currentST)) {
-        if (currentST >= 8) {
-          Alert.alert('Maximum Reached', 'ST hours cannot exceed 8 per day per line.');
-        } else {
-          Alert.alert('Weekly Limit', 'Total ST hours cannot exceed 40 per week.');
+    // If already processing this operation, ignore
+    if (processingRef.current.has(operationKey)) {
+      return;
+    }
+    
+    // Mark as processing
+    processingRef.current.add(operationKey);
+    
+    try {
+      // Haptic feedback for immediate response feel
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      
+      const currentST = getEntryHours(workDate, lineCode, 'st');
+      const currentOT = getEntryHours(workDate, lineCode, 'ot');
+      
+      if (type === 'st') {
+        if (!canIncrementST(workDate, lineCode, currentST)) {
+          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          if (currentST >= 8) {
+            Alert.alert('Maximum Reached', 'ST hours cannot exceed 8 per day per line.');
+          } else {
+            Alert.alert('Weekly Limit', 'Total ST hours cannot exceed 40 per week.');
+          }
+          return;
         }
-        return;
+        await updateEntry(workDate, lineCode, currentST + 1, currentOT);
+      } else {
+        if (!canIncrementOT(lineCode)) {
+          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          Alert.alert('Not Allowed', 'PTO and HOLIDAY lines cannot have overtime hours.');
+          return;
+        }
+        await updateEntry(workDate, lineCode, currentST, currentOT + 1);
       }
-      await updateEntry(workDate, lineCode, currentST + 1, currentOT);
-    } else {
-      if (!canIncrementOT(lineCode)) {
-        Alert.alert('Not Allowed', 'PTO and HOLIDAY lines cannot have overtime hours.');
-        return;
-      }
-      await updateEntry(workDate, lineCode, currentST, currentOT + 1);
+      
+      // Success haptic
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    } finally {
+      // Always remove from processing set after a short delay
+      setTimeout(() => {
+        processingRef.current.delete(operationKey);
+      }, 300);
     }
-  };
+  }, [getEntryHours, canIncrementST, canIncrementOT, updateEntry]);
 
-  const handleDecrement = async (workDate: string, lineCode: string, type: 'st' | 'ot') => {
-    const currentST = getEntryHours(workDate, lineCode, 'st');
-    const currentOT = getEntryHours(workDate, lineCode, 'ot');
+  const handleDecrement = useCallback(async (workDate: string, lineCode: string, type: 'st' | 'ot') => {
+    // Create unique key for this operation to prevent duplicate taps
+    const operationKey = `${workDate}-${lineCode}-${type}-dec`;
     
-    if (type === 'st' && currentST > 0) {
-      await updateEntry(workDate, lineCode, currentST - 1, currentOT);
-    } else if (type === 'ot' && currentOT > 0) {
-      await updateEntry(workDate, lineCode, currentST, currentOT - 1);
+    // If already processing this operation, ignore
+    if (processingRef.current.has(operationKey)) {
+      return;
     }
-  };
+    
+    // Mark as processing
+    processingRef.current.add(operationKey);
+    
+    try {
+      const currentST = getEntryHours(workDate, lineCode, 'st');
+      const currentOT = getEntryHours(workDate, lineCode, 'ot');
+      
+      if (type === 'st' && currentST > 0) {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        await updateEntry(workDate, lineCode, currentST - 1, currentOT);
+      } else if (type === 'ot' && currentOT > 0) {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        await updateEntry(workDate, lineCode, currentST, currentOT - 1);
+      }
+    } finally {
+      // Always remove from processing set after a short delay
+      setTimeout(() => {
+        processingRef.current.delete(operationKey);
+      }, 300);
+    }
+  }, [getEntryHours, updateEntry]);
 
   if (loading && !weekInfo) {
     return (
