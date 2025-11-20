@@ -372,19 +372,30 @@ export default function TimesheetScreen() {
                         {/* ST Section */}
                         <View style={styles.hoursSection}>
                           <Pressable 
-                            style={[styles.controlButton, styles.minusButton]}
+                            style={({ pressed }) => [
+                              styles.controlButton, 
+                              styles.minusButton,
+                              pressed && styles.buttonPressed,
+                              stHours === 0 && styles.buttonDisabled
+                            ]}
                             onPress={() => handleDecrement(day, line.line_code, 'st')}
                             disabled={stHours === 0}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                           >
-                            <Text style={styles.controlButtonText}>-</Text>
+                            <Text style={[styles.controlButtonText, stHours === 0 && styles.buttonTextDisabled]}>-</Text>
                           </Pressable>
                           <View style={styles.valueContainer}>
                             <Text style={styles.valueText}>{stHours}</Text>
                             <Text style={styles.typeLabel}>ST</Text>
                           </View>
                           <Pressable 
-                            style={[styles.controlButton, styles.plusButton]}
+                            style={({ pressed }) => [
+                              styles.controlButton, 
+                              styles.plusButton,
+                              pressed && styles.buttonPressed
+                            ]}
                             onPress={() => handleIncrement(day, line.line_code, 'st')}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                           >
                             <Text style={styles.controlButtonText}>+</Text>
                           </Pressable>
@@ -394,19 +405,30 @@ export default function TimesheetScreen() {
                         {!isPTOOrHoliday && (
                           <View style={[styles.hoursSection, { marginTop: 8 }]}>
                             <Pressable 
-                              style={[styles.controlButton, styles.minusButton]}
+                              style={({ pressed }) => [
+                                styles.controlButton, 
+                                styles.minusButton,
+                                pressed && styles.buttonPressed,
+                                otHours === 0 && styles.buttonDisabled
+                              ]}
                               onPress={() => handleDecrement(day, line.line_code, 'ot')}
                               disabled={otHours === 0}
+                              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                             >
-                              <Text style={styles.controlButtonText}>-</Text>
+                              <Text style={[styles.controlButtonText, otHours === 0 && styles.buttonTextDisabled]}>-</Text>
                             </Pressable>
                             <View style={styles.valueContainer}>
                               <Text style={[styles.valueText, { color: '#dc2626' }]}>{otHours}</Text>
                               <Text style={styles.typeLabel}>OT</Text>
                             </View>
                             <Pressable 
-                              style={[styles.controlButton, styles.plusButton]}
+                              style={({ pressed }) => [
+                                styles.controlButton, 
+                                styles.plusButton,
+                                pressed && styles.buttonPressed
+                              ]}
                               onPress={() => handleIncrement(day, line.line_code, 'ot')}
+                              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                             >
                               <Text style={styles.controlButtonText}>+</Text>
                             </Pressable>
