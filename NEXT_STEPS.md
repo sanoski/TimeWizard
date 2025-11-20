@@ -1,17 +1,33 @@
 # VRS Time Wizard - Next Steps & Future Roadmap
 
-## ✅ Current Status: Production Ready (Offline-First)
+## ⚠️ CRITICAL: Database Preservation Notice
 
-The app has been successfully refactored to an offline-first architecture. All core functionality is complete and tested on physical devices.
+**USER HAS V1.1.0 IN PRODUCTION WITH REAL DATA**
+
+When implementing v1.2.0 (On-Call Schedule feature):
+- **DO NOT drop or reset existing tables**
+- **DO NOT wipe user's production data**
+- Use proper database migration strategy (see SESSION_NOTES_NOV19_2025.md)
+- Test upgrade path: v1.1.0 → v1.2.0 thoroughly
+- Preserve: time_entries, line_codes, work_notes, settings
+
+**See `/app/SESSION_NOTES_NOV19_2025.md` for complete details**
+
+---
+
+## ✅ Current Status: v1.1.0 in Production (Offline-First + Notes)
+
+The app has been successfully refactored to an offline-first architecture with notes feature added. All core functionality is complete and tested on physical devices. **User is actively using this version.**
 
 ### Completed Phases
 - ✅ **Phase 1**: Local SQLite database setup
 - ✅ **Phase 2**: Business logic migration from backend to frontend
 - ✅ **Phase 3**: One-time data migration system
 - ✅ **Phase 4**: Export/import backup functionality
-- ✅ **Bug Fixes**: Pay week calculation, grid alignment, data consistency
+- ✅ **Phase 5**: Notes feature (v1.1.0) - Weekly notes with tabs
+- ✅ **Bug Fixes**: Pay week calculation, grid alignment, data consistency, timezone bugs
 
-### What Works Now
+### What Works Now (v1.1.0)
 - 100% offline functionality
 - Local data storage with expo-sqlite
 - Week navigation and hour entry
@@ -19,6 +35,9 @@ The app has been successfully refactored to an offline-first architecture. All c
 - History with auto-refresh
 - Backup/restore via JSON files
 - Debug information screen
+- **Weekly notes with day tabs**
+- **Context-aware notes per line/day**
+- **Notes in weekly summary**
 
 ## 🚀 Future Enhancements
 
