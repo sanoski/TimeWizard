@@ -389,9 +389,9 @@ export default function TimesheetScreen() {
         </View>
       </View>
 
-      {/* Daily Notes Section */}
+      {/* Floating Notes Button */}
       {selectedDateForNotes && (
-        <DailyNotesSection 
+        <NotesFloatingButton 
           workDate={selectedDateForNotes}
           entries={entries}
         />
