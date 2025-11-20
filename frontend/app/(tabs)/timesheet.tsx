@@ -35,16 +35,30 @@ export default function TimesheetScreen() {
   const processingRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    // Use local date, not UTC
-    const today = format(new Date(), 'yyyy-MM-dd');
-    setSelectedDateForNotes(today); // Initialize notes to today
-    fetchLines();
-    fetchWeekInfo(today).then(() => {
-      if (weekInfo) {
-        fetchEntries(weekInfo.week_ending_date);
-        fetchWeeklySummary(weekInfo.week_ending_date);
+    const initializeApp = async () => {
+      try {
+        // CRITICAL: Initialize database before any operations
+        await db.initialize();
+        console.log('✅ Database initialized in timesheet screen');
+        
+        // Use local date, not UTC
+        const today = format(new Date(), 'yyyy-MM-dd');
+        setSelectedDateForNotes(today); // Initialize notes to today
+        
+        await fetchLines();
+        await fetchWeekInfo(today);
+        
+        if (weekInfo) {
+          await fetchEntries(weekInfo.week_ending_date);
+          await fetchWeeklySummary(weekInfo.week_ending_date);
+        }
+      } catch (error) {
+        console.error('❌ Failed to initialize timesheet:', error);
+        Alert.alert('Initialization Error', 'Failed to initialize database. Please restart the app.');
       }
-    });
+    };
+    
+    initializeApp();
   }, []);
 
   useEffect(() => {
