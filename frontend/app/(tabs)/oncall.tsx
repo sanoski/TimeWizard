@@ -527,19 +527,34 @@ const styles = StyleSheet.create({
     color: '#92400e',
     fontWeight: '600',
   },
-  importButton: {
+  actionButtons: {
     flexDirection: 'row',
-    backgroundColor: '#2563eb',
-    margin: 16,
+    gap: 12,
+    padding: 16,
+  },
+  testDataButton: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#7c3aed',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
   },
-  importButtonText: {
+  importButton: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#2563eb',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  buttonText: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
 });
