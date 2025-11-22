@@ -576,6 +576,152 @@ class DatabaseService {
     
     return result[0].count > 0;
   }
+
+  // ===== ON-CALL USER METHODS =====
+
+  async getAllOnCallUsers(): Promise<any[]> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const results = await this.db.getAllAsync(
+      'SELECT * FROM on_call_users ORDER BY user_name'
+    );
+    
+    return results;
+  }
+
+  async getCurrentUser(): Promise<any | null> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const results = await this.db.getAllAsync(
+      'SELECT * FROM on_call_users WHERE is_current_user = 1 LIMIT 1'
+    );
+    
+    return results.length > 0 ? results[0] : null;
+  }
+
+  async setCurrentUser(userName: string): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    // Clear any existing current user
+    await this.db.runAsync('UPDATE on_call_users SET is_current_user = 0');
+    
+    // Set new current user
+    await this.db.runAsync(
+      'UPDATE on_call_users SET is_current_user = 1 WHERE user_name = ?',
+      [userName]
+    );
+  }
+
+  async addOnCallUser(userName: string, isCurrentUser: boolean = false): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    await this.db.runAsync(
+      'INSERT OR IGNORE INTO on_call_users (user_name, is_current_user) VALUES (?, ?)',
+      [userName, isCurrentUser ? 1 : 0]
+    );
+  }
+
+  async importOnCallUsers(users: string[]): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    for (const userName of users) {
+      await this.addOnCallUser(userName, false);
+    }
+  }
+
+  // ===== ON-CALL SCHEDULE METHODS =====
+
+  async getOnCallSchedule(startDate: string, endDate: string): Promise<any[]> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const results = await this.db.getAllAsync(
+      'SELECT * FROM on_call_schedule WHERE schedule_date >= ? AND schedule_date <= ? ORDER BY schedule_date, shift_type',
+      [startDate, endDate]
+    );
+    
+    return results;
+  }
+
+  async getOnCallForDate(date: string): Promise<any[]> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const results = await this.db.getAllAsync(
+      'SELECT * FROM on_call_schedule WHERE schedule_date = ? ORDER BY shift_type',
+      [date]
+    );
+    
+    return results;
+  }
+
+  async getMyOnCallDays(startDate: string, endDate: string): Promise<any[]> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const currentUser = await this.getCurrentUser();
+    if (!currentUser) {
+      return [];
+    }
+    
+    const results = await this.db.getAllAsync(
+      'SELECT * FROM on_call_schedule WHERE user_name = ? AND schedule_date >= ? AND schedule_date <= ? ORDER BY schedule_date',
+      [currentUser.user_name, startDate, endDate]
+    );
+    
+    return results;
+  }
+
+  async addOnCallSchedule(date: string, userName: string, shiftType: string = 'primary', notes: string = ''): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    await this.db.runAsync(
+      `INSERT INTO on_call_schedule (schedule_date, user_name, shift_type, notes)
+       VALUES (?, ?, ?, ?)
+       ON CONFLICT(schedule_date, user_name, shift_type)
+       DO UPDATE SET notes = ?, updated_at = CURRENT_TIMESTAMP`,
+      [date, userName, shiftType, notes, notes]
+    );
+  }
+
+  async swapOnCallShift(date: string, originalUser: string, newUser: string, shiftType: string = 'primary'): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    // Mark as swapped and record original user
+    await this.db.runAsync(
+      `UPDATE on_call_schedule 
+       SET user_name = ?, is_swapped = 1, original_user_name = ?, updated_at = CURRENT_TIMESTAMP
+       WHERE schedule_date = ? AND user_name = ? AND shift_type = ?`,
+      [newUser, originalUser, date, originalUser, shiftType]
+    );
+  }
+
+  async importOnCallSchedule(scheduleData: Array<{ date: string; user: string; shift_type?: string; notes?: string }>): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    console.log(`📅 Importing ${scheduleData.length} on-call schedule entries...`);
+    
+    for (const entry of scheduleData) {
+      await this.addOnCallSchedule(
+        entry.date,
+        entry.user,
+        entry.shift_type || 'primary',
+        entry.notes || ''
+      );
+    }
+    
+    console.log('✅ On-call schedule imported successfully');
+  }
+
+  async clearOnCallSchedule(startDate?: string, endDate?: string): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    if (startDate && endDate) {
+      await this.db.runAsync(
+        'DELETE FROM on_call_schedule WHERE schedule_date >= ? AND schedule_date <= ?',
+        [startDate, endDate]
+      );
+    } else {
+      await this.db.runAsync('DELETE FROM on_call_schedule');
+    }
+  }
 }
 
 // Export singleton instance
