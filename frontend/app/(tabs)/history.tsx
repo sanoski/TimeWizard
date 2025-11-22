@@ -500,100 +500,69 @@ export default function HistoryScreen() {
               </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.modalScroll}>
+            <ScrollView style={styles.modalScroll} contentContainerStyle={{ padding: 20 }}>
               {!dayDetails ? (
-                <View style={styles.emptySection}>
-                  <ActivityIndicator size="large" color="#2563eb" />
-                  <Text style={styles.emptyText}>Loading...</Text>
-                </View>
-              ) : dayDetails.loading ? (
-                <View style={styles.emptySection}>
-                  <ActivityIndicator size="large" color="#2563eb" />
-                  <Text style={styles.emptyText}>Loading day details...</Text>
-                </View>
+                <Text style={{ fontSize: 16, color: '#000' }}>Loading...</Text>
               ) : (
-                <>
-                  {/* Hours Summary */}
-                  {dayDetails.totalHours > 0 ? (
-                    <View style={styles.modalSection}>
-                      <Text style={styles.modalSectionTitle}>Hours Worked</Text>
-                      <View style={styles.hoursGrid}>
-                        <View style={styles.hoursStat}>
-                          <Text style={styles.hoursStatLabel}>ST</Text>
-                          <Text style={styles.hoursStatValue}>{dayDetails.totalST}h</Text>
-                        </View>
-                        <View style={styles.hoursStat}>
-                          <Text style={[styles.hoursStatLabel, { color: '#dc2626' }]}>OT</Text>
-                          <Text style={[styles.hoursStatValue, { color: '#dc2626' }]}>{dayDetails.totalOT}h</Text>
-                        </View>
-                        <View style={styles.hoursStat}>
-                          <Text style={styles.hoursStatLabel}>Total</Text>
-                          <Text style={[styles.hoursStatValue, { color: '#2563eb' }]}>{dayDetails.totalHours}h</Text>
-                        </View>
-                      </View>
-                    </View>
-                  ) : (
-                    <View style={styles.emptySection}>
-                      <Ionicons name="time-outline" size={48} color="#d1d5db" />
-                      <Text style={styles.emptyText}>No hours logged this day</Text>
-                    </View>
-                  )}
+                <View>
+                  <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 20 }}>
+                    Data for {dayDetails.date}
+                  </Text>
+                  
+                  {/* Simple hours display */}
+                  <View style={{ marginBottom: 20, backgroundColor: '#f0f0f0', padding: 15, borderRadius: 8 }}>
+                    <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 10 }}>Hours:</Text>
+                    <Text style={{ fontSize: 14 }}>ST: {dayDetails.totalST}h</Text>
+                    <Text style={{ fontSize: 14 }}>OT: {dayDetails.totalOT}h</Text>
+                    <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Total: {dayDetails.totalHours}h</Text>
+                  </View>
 
-                  {/* Lines Worked */}
-                  {dayDetails.entries.length > 0 && (
-                    <View style={styles.modalSection}>
-                      <Text style={styles.modalSectionTitle}>Lines Worked</Text>
-                      {dayDetails.entries.map((entry: any, index: number) => (
-                        <View key={index} style={styles.lineRow}>
-                          <Text style={styles.lineCode}>{entry.line_code}</Text>
-                          <View style={styles.lineHours}>
-                            <Text style={styles.lineHoursText}>ST: {entry.st_hours}h</Text>
-                            <Text style={[styles.lineHoursText, { color: '#dc2626' }]}>OT: {entry.ot_hours}h</Text>
-                          </View>
-                        </View>
+                  {/* Lines */}
+                  {dayDetails.entries && dayDetails.entries.length > 0 && (
+                    <View style={{ marginBottom: 20, backgroundColor: '#e3f2fd', padding: 15, borderRadius: 8 }}>
+                      <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 10 }}>
+                        Lines ({dayDetails.entries.length}):
+                      </Text>
+                      {dayDetails.entries.map((entry: any, idx: number) => (
+                        <Text key={idx} style={{ fontSize: 14, marginBottom: 5 }}>
+                          • {entry.line_code}: ST {entry.st_hours}h, OT {entry.ot_hours}h
+                        </Text>
                       ))}
                     </View>
                   )}
 
                   {/* Notes */}
-                  {dayDetails.notes.length > 0 && (
-                    <View style={styles.modalSection}>
-                      <Text style={styles.modalSectionTitle}>Notes</Text>
-                      {dayDetails.notes.map((note: any, index: number) => (
-                        <View key={index} style={styles.noteCard}>
-                          <View style={styles.noteHeader}>
-                            <Ionicons name="document-text" size={16} color="#f59e0b" />
-                            <Text style={styles.noteLineCode}>{note.line_code}</Text>
-                          </View>
-                          <Text style={styles.noteText}>{note.note_text}</Text>
+                  {dayDetails.notes && dayDetails.notes.length > 0 && (
+                    <View style={{ marginBottom: 20, backgroundColor: '#fff3e0', padding: 15, borderRadius: 8 }}>
+                      <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 10 }}>
+                        Notes ({dayDetails.notes.length}):
+                      </Text>
+                      {dayDetails.notes.map((note: any, idx: number) => (
+                        <View key={idx} style={{ marginBottom: 10 }}>
+                          <Text style={{ fontSize: 14, fontWeight: '500' }}>{note.line_code}:</Text>
+                          <Text style={{ fontSize: 14 }}>{note.note_text}</Text>
                         </View>
                       ))}
                     </View>
                   )}
 
-                  {/* On-Call Info */}
-                  {dayDetails.onCallInfo.length > 0 && (
-                    <View style={styles.modalSection}>
-                      <Text style={styles.modalSectionTitle}>On-Call This Weekend</Text>
-                      {dayDetails.onCallInfo.map((person: any, index: number) => {
-                        const isYou = person.user_name === dayDetails.currentUser?.user_name;
-                        return (
-                          <View key={index} style={[styles.onCallCard, isYou && styles.onCallCardYou]}>
-                            <Ionicons name="person" size={16} color={isYou ? '#10b981' : '#6b7280'} />
-                            <Text style={[styles.onCallName, isYou && styles.onCallNameYou]}>
-                              {person.user_name} {isYou && '(You)'}
-                            </Text>
-                            {person.is_swapped === 1 && (
-                              <View style={styles.swappedBadge}>
-                                <Text style={styles.swappedText}>Swapped</Text>
-                              </View>
-                            )}
-                          </View>
-                        );
-                      })}
+                  {/* On-Call */}
+                  {dayDetails.onCallInfo && dayDetails.onCallInfo.length > 0 && (
+                    <View style={{ marginBottom: 20, backgroundColor: '#e8f5e9', padding: 15, borderRadius: 8 }}>
+                      <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 10 }}>On-Call:</Text>
+                      {dayDetails.onCallInfo.map((person: any, idx: number) => (
+                        <Text key={idx} style={{ fontSize: 14 }}>• {person.user_name}</Text>
+                      ))}
                     </View>
                   )}
-                </>
+
+                  {/* Debug info */}
+                  <View style={{ marginTop: 20, padding: 10, backgroundColor: '#fff9c4', borderRadius: 8 }}>
+                    <Text style={{ fontSize: 12, fontFamily: 'monospace' }}>
+                      Debug: {dayDetails.entries?.length || 0} entries, {dayDetails.notes?.length || 0} notes
+                    </Text>
+                  </View>
+                </View>
               )}
             </ScrollView>
           </View>
