@@ -669,40 +669,41 @@ class DatabaseService {
     return results;
   }
 
-  async addOnCallSchedule(date: string, userName: string, shiftType: string = 'primary', notes: string = ''): Promise<void> {
+  async addOnCallSchedule(startDate: string, endDate: string, userName: string, location: string, notes: string = ''): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
     
     await this.db.runAsync(
-      `INSERT INTO on_call_schedule (schedule_date, user_name, shift_type, notes)
-       VALUES (?, ?, ?, ?)
-       ON CONFLICT(schedule_date, user_name, shift_type)
+      `INSERT INTO on_call_schedule (start_date, end_date, user_name, location, notes)
+       VALUES (?, ?, ?, ?, ?)
+       ON CONFLICT(start_date, end_date, user_name, location)
        DO UPDATE SET notes = ?, updated_at = CURRENT_TIMESTAMP`,
-      [date, userName, shiftType, notes, notes]
+      [startDate, endDate, userName, location, notes, notes]
     );
   }
 
-  async swapOnCallShift(date: string, originalUser: string, newUser: string, shiftType: string = 'primary'): Promise<void> {
+  async swapOnCallShift(startDate: string, endDate: string, location: string, originalUser: string, newUser: string): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
     
     // Mark as swapped and record original user
     await this.db.runAsync(
       `UPDATE on_call_schedule 
        SET user_name = ?, is_swapped = 1, original_user_name = ?, updated_at = CURRENT_TIMESTAMP
-       WHERE schedule_date = ? AND user_name = ? AND shift_type = ?`,
-      [newUser, originalUser, date, originalUser, shiftType]
+       WHERE start_date = ? AND end_date = ? AND location = ? AND user_name = ?`,
+      [newUser, originalUser, startDate, endDate, location, originalUser]
     );
   }
 
-  async importOnCallSchedule(scheduleData: Array<{ date: string; user: string; shift_type?: string; notes?: string }>): Promise<void> {
+  async importOnCallSchedule(scheduleData: Array<{ start_date: string; end_date: string; user: string; location: string; notes?: string }>): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
     
     console.log(`📅 Importing ${scheduleData.length} on-call schedule entries...`);
     
     for (const entry of scheduleData) {
       await this.addOnCallSchedule(
-        entry.date,
+        entry.start_date,
+        entry.end_date,
         entry.user,
-        entry.shift_type || 'primary',
+        entry.location,
         entry.notes || ''
       );
     }
