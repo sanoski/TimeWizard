@@ -71,6 +71,60 @@ export default function OnCallScreen() {
     }
   };
 
+  const handleLoadTestData = async () => {
+    try {
+      // Test data matching the provided schedule
+      const testSchedule = [
+        { start_date: '2025-12-06', end_date: '2025-12-07', user: 'Mark Ellison', notes: '' },
+        { start_date: '2025-12-06', end_date: '2025-12-07', user: 'Amy Crawford', notes: '' },
+        { start_date: '2025-12-13', end_date: '2025-12-14', user: 'David Harper', notes: '' },
+        { start_date: '2025-12-13', end_date: '2025-12-14', user: 'Laura McIntyre', notes: '' },
+        { start_date: '2025-12-20', end_date: '2025-12-21', user: 'Brandon Keller', notes: '' },
+        { start_date: '2025-12-20', end_date: '2025-12-21', user: 'Kate Durham', notes: '' },
+        { start_date: '2025-12-27', end_date: '2025-12-28', user: 'Jose Ramirez', notes: '' },
+        { start_date: '2025-12-27', end_date: '2025-12-28', user: 'Sophie Lambert', notes: '' },
+        { start_date: '2026-01-03', end_date: '2026-01-04', user: 'Cole Matthews', notes: '' },
+        { start_date: '2026-01-03', end_date: '2026-01-04', user: 'Emily Rhodes', notes: '' },
+        { start_date: '2026-01-10', end_date: '2026-01-11', user: 'Troy Lindgren', notes: '' },
+        { start_date: '2026-01-10', end_date: '2026-01-11', user: 'Michelle Barrett', notes: '' },
+        { start_date: '2026-01-17', end_date: '2026-01-18', user: 'Henry Ross', notes: '' },
+        { start_date: '2026-01-17', end_date: '2026-01-18', user: 'Brianna Shaw', notes: '' },
+        { start_date: '2026-01-24', end_date: '2026-01-25', user: 'Evan Morrison', notes: '' },
+        { start_date: '2026-01-24', end_date: '2026-01-25', user: 'Chloe Bennett', notes: '' },
+        { start_date: '2026-01-31', end_date: '2026-02-01', user: 'Roger Flynn', notes: '' },
+        { start_date: '2026-01-31', end_date: '2026-02-01', user: 'Isabella Cortez', notes: '' },
+        { start_date: '2026-02-07', end_date: '2026-02-08', user: 'Connor Blake', notes: '' },
+        { start_date: '2026-02-07', end_date: '2026-02-08', user: 'Megan Holloway', notes: '' },
+        { start_date: '2026-02-14', end_date: '2026-02-15', user: 'Shawn Turner', notes: '' },
+        { start_date: '2026-02-14', end_date: '2026-02-15', user: 'Rachel Kim', notes: '' },
+        { start_date: '2026-02-21', end_date: '2026-02-22', user: 'Adam Foster', notes: '' },
+        { start_date: '2026-02-21', end_date: '2026-02-22', user: 'Jasmine Patel', notes: '' },
+        { start_date: '2026-02-28', end_date: '2026-03-01', user: 'Caleb Johnson', notes: '' },
+        { start_date: '2026-02-28', end_date: '2026-03-01', user: 'Kendra Lee', notes: '' },
+      ];
+
+      // Import the schedule
+      await db.importOnCallSchedule(testSchedule);
+
+      // Extract unique users and add them
+      const uniqueUsers = [...new Set(testSchedule.map(s => s.user))];
+      for (const user of uniqueUsers) {
+        await db.addOnCallUser(user, false);
+      }
+
+      // Reload schedule
+      await loadSchedule();
+
+      Alert.alert(
+        'Test Data Loaded!',
+        `Loaded ${testSchedule.length} schedule entries with ${uniqueUsers.length} users.\n\nCoverage: Dec 2025 - Mar 2026`
+      );
+    } catch (error) {
+      console.error('Error loading test data:', error);
+      Alert.alert('Error', 'Failed to load test data');
+    }
+  };
+
   const getWeekendsInMonth = () => {
     const start = startOfMonth(currentMonth);
     const end = endOfMonth(currentMonth);
