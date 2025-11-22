@@ -5,7 +5,6 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { db } from './databaseWrapper';
-import * as Notifications from 'expo-notifications';
 
 const LAST_SYNC_KEY = 'last_oncall_sync';
 const AUTO_SYNC_ENABLED_KEY = 'auto_sync_enabled';
