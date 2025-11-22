@@ -537,6 +537,11 @@ export default function HistoryScreen() {
         </ScrollView>
       )}
 
+      {/* Reports View */}
+      {viewMode === 'reports' && (
+        <ReportsView currentUser={currentUser} />
+      )}
+
       {/* Day Details Modal */}
       <Modal
         visible={showDetailModal}
