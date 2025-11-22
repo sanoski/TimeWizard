@@ -33,6 +33,7 @@ export default function HistoryScreen() {
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
     fetchWeekInfo(today);
+    loadCurrentUser();
   }, []);
 
   // Refresh data when screen comes into focus
