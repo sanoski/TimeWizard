@@ -351,19 +351,9 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Ionicons name="sync" size={20} color="#374151" />
-            <Text style={styles.sectionTitle}>On-Call Schedule Sync</Text>
+            <Text style={styles.sectionTitle}>On-Call Schedule</Text>
           </View>
           <View style={styles.card}>
-            <Text style={styles.inputLabel}>Google Sheets CSV URL</Text>
-            <TextInput
-              style={styles.urlInput}
-              placeholder="https://docs.google.com/spreadsheets/.../export?format=csv"
-              value={scheduleUrl}
-              onChangeText={setScheduleUrl}
-              autoCapitalize="none"
-              autoCorrect={false}
-              multiline
-            />
             <Pressable 
               style={[styles.syncButton, (!scheduleUrl.trim() || syncing) && styles.syncButtonDisabled]}
               onPress={handleSyncSchedule}
@@ -375,12 +365,17 @@ export default function SettingsScreen() {
                 <Ionicons name="sync" size={20} color="#ffffff" />
               )}
               <Text style={styles.syncButtonText}>
-                {syncing ? 'Syncing...' : 'Sync Now'}
+                {syncing ? 'Syncing...' : 'Sync Schedule'}
               </Text>
             </Pressable>
             {lastSyncTime && (
               <Text style={styles.lastSyncText}>
                 Last synced: {new Date(lastSyncTime).toLocaleString()}
+              </Text>
+            )}
+            {!scheduleUrl.trim() && (
+              <Text style={styles.noUrlText}>
+                No schedule URL configured. Contact your administrator.
               </Text>
             )}
           </View>
