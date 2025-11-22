@@ -594,4 +594,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
+  devSection: {
+    backgroundColor: '#fff5f5',
+    borderWidth: 2,
+    borderColor: '#dc2626',
+    borderRadius: 12,
+    padding: 16,
+    margin: 16,
+  },
+  devHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  devTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#dc2626',
+  },
+  devHint: {
+    fontSize: 12,
+    color: '#991b1b',
+    marginTop: 8,
+    fontStyle: 'italic',
+  },
 });
