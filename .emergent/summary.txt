@@ -1,97 +1,84 @@
 <analysis>
-The trajectory documents the iterative development and significant architectural refactoring of the VRS Time Wizard mobile app. Initially built with a flawed client-server architecture (Expo frontend, FastAPI backend with SQLite), the primary focus shifted to converting it into a true offline-first application as per the core product requirement. This involved a multi-phase refactor to integrate  on the frontend, migrate the database schema and data, and replace all backend API calls in the  store with local database operations.
+The trajectory details an extensive development session on the VRS Time Wizard mobile app. The work began by fixing a critical bug where timesheet hour-adjustment buttons were unresponsive. The initial fixes involved performance optimizations (haptics, debouncing), but the root cause, diagnosed by the , was a missing database initialization call (). This was resolved by adding the initialization to the app's root layout.
 
-Throughout the process, the AI engineer addressed numerous user-reported bugs and feature requests. Key challenges included:
-1.  **UI/UX Fixes:** Correcting a persistent vertical grid misalignment in the timesheet by enforcing strict row heights.
-2.  **New Features:** Implementing a Paper Timesheet Helper section on the weekly summary screen for easier manual data entry.
-3.  **Logic Bugs:** Fixing a bug where the View Previous Week button's logic was based on the currently viewed week instead of the actual current date.
-4.  **Complex Debugging:** Solving a series of critical issues related to the offline migration, including  web compatibility errors (solved with  files), native Android migration failures (solved by fixing the DB service and clearing cache), and an infinite loading loop (solved by restructuring the app's initialization logic). A major, recurring problem was a timezone/DST bug in the pay week calculation, which required multiple attempts to fix by enforcing UTC date handling.
+Following the bug fix, the focus shifted to a major new feature: the On-Call Schedule. This was a highly iterative process, guided by continuous user feedback. The database schema was designed and refined multiple times to handle weekend date ranges and remove unnecessary fields like  and, temporarily, . A critical architectural decision was made to use a published Google Sheet as a public CSV for a master schedule, enabling an offline-first sync mechanism without a dedicated backend.
 
-The work concluded with a final major bug fix—making the  screen use the local database instead of the old backend API, which resolved a data discrepancy. The final user request was for extensive documentation for a handoff, which the AI completed by creating several markdown files. The user's language is English.
+The implementation included creating a new On-Call tab, a test data loader, and a settings page to manage the Google Sheets sync URL. The sync logic itself was debugged and refined to correctly replace, rather than append, the schedule. A hidden developer menu was created to protect the sync URL from regular users.
+
+The final major piece of work was implementing a unified calendar view in the History tab, which involved installing , creating a toggle between list and calendar views, and debugging a significant rendering issue where modal content was not visible on native devices due to a missing  style. The session concluded with the creation of comprehensive documentation for handoff.
+
+The user's primary language is English. The next agent should respond in English.
 </analysis>
 
 <product_requirements>
-The goal is to build VRS Time Wizard, a mobile-first, offline-capable timesheet application for railroad maintenance workers to replace a paper-based system.
+The VRS Time Wizard is an offline-first mobile timesheet application for railroad workers, built with Expo. It allows users to log hours locally on their device using an SQLite database.
 
-**Core Features:**
-1.  **Offline-First:** All data must be stored locally on the device using SQLite.
-2.  **Timesheet Grid:** A weekly (Sunday-Saturday) grid for logging Straight Time (ST) and Overtime (OT) hours against specific line codes (e.g., VTR, PTO, PROJECT).
-3.  **Business Logic:** ST is capped at 8 hours/day and 40 hours/week. PTO/HOLIDAY lines are ST-only. Users can add/hide project lines.
-4.  **Pay Week Calculation:** A bi-weekly pay cycle is determined based on a configurable base date (Nov 29, 2025). The UI must indicate which weeks are pay weeks.
-5.  **Dashboard:** An overview of current week totals and a button to view the previous week's summary.
-6.  **Reporting:**
-    *   **Weekly Summary:** A screen summarizing hours for manual entry.
-    *   **Paper Timesheet Helper:** A new section on the summary screen formatted to mirror the paper timesheet, displaying a grid of ST/OT hours per line, per day, with totals to make manual copying easy.
-7.  **Data Management:** Functionality to export the local database to a file for backup and import from that file to restore data.
+**Core functionality:**
+- Weekly timesheet grid for logging hours.
+- Business logic for pay periods and hour caps.
+- Work Notes feature for adding daily notes.
+
+**Newly Implemented Features:**
+- **On-Call Schedule:** A new feature to view weekend on-call duties.
+    - The master schedule is managed via a Google Sheet, which is published as a CSV and synced to the app.
+    - Sync settings are managed in a hidden developer menu.
+- **Unified Calendar View:** Embedded within the History tab, this calendar displays a consolidated view of all user data:
+    - Logged hours and line codes.
+    - Personal work notes.
+    - On-call assignments.
+    - A modal view provides detailed information for any selected day.
+
+**Critical Constraint:** The application is in production. All database schema changes **must** be done through a non-destructive migration system that preserves all existing user data.
 </product_requirements>
 
 <key_technical_concepts>
-- **Frontend Framework:** Expo (React Native)
-- **Local Database:**  for offline-first data storage. This was the central piece of a major architectural refactor.
-- **State Management:** , refactored to interact with the local SQLite database instead of backend APIs.
-- **Navigation:**  for file-based routing with a top-tab layout.
-- **Backend Framework:** FastAPI (Python), which was originally central but is now kept only for potential future cloud-sync features.
-- **Date/Time:**  and careful UTC-based calculations to handle timezone and Daylight Saving Time (DST) bugs.
+- **Framework:** Expo (React Native)
+- **Database:**  with a custom, versioned migration system ().
+- **Architecture:** Offline-first, client-side logic.
+- **Data Sync:** A novel approach using a published Google Sheet as a public CSV endpoint for the master on-call schedule.
+- **UI Components:**  for the unified history view.
+- **State Management:** Zustand for global state.
+- **Configuration:** A hidden developer menu (activated by tapping the app version) to manage sensitive settings like the sync URL.
 </key_technical_concepts>
 
 <code_architecture>
-The application was refactored from a client-server model to an offline-first architecture. The frontend Expo app now contains all business and data logic, while the backend is dormant.
+The application's logic is contained within the  directory, following an offline-first model.
 
 **Directory Structure:**
 
 
-- ****
-  - **Importance:** The heart of the offline application. It handles all SQLite database interactions: schema creation, CRUD operations for time entries, and business logic calculations like .
-  - **Changes:** Created from scratch. The  function was heavily debugged and refactored multiple times to fix a critical timezone/DST bug, finally settling on a UTC-based approach. The schema creation was changed from  to  to fix Android-specific migration failures.
+- ** & **
+  - **Importance:** These files form the new data persistence layer for the on-call feature.  was modified to run migrations on startup and includes new methods for clearing and adding on-call schedule data.  is a new, critical file that defines the non-destructive process for adding the  and  tables, ensuring existing user data is preserved.
+  - **Changes:**  had its  method updated to call . New methods like  and  were added. The  file was created from scratch to handle the schema upgrade to version 2.
 
 - ****
-  - **Importance:** The central state management for the app.
-  - **Changes:** Completely refactored. All  calls to the backend API were replaced with calls to the local  service, completing the offline transition.
+  - **Importance:** This is the main screen for viewing historical data. It now provides a much richer user experience.
+  - **Changes:** The file was completely rebuilt to feature a toggle between the original list view and a new calendar view (using ). It fetches and marks dates with hours, notes, and on-call duties. A modal was implemented to show detailed data for a selected day. This file underwent significant debugging to fix a critical rendering issue with the modal on native devices.
 
 - ****
-  - **Importance:** Displays a detailed report for a given week.
-  - **Changes:** A Paper Timesheet Helper section was added per user request. Critically, this file was one of the last to be refactored; its data fetching was switched from a direct backend API call to use the local database via  and the  service, fixing a major data discrepancy bug.
+  - **Importance:** This screen now contains the user-facing controls for the new sync feature and the hidden entry point for admin configuration.
+  - **Changes:** A new On-Call Schedule section was added with a Sync Schedule button and a Last Synced timestamp. The About section was modified with a tap handler on the version number, which reveals a hidden developer menu for setting the Google Sheets sync URL.
 
 - ****
-  - **Importance:** Shows a list of past weekly summaries.
-  - **Changes:** Data fetching was moved from a backend API to the local database.  was added to ensure the data refreshes when the user navigates to the tab. The week label display was fixed to correctly handle timezones.
-
-- ****
-  - **Importance:** The main user interface for entering hours.
-  - **Changes:** A persistent vertical alignment bug in the grid was fixed by adding  and  styles, enforcing explicit heights ( for regular,  for PTO/Holiday) to synchronize the fixed line-name column with the scrollable data grid.
-
-- ****
-  - **Importance:** Screen for user settings and app management.
-  - **Changes:** An Import Backup feature was added to complement the existing export function. The UI and alert dialogs were updated for clarity. The export function was fixed to use the correct FileSystem API for the Expo SDK version. A link to the new  screen was also added.
-
-- **, , **
-  - **Importance:** These files manage the app's root navigation and initialization.
-  - **Changes:** The initialization and data migration logic was moved from  to  (the Dashboard) to resolve an infinite loading loop/white screen crash on app start.
-
-- ****
-  - **Importance:** A critical workaround for development.
-  - **Summary:** This file provides a mock, non-functional database interface. It allows the app to load in a web browser preview without crashing, as 's WebAssembly (WASM) dependencies cause errors in that environment.
+  - **Importance:** The primary screen for the on-call feature.
+  - **Changes:** Created from scratch, it currently displays the user's upcoming shifts and includes a Load Test Data button to populate the schedule for development purposes.
 </code_architecture>
 
 <pending_tasks>
-The primary development work requested by the user has been completed. The final tasks were related to documentation for a handoff. Future work, as documented in , includes:
-- **Phase 4: Testing & Polish:** Building a production APK/IPA for full offline testing.
-- **Future Enhancements:** PDF generation of timesheets, cloud sync, and an admin portal.
+- **Implement Shift Swap Feature:** Allow users to record when they swap on-call weekends with co-workers.
+- **Implement Auto-Sync:** Add a background process to automatically check for and apply schedule updates from the Google Sheet.
+- **Enhance On-Call Tab:** Add more detail to the on-call weekend view, such as the ability to add personal notes to a shift.
+- **Polish & Final Testing:** Thoroughly test all features, fix bugs, and optimize performance before building the final production APK.
 </pending_tasks>
 
 <current_work>
-The most recent work was to comprehensively document the entire project for a handoff. This was explicitly requested by the user after all major features and bug fixes were completed. The AI engineer created and/or updated several markdown and text files in the root directory to ensure context would not be lost.
+The most recent work focused on finalizing the Google Sheets sync functionality and structuring the app for production use. The sync logic was debugged to ensure that fetching the master schedule from the Google Sheet correctly replaces the entire local schedule, rather than appending to it. This reflects the design decision that the Google Sheet is the single source of truth.
 
-The files created or updated are:
--   ****: A general overview of the project, its purpose, and key features.
--   ****: A detailed summary of the development trajectory, architectural decisions, and challenges overcome.
--   ****: Outlines potential future phases, including production builds, testing, and feature enhancements like PDF generation.
--   ****: A detailed guide for the next developer/AI on how to set up the environment and build the Android APK from the source code.
--   ****: A concise, direct message intended to be given to the next AI to instruct it on the build task.
+Following this, a significant UI/UX improvement was implemented on the  screen. The input field for the Google Sheets URL, which is a sensitive administrative setting, was moved into a hidden Developer Menu. This menu is now only accessible by tapping the app version number in the About section five times. The main settings screen now only shows a simple Sync Schedule button for regular users, preventing accidental changes to the master sync URL.
 
-This documentation phase immediately followed the resolution of the final critical bug: the Weekly Summary screen was discovered to be pulling data from the old backend instead of the local database, causing data inconsistencies. This was fixed by refactoring  to use local data sources, making the app fully and consistently offline.
+The final action taken was to create comprehensive documentation for the work session, including , an updated , and a  guide to ensure a smooth handoff.
 </current_work>
 
 <optional_next_step>
-Follow the instructions in  and  to set up the build environment and generate the Android APK file as requested by the user for the handoff.
+Based on the list of remaining features, the next logical step is to begin implementing the **Shift Swap Feature** as it is a core piece of functionality for the on-call schedule.
 </optional_next_step>
