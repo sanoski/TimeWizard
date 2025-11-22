@@ -168,6 +168,7 @@ export default function HistoryScreen() {
       });
       
       console.log('📊 Final marked dates:', Object.keys(marked).length, 'dates marked');
+      console.log('📊 Sample marked dates:', JSON.stringify(Object.entries(marked).slice(0, 5), null, 2));
       
       setMarkedDates(marked);
     } catch (error) {
