@@ -74,7 +74,7 @@ export default function SettingsScreen() {
       console.log('📥 Syncing schedule from:', urlToSync);
       
       // Download CSV from URL
-      const response = await fetch(scheduleUrl.trim());
+      const response = await fetch(urlToSync);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
