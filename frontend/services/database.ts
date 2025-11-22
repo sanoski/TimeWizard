@@ -682,31 +682,31 @@ class DatabaseService {
     return results;
   }
 
-  async addOnCallSchedule(startDate: string, endDate: string, userName: string, location: string, notes: string = ''): Promise<void> {
+  async addOnCallSchedule(startDate: string, endDate: string, userName: string, notes: string = ''): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
     
     await this.db.runAsync(
-      `INSERT INTO on_call_schedule (start_date, end_date, user_name, location, notes)
-       VALUES (?, ?, ?, ?, ?)
-       ON CONFLICT(start_date, end_date, user_name, location)
+      `INSERT INTO on_call_schedule (start_date, end_date, user_name, notes)
+       VALUES (?, ?, ?, ?)
+       ON CONFLICT(start_date, end_date, user_name)
        DO UPDATE SET notes = ?, updated_at = CURRENT_TIMESTAMP`,
-      [startDate, endDate, userName, location, notes, notes]
+      [startDate, endDate, userName, notes, notes]
     );
   }
 
-  async swapOnCallShift(startDate: string, endDate: string, location: string, originalUser: string, newUser: string): Promise<void> {
+  async swapOnCallShift(startDate: string, endDate: string, originalUser: string, newUser: string): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
     
     // Mark as swapped and record original user
     await this.db.runAsync(
       `UPDATE on_call_schedule 
        SET user_name = ?, is_swapped = 1, original_user_name = ?, updated_at = CURRENT_TIMESTAMP
-       WHERE start_date = ? AND end_date = ? AND location = ? AND user_name = ?`,
-      [newUser, originalUser, startDate, endDate, location, originalUser]
+       WHERE start_date = ? AND end_date = ? AND user_name = ?`,
+      [newUser, originalUser, startDate, endDate, originalUser]
     );
   }
 
-  async importOnCallSchedule(scheduleData: Array<{ start_date: string; end_date: string; user: string; location: string; notes?: string }>): Promise<void> {
+  async importOnCallSchedule(scheduleData: Array<{ start_date: string; end_date: string; user: string; notes?: string }>): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
     
     console.log(`📅 Importing ${scheduleData.length} on-call schedule entries...`);
@@ -716,7 +716,6 @@ class DatabaseService {
         entry.start_date,
         entry.end_date,
         entry.user,
-        entry.location,
         entry.notes || ''
       );
     }
