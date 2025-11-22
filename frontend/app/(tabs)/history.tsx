@@ -325,6 +325,13 @@ export default function HistoryScreen() {
           <Ionicons name="calendar" size={20} color={viewMode === 'calendar' ? '#ffffff' : '#6b7280'} />
           <Text style={[styles.toggleText, viewMode === 'calendar' && styles.toggleTextActive]}>Calendar</Text>
         </Pressable>
+        <Pressable
+          style={[styles.toggleButton, viewMode === 'reports' && styles.toggleButtonActive]}
+          onPress={() => setViewMode('reports')}
+        >
+          <Ionicons name="bar-chart" size={20} color={viewMode === 'reports' ? '#ffffff' : '#6b7280'} />
+          <Text style={[styles.toggleText, viewMode === 'reports' && styles.toggleTextActive]}>Reports</Text>
+        </Pressable>
       </View>
 
       {/* List View */}
