@@ -437,13 +437,90 @@ export default function SettingsScreen() {
                 <Ionicons name="train" size={40} color="#2563eb" />
               </View>
               <Text style={styles.appName}>VRS Time Wizard</Text>
-              <Text style={styles.appVersion}>Version 1.0.0</Text>
+              <Pressable
+                onPress={() => {
+                  const newTaps = versionTaps + 1;
+                  setVersionTaps(newTaps);
+                  if (newTaps >= 5) {
+                    setShowDevMenu(true);
+                    setVersionTaps(0);
+                    Alert.alert('Developer Menu', 'Developer menu unlocked!');
+                  }
+                }}
+              >
+                <Text style={styles.appVersion}>Version 1.0.0</Text>
+              </Pressable>
               <Text style={styles.appDescription}>
                 Railroad timesheet tracking for MOW crews
               </Text>
             </View>
           </View>
         </View>
+        
+        {/* Developer Menu */}
+        {showDevMenu && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="code" size={20} color="#dc2626" />
+              <Text style={[styles.sectionTitle, { color: '#dc2626' }]}>Developer Menu</Text>
+            </View>
+            <View style={[styles.card, { borderColor: '#dc2626', borderWidth: 2 }]}>
+              <Text style={styles.inputLabel}>Master Schedule URL</Text>
+              <TextInput
+                style={styles.urlInput}
+                placeholder="https://docs.google.com/spreadsheets/.../export?format=csv"
+                value={scheduleUrl}
+                onChangeText={setScheduleUrl}
+                autoCapitalize="none"
+                autoCorrect={false}
+                multiline
+              />
+              <Pressable
+                style={[styles.actionButton, { backgroundColor: '#dc2626' }]}
+                onPress={async () => {
+                  if (scheduleUrl.trim()) {
+                    await AsyncStorage.setItem('oncall_schedule_url', scheduleUrl.trim());
+                    Alert.alert('Saved', 'Master schedule URL saved successfully');
+                  }
+                }}
+              >
+                <Ionicons name="save" size={20} color="#ffffff" />
+                <Text style={styles.actionButtonText}>Save URL</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.actionButton, { backgroundColor: '#f59e0b', marginTop: 12 }]}
+                onPress={async () => {
+                  Alert.alert(
+                    'Clear All On-Call Data?',
+                    'This will delete all on-call schedule data. Are you sure?',
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      {
+                        text: 'Clear',
+                        style: 'destructive',
+                        onPress: async () => {
+                          await db.initialize();
+                          await db.clearOnCallSchedule();
+                          Alert.alert('Cleared', 'All on-call data has been cleared');
+                        }
+                      }
+                    ]
+                  );
+                }}
+              >
+                <Ionicons name="trash" size={20} color="#ffffff" />
+                <Text style={styles.actionButtonText}>Clear On-Call Data</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.actionButton, { backgroundColor: '#6b7280', marginTop: 12 }]}
+                onPress={() => setShowDevMenu(false)}
+              >
+                <Ionicons name="close" size={20} color="#ffffff" />
+                <Text style={styles.actionButtonText}>Close Developer Menu</Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
 
         {/* Debug Button */}
         <View style={styles.section}>
