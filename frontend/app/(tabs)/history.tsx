@@ -26,6 +26,9 @@ export default function HistoryScreen() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [markedDates, setMarkedDates] = useState<any>({});
   const [loadingCalendar, setLoadingCalendar] = useState(false);
+  
+  // Reports state
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
