@@ -232,19 +232,12 @@ async function performSync(): Promise<SyncResult> {
 
 /**
  * Show notification badge if user's shifts changed
+ * Note: Badge notifications disabled in Expo Go. Will work in standalone builds.
  */
 async function notifyUserShiftsChanged(): Promise<void> {
-  try {
-    // Request permissions
-    const { status } = await Notifications.requestPermissionsAsync();
-    
-    if (status === 'granted') {
-      await Notifications.setBadgeCountAsync(1);
-      console.log('📬 Badge notification set for shift change');
-    }
-  } catch (error) {
-    console.error('Error setting notification badge:', error);
-  }
+  // Badge notifications require a standalone build
+  // This is a placeholder for future implementation
+  console.log('📬 User shifts changed (badge notifications disabled in Expo Go)');
 }
 
 /**
