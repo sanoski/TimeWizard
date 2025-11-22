@@ -3,9 +3,9 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Platform, 
 import { Ionicons } from '@expo/vector-icons';
 import { format, subMonths, subDays, startOfYear, startOfMonth, endOfMonth, differenceInDays, eachMonthOfInterval, parseISO } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import * as FileSystem from 'expo-file-system';
+import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 import { db } from '../services/databaseWrapper';
 
 interface ReportsViewProps {
