@@ -806,4 +806,11 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     textAlign: 'center',
   },
+  noUrlText: {
+    marginTop: 12,
+    fontSize: 12,
+    color: '#dc2626',
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
 });
