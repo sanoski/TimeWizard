@@ -124,11 +124,13 @@ export default function OnCallScreen() {
           
           <View style={styles.inputContainer}>
             <Ionicons name="person" size={20} color="#6b7280" style={styles.inputIcon} />
-            <input
+            <TextInput
               style={styles.input}
               placeholder="Enter your full name"
               value={userName}
-              onChange={(e: any) => setUserName(e.target.value)}
+              onChangeText={setUserName}
+              autoCapitalize="words"
+              autoCorrect={false}
             />
           </View>
 
