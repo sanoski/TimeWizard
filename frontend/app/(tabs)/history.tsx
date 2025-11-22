@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator, Modal, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator, Modal, TouchableOpacity, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Calendar, DateData } from 'react-native-calendars';
 import { useTimesheetStore } from '../../store/timesheetStore';
-import { format, parseISO, eachDayOfInterval, isSaturday, isSunday } from 'date-fns';
+import { format, parseISO, eachDayOfInterval, isSaturday, isSunday, startOfMonth, endOfMonth, subMonths, subDays, startOfYear } from 'date-fns';
 import { useFocusEffect } from 'expo-router';
 import { db } from '../../services/databaseWrapper';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
-type ViewMode = 'list' | 'calendar';
+type ViewMode = 'list' | 'calendar' | 'reports';
 
 export default function HistoryScreen() {
   const { weekInfo, fetchWeekInfo, loading } = useTimesheetStore();
