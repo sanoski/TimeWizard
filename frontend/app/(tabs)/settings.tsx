@@ -870,6 +870,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6b7280',
   },
+  urlInfoText: {
+    marginTop: 12,
+    fontSize: 11,
+    color: '#6b7280',
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
   noUrlText: {
     marginTop: 12,
     fontSize: 12,
