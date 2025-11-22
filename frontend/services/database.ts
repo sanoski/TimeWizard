@@ -577,6 +577,12 @@ class DatabaseService {
     return result[0].count > 0;
   }
 
+  // Expose database instance for direct queries (use with caution)
+  get database() {
+    if (!this.db) throw new Error('Database not initialized');
+    return this.db;
+  }
+
   // ===== ON-CALL USER METHODS =====
 
   async getAllOnCallUsers(): Promise<any[]> {
