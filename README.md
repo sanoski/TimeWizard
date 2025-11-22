@@ -315,12 +315,16 @@ MONGO_URL=<not-used-in-v1.2.0>
 │   │   └── _layout.tsx              # Root layout
 │   ├── components/
 │   │   ├── NotesFloatingButton.tsx  # Notes button
-│   │   └── WeeklyNotesModal.tsx     # Notes modal
+│   │   ├── WeeklyNotesModal.tsx     # Notes modal
+│   │   └── ReportsView.tsx          # Reports feature (NEW)
 │   ├── services/
 │   │   ├── database.ts              # SQLite operations
 │   │   ├── database.web.ts          # Mock DB for web
 │   │   ├── databaseWrapper.ts       # Platform selector
-│   │   └── migrations.ts            # Schema migrations (NEW)
+│   │   ├── migrations.ts            # Schema migrations (NEW)
+│   │   └── autoSync.ts              # Auto-sync service (NEW)
+│   ├── constants/
+│   │   └── config.ts                # App configuration (NEW)
 │   ├── store/
 │   │   └── timesheetStore.ts        # Zustand state
 │   ├── app.json                     # Expo config
