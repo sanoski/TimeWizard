@@ -14,6 +14,7 @@ export default function OnCallScreen() {
   const [schedule, setSchedule] = useState<any[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [loading, setLoading] = useState(true);
+  const [showDevFeatures, setShowDevFeatures] = useState(false);
 
   useEffect(() => {
     initializeOnCall();
