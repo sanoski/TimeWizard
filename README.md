@@ -25,11 +25,14 @@ VRS Time Wizard is an offline-first mobile timesheet application designed for ra
 - **User Identification**: Set your name to filter relevant shifts
 - **Zero Configuration**: Works out of the box with pre-configured sync URL
 
-### Unified Calendar
-- **Toggle View**: Switch between list and calendar views in History tab
+### Unified Calendar & Reports (v1.2.0)
+- **Toggle View**: Switch between list, calendar, and reports views in History tab
 - **Multi-Dot Markers**: Shows hours logged, notes, and on-call status
-- **Weekend Highlighting**: Gray for all weekends, green for your on-call shifts
 - **Day Details**: Tap any date to see hours, lines, notes, and on-call info
+- **Reports Feature**: Generate detailed work hour reports with date range selection
+- **PDF Export**: Professional PDF reports (monthly summary or detailed daily)
+- **CSV Export**: Complete data export for spreadsheet analysis
+- **Statistics**: Total hours, ST/OT breakdown, days worked, averages
 
 ### Data Management
 - **100% Offline**: All data stored locally with SQLite
