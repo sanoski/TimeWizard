@@ -136,29 +136,29 @@ export default function HistoryScreen() {
         const isWeekend = isSaturday(day) || isSunday(day);
         
         if (isWeekend) {
+          // Initialize date entry if needed
+          if (!marked[dateStr]) {
+            marked[dateStr] = { dots: [] };
+          }
+          
           // Check if user is on-call this weekend
           const onCall = onCallSchedule.find((s: any) => 
             s.start_date <= dateStr && s.end_date >= dateStr && s.user_name === currentUser?.user_name
           );
           
           if (onCall) {
-            if (!marked[dateStr]) {
-              marked[dateStr] = { dots: [] };
+            // Add green dot for on-call
+            if (!marked[dateStr].dots.find((d: any) => d.key === 'oncall')) {
+              marked[dateStr].dots.push({ color: '#10b981', key: 'oncall' });
             }
-            marked[dateStr].dots.push({ color: '#10b981', key: 'oncall' });
-            marked[dateStr].customStyles = {
-              container: { backgroundColor: '#d1fae5' },
-              text: { color: '#065f46', fontWeight: '700' }
-            };
+            // Mark as selected for on-call weekend
+            marked[dateStr].selected = true;
+            marked[dateStr].selectedColor = '#d1fae5';
+            marked[dateStr].selectedTextColor = '#065f46';
           } else {
-            // Regular weekend (not on-call)
-            if (!marked[dateStr]) {
-              marked[dateStr] = {};
-            }
-            marked[dateStr].customStyles = {
-              container: { backgroundColor: '#f3f4f6' },
-              text: { color: '#6b7280' }
-            };
+            // Regular weekend - mark with disabled styling
+            marked[dateStr].disabled = false;
+            marked[dateStr].disableTouchEvent = false;
           }
         }
       });
