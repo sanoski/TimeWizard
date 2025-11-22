@@ -89,6 +89,11 @@ export default function SettingsScreen() {
       
       // Import into database
       await db.initialize();
+      
+      // Clear existing schedule before importing (replace, don't add)
+      console.log('🗑️ Clearing existing on-call schedule...');
+      await db.clearOnCallSchedule();
+      
       await db.importOnCallSchedule(scheduleData);
       
       // Extract unique users and add them
