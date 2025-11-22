@@ -645,9 +645,22 @@ class DatabaseService {
   async getOnCallForDate(date: string): Promise<any[]> {
     if (!this.db) throw new Error('Database not initialized');
     
+    // Get all entries where date falls within start_date and end_date range
     const results = await this.db.getAllAsync(
-      'SELECT * FROM on_call_schedule WHERE schedule_date = ? ORDER BY shift_type',
-      [date]
+      'SELECT * FROM on_call_schedule WHERE start_date <= ? AND end_date >= ? ORDER BY location, user_name',
+      [date, date]
+    );
+    
+    return results;
+  }
+  
+  async getOnCallForWeekend(startDate: string, endDate: string): Promise<any[]> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    // Get all people on-call for specific weekend
+    const results = await this.db.getAllAsync(
+      'SELECT * FROM on_call_schedule WHERE start_date = ? AND end_date = ? ORDER BY location, user_name',
+      [startDate, endDate]
     );
     
     return results;
