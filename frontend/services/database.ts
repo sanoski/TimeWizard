@@ -647,7 +647,7 @@ class DatabaseService {
     
     // Get all entries where date falls within start_date and end_date range
     const results = await this.db.getAllAsync(
-      'SELECT * FROM on_call_schedule WHERE start_date <= ? AND end_date >= ? ORDER BY location, user_name',
+      'SELECT * FROM on_call_schedule WHERE start_date <= ? AND end_date >= ? ORDER BY user_name',
       [date, date]
     );
     
@@ -657,9 +657,9 @@ class DatabaseService {
   async getOnCallForWeekend(startDate: string, endDate: string): Promise<any[]> {
     if (!this.db) throw new Error('Database not initialized');
     
-    // Get all people on-call for specific weekend
+    // Get all people on-call for specific weekend (typically 2 people)
     const results = await this.db.getAllAsync(
-      'SELECT * FROM on_call_schedule WHERE start_date = ? AND end_date = ? ORDER BY location, user_name',
+      'SELECT * FROM on_call_schedule WHERE start_date = ? AND end_date = ? ORDER BY user_name',
       [startDate, endDate]
     );
     
