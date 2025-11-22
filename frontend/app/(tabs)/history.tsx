@@ -93,13 +93,13 @@ export default function HistoryScreen() {
       const endDate = format(endOfMonth, 'yyyy-MM-dd');
       
       // Get all dates with hours logged
-      const entriesWithHours = await db.db.getAllAsync(
+      const entriesWithHours = await db.database.getAllAsync(
         'SELECT DISTINCT work_date FROM time_entries WHERE work_date >= ? AND work_date <= ? ORDER BY work_date',
         [startDate, endDate]
       );
       
       // Get all dates with notes
-      const datesWithNotes = await db.db.getAllAsync(
+      const datesWithNotes = await db.database.getAllAsync(
         'SELECT DISTINCT work_date FROM work_notes WHERE work_date >= ? AND work_date <= ?',
         [startDate, endDate]
       );
@@ -177,13 +177,13 @@ export default function HistoryScreen() {
     
     try {
       // Get hours/lines for this day
-      const entries = await db.db.getAllAsync(
+      const entries = await db.database.getAllAsync(
         'SELECT * FROM time_entries WHERE work_date = ? ORDER BY line_code',
         [day.dateString]
       );
       
       // Get notes for this day
-      const notes = await db.db.getAllAsync(
+      const notes = await db.database.getAllAsync(
         'SELECT * FROM work_notes WHERE work_date = ? ORDER BY line_code',
         [day.dateString]
       );
