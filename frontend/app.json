@@ -20,6 +20,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.vrstimewizard.app",
+      "versionCode": 3,
       "permissions": []
     },
     "web": {
