@@ -22,7 +22,103 @@ export default function SettingsScreen() {
 
   useEffect(() => {
     fetchLines();
+    loadSyncSettings();
   }, []);
+
+  const loadSyncSettings = async () => {
+    try {
+      const savedUrl = await AsyncStorage.getItem('oncall_schedule_url');
+      const savedTime = await AsyncStorage.getItem('oncall_last_sync');
+      if (savedUrl) setScheduleUrl(savedUrl);
+      if (savedTime) setLastSyncTime(savedTime);
+    } catch (error) {
+      console.error('Error loading sync settings:', error);
+    }
+  };
+
+  const handleSyncSchedule = async () => {
+    if (!scheduleUrl.trim()) {
+      Alert.alert('Error', 'Please enter a Google Sheets URL');
+      return;
+    }
+
+    setSyncing(true);
+    try {
+      console.log('📥 Syncing schedule from:', scheduleUrl);
+      
+      // Download CSV from URL
+      const response = await fetch(scheduleUrl.trim());
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const csvText = await response.text();
+      console.log('✅ Downloaded CSV:', csvText.substring(0, 200) + '...');
+      
+      // Parse CSV
+      const lines = csvText.trim().split('\n');
+      const headers = lines[0].split(',').map(h => h.trim());
+      
+      // Validate headers
+      const requiredHeaders = ['start_date', 'end_date', 'user'];
+      const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+      if (missingHeaders.length > 0) {
+        throw new Error(`Missing required columns: ${missingHeaders.join(', ')}`);
+      }
+      
+      // Parse data rows
+      const scheduleData = [];
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim());
+        if (values.length < 3 || !values[0]) continue; // Skip empty rows
+        
+        const row: any = {};
+        headers.forEach((header, index) => {
+          row[header] = values[index] || '';
+        });
+        
+        scheduleData.push({
+          start_date: row.start_date,
+          end_date: row.end_date,
+          user: row.user,
+          notes: row.notes || ''
+        });
+      }
+      
+      console.log(`📅 Parsed ${scheduleData.length} schedule entries`);
+      
+      // Import into database
+      await db.initialize();
+      await db.importOnCallSchedule(scheduleData);
+      
+      // Extract unique users and add them
+      const uniqueUsers = [...new Set(scheduleData.map(s => s.user))];
+      for (const user of uniqueUsers) {
+        await db.addOnCallUser(user, false);
+      }
+      
+      // Save URL and sync time
+      await AsyncStorage.setItem('oncall_schedule_url', scheduleUrl.trim());
+      const now = new Date().toISOString();
+      await AsyncStorage.setItem('oncall_last_sync', now);
+      setLastSyncTime(now);
+      
+      Alert.alert(
+        'Sync Complete!',
+        `Successfully imported ${scheduleData.length} schedule entries with ${uniqueUsers.length} users.`
+      );
+      
+      console.log('✅ Sync complete');
+    } catch (error: any) {
+      console.error('❌ Sync error:', error);
+      Alert.alert(
+        'Sync Failed',
+        error.message || 'Failed to sync schedule. Check the URL and try again.'
+      );
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const handleAddProject = async () => {
     if (!projectNumber.trim()) {
