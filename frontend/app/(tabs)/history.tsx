@@ -229,7 +229,8 @@ export default function HistoryScreen() {
         currentUser,
         totalST,
         totalOT,
-        totalHours: totalST + totalOT
+        totalHours: totalST + totalOT,
+        loading: false
       };
       
       console.log('📊 Day details prepared:', {
@@ -239,8 +240,14 @@ export default function HistoryScreen() {
         totalHours: details.totalHours
       });
       
-      setDayDetails(details);
-      setShowDetailModal(true);
+      console.log('📊 Full details object:', JSON.stringify(details, null, 2));
+      
+      // Force update by setting state twice
+      setDayDetails(null);
+      setTimeout(() => {
+        setDayDetails(details);
+        console.log('✅ Modal should now show data');
+      }, 10);
     } catch (error) {
       console.error('❌ Error loading day details:', error);
       Alert.alert('Error', 'Failed to load day details');
