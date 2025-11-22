@@ -83,6 +83,16 @@ export default function HistoryScreen() {
     setWeekSummaries(summaries);
     setLoadingSummaries(false);
   };
+  
+  const loadCurrentUser = async () => {
+    try {
+      await db.initialize();
+      const user = await db.getCurrentUser();
+      setCurrentUser(user);
+    } catch (error) {
+      console.error('Error loading current user:', error);
+    }
+  };
 
   const loadCalendarData = async () => {
     setLoadingCalendar(true);
