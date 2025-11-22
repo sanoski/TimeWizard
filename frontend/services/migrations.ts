@@ -159,16 +159,16 @@ const migration_v2: Migration = {
         start_date TEXT NOT NULL,
         end_date TEXT NOT NULL,
         user_name TEXT NOT NULL,
-        location TEXT NOT NULL,
         notes TEXT,
         is_swapped INTEGER DEFAULT 0,
         original_user_name TEXT,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(start_date, end_date, user_name, location)
+        UNIQUE(start_date, end_date, user_name)
       )
     `);
     console.log('✅ on_call_schedule table created');
+    console.log('ℹ️  Note: Location field omitted - Rutland only for now');
     
     // ========================================================================
     // STEP 5: Validate all new tables
