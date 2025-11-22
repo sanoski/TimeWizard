@@ -82,11 +82,14 @@ class DatabaseService {
       this.db = await SQLite.openDatabaseAsync('vrs_time_wizard.db');
       console.log('✅ Database connection opened');
       
-      // Create tables
+      // Create base tables (if they don't exist)
       await this.createTables();
       
       // Initialize default data
       await this.initializeDefaultData();
+      
+      // Run database migrations to add new features
+      await this.runMigrations();
       
       this.isInitialized = true;
       console.log('✅ Database initialized successfully');
@@ -94,6 +97,20 @@ class DatabaseService {
       console.error('❌ Database initialization failed:', error);
       this.db = null;
       this.isInitialized = false;
+      throw error;
+    }
+  }
+
+  private async runMigrations(): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    try {
+      console.log('🔄 Running database migrations...');
+      const { runMigrations } = await import('./migrations');
+      await runMigrations(this.db);
+      console.log('✅ Migrations completed');
+    } catch (error) {
+      console.error('❌ Migration failed:', error);
       throw error;
     }
   }
