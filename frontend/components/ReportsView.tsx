@@ -5,7 +5,7 @@ import { format, subMonths, subDays, startOfYear, startOfMonth, endOfMonth, diff
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { db } from '../services/databaseWrapper';
 
 interface ReportsViewProps {
