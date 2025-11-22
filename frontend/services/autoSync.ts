@@ -137,11 +137,13 @@ async function performSync(): Promise<SyncResult> {
       return { success: false, newEntriesCount: 0, userShiftsChanged: false, error: 'No user configured' };
     }
     
-    // Get sync URL
-    const syncUrl = await AsyncStorage.getItem('oncall_schedule_url');
-    if (!syncUrl) {
-      console.log('⚠️ No sync URL configured, skipping sync');
-      return { success: false, newEntriesCount: 0, userShiftsChanged: false, error: 'No sync URL' };
+    // Get sync URL (use custom URL if set, otherwise use default)
+    let syncUrl = await AsyncStorage.getItem('oncall_schedule_url');
+    if (!syncUrl || syncUrl.trim() === '') {
+      syncUrl = DEFAULT_ONCALL_SCHEDULE_URL;
+      console.log('📌 Using default master schedule URL');
+    } else {
+      console.log('📌 Using custom schedule URL from dev menu');
     }
     
     // Get user's shifts before sync
