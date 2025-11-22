@@ -172,7 +172,22 @@ export default function HistoryScreen() {
   };
 
   const handleDayPress = async (day: DateData) => {
+    console.log('🔵 DAY PRESSED!', day.dateString);
     setSelectedDate(day.dateString);
+    
+    // Show modal immediately with loading state
+    setDayDetails({
+      date: day.dateString,
+      entries: [],
+      notes: [],
+      onCallInfo: [],
+      currentUser: null,
+      totalST: 0,
+      totalOT: 0,
+      totalHours: 0,
+      loading: true
+    });
+    setShowDetailModal(true);
     
     try {
       console.log('📅 Loading details for:', day.dateString);
