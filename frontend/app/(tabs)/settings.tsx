@@ -66,14 +66,12 @@ export default function SettingsScreen() {
   };
 
   const handleSyncSchedule = async () => {
-    if (!scheduleUrl.trim()) {
-      Alert.alert('Error', 'Please enter a Google Sheets URL');
-      return;
-    }
+    // Use custom URL if set, otherwise use default
+    const urlToSync = scheduleUrl.trim() || DEFAULT_ONCALL_SCHEDULE_URL;
 
     setSyncing(true);
     try {
-      console.log('📥 Syncing schedule from:', scheduleUrl);
+      console.log('📥 Syncing schedule from:', urlToSync);
       
       // Download CSV from URL
       const response = await fetch(scheduleUrl.trim());
