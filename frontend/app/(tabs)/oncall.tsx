@@ -300,14 +300,24 @@ export default function OnCallScreen() {
           )}
         </View>
 
-        {/* Import Button */}
-        <TouchableOpacity
-          style={styles.importButton}
-          onPress={() => Alert.alert('Coming Soon', 'CSV import feature will be available soon')}
-        >
-          <Ionicons name="cloud-upload" size={20} color="#ffffff" />
-          <Text style={styles.importButtonText}>Import Schedule</Text>
-        </TouchableOpacity>
+        {/* Action Buttons */}
+        <View style={styles.actionButtons}>
+          <TouchableOpacity
+            style={styles.testDataButton}
+            onPress={handleLoadTestData}
+          >
+            <Ionicons name="flask" size={20} color="#ffffff" />
+            <Text style={styles.buttonText}>Load Test Data</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.importButton}
+            onPress={() => Alert.alert('Coming Soon', 'CSV import feature will be available soon')}
+          >
+            <Ionicons name="cloud-upload" size={20} color="#ffffff" />
+            <Text style={styles.buttonText}>Import CSV</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
