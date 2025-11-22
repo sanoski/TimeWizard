@@ -79,15 +79,15 @@ export default function HistoryScreen() {
     setLoadingSummaries(false);
   };
 
-  const loadCalendarData = async () => {
+  const loadCalendarData = async (monthDate?: Date) => {
     setLoadingCalendar(true);
     try {
       await db.initialize();
       
-      // Get current month range
-      const today = new Date();
-      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-      const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      // Get month range - use provided date or current month
+      const targetDate = monthDate || new Date();
+      const startOfMonth = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
+      const endOfMonth = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
       
       const startDate = format(startOfMonth, 'yyyy-MM-dd');
       const endDate = format(endOfMonth, 'yyyy-MM-dd');
