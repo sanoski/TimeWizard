@@ -19,6 +19,10 @@ export default function SettingsScreen() {
   const [scheduleUrl, setScheduleUrl] = useState('');
   const [syncing, setSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
+  
+  // Developer menu state
+  const [versionTaps, setVersionTaps] = useState(0);
+  const [showDevMenu, setShowDevMenu] = useState(false);
 
   useEffect(() => {
     fetchLines();
