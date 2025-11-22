@@ -144,8 +144,8 @@ export default function HistoryScreen() {
         }
       });
       
-      // Mark weekends and on-call days
-      const monthDays = eachDayOfInterval({ start: startOfMonth, end: endOfMonth });
+      // Mark weekends and on-call days for the 3-month range
+      const monthDays = eachDayOfInterval({ start: startOfPrevMonth, end: endOfNextMonth });
       monthDays.forEach(day => {
         const dateStr = format(day, 'yyyy-MM-dd');
         const isWeekend = isSaturday(day) || isSunday(day);
