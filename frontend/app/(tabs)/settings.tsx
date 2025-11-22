@@ -9,6 +9,7 @@ import * as DocumentPicker from 'expo-document-picker';
 
 import { db } from '../../services/databaseWrapper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isAutoSyncEnabled, setAutoSyncEnabled, getLastSyncTime } from '../../services/autoSync';
 
 export default function SettingsScreen() {
   const { lines, fetchLines, toggleLineVisibility, addProjectLine, deleteProjectLine, exportData, importData } = useTimesheetStore();
