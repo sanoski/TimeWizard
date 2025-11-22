@@ -514,7 +514,10 @@ export default function SettingsScreen() {
               </Pressable>
               <Pressable
                 style={[styles.actionButton, { backgroundColor: '#6b7280', marginTop: 12 }]}
-                onPress={() => setShowDevMenu(false)}
+                onPress={async () => {
+                  setShowDevMenu(false);
+                  await AsyncStorage.setItem('dev_menu_enabled', 'false');
+                }}
               >
                 <Ionicons name="close" size={20} color="#ffffff" />
                 <Text style={styles.actionButtonText}>Close Developer Menu</Text>
