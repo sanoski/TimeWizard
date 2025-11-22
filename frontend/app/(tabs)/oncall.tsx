@@ -336,24 +336,25 @@ export default function OnCallScreen() {
           )}
         </View>
 
-        {/* Action Buttons */}
-        <View style={styles.actionButtons}>
-          <TouchableOpacity
-            style={styles.testDataButton}
-            onPress={handleLoadTestData}
-          >
-            <Ionicons name="flask" size={20} color="#ffffff" />
-            <Text style={styles.buttonText}>Load Test Data</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={styles.importButton}
-            onPress={() => Alert.alert('Coming Soon', 'CSV import feature will be available soon')}
-          >
-            <Ionicons name="cloud-upload" size={20} color="#ffffff" />
-            <Text style={styles.buttonText}>Import CSV</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Developer-only CSV Import Button */}
+        {showDevFeatures && (
+          <View style={styles.devSection}>
+            <View style={styles.devHeader}>
+              <Ionicons name="code" size={16} color="#dc2626" />
+              <Text style={styles.devTitle}>Developer Tools</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.importButton}
+              onPress={handleImportCSV}
+            >
+              <Ionicons name="cloud-upload" size={20} color="#ffffff" />
+              <Text style={styles.buttonText}>Import CSV File</Text>
+            </TouchableOpacity>
+            <Text style={styles.devHint}>
+              Imports on-call schedule from a local CSV file. This will replace all existing schedule data.
+            </Text>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
