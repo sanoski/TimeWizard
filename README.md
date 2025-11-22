@@ -440,26 +440,28 @@ await db.clearOnCallSchedule(); // Clears all on-call data
 ### Completed (v1.2.0)
 - ✅ Database migration system
 - ✅ On-call schedule tables
-- ✅ Google Sheets sync
+- ✅ Google Sheets sync (hardcoded URL)
+- ✅ Auto-sync (weekly, on app open)
 - ✅ Developer menu
 - ✅ Unified calendar view
-- ✅ Weekend highlighting
+- ✅ Reports feature (PDF/CSV export)
+- ✅ Date range selection with presets
 - ✅ Day detail modal
 - ✅ Performance improvements
 
 ### Planned (v1.3.0)
-- ⏸️ Shift swap functionality (UI exists, logic pending)
-- ⏸️ Auto-sync schedule (background updates)
-- ⏸️ User profile management
-- ⏸️ Enhanced on-call tab (weekend details)
-- ⏸️ Notifications (on-call reminders)
+- ⏸️ Shift swap functionality (postponed)
+- ⏸️ Enhanced on-call statistics
+- ⏸️ Personal notes on shifts
+- ⏸️ Background auto-sync notifications
+- ⏸️ On-call reminders
 
 ### Future Considerations
 - 📋 Multi-location support (Rutland, Burlington, etc.)
 - 📋 Offline peer-to-peer schedule sharing
-- 📋 Export to PDF
-- 📋 On-call statistics and analytics
+- 📋 On-call analytics and trends
 - 📋 Integration with payroll systems
+- 📋 Shift swap tracking
 
 ---
 
