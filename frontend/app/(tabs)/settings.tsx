@@ -438,12 +438,13 @@ export default function SettingsScreen() {
               </View>
               <Text style={styles.appName}>VRS Time Wizard</Text>
               <Pressable
-                onPress={() => {
+                onPress={async () => {
                   const newTaps = versionTaps + 1;
                   setVersionTaps(newTaps);
                   if (newTaps >= 5) {
                     setShowDevMenu(true);
                     setVersionTaps(0);
+                    await AsyncStorage.setItem('dev_menu_enabled', 'true');
                     Alert.alert('Developer Menu', 'Developer menu unlocked!');
                   }
                 }}
