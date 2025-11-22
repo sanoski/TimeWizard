@@ -472,7 +472,7 @@ export default function SettingsScreen() {
               <View style={styles.logoContainer}>
                 <Ionicons name="train" size={40} color="#2563eb" />
               </View>
-              <Text style={styles.appName}>VRS Time Wizard</Text>
+              <Text style={styles.appName}>{APP_NAME}</Text>
               <Pressable
                 onPress={async () => {
                   const newTaps = versionTaps + 1;
@@ -485,7 +485,7 @@ export default function SettingsScreen() {
                   }
                 }}
               >
-                <Text style={styles.appVersion}>Version 1.0.0</Text>
+                <Text style={styles.appVersion}>Version {APP_VERSION}</Text>
               </Pressable>
               <Text style={styles.appDescription}>
                 Railroad timesheet tracking for MOW crews
