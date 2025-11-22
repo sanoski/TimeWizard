@@ -634,8 +634,9 @@ class DatabaseService {
   async getOnCallSchedule(startDate: string, endDate: string): Promise<any[]> {
     if (!this.db) throw new Error('Database not initialized');
     
+    // Get all entries where the weekend overlaps with the date range
     const results = await this.db.getAllAsync(
-      'SELECT * FROM on_call_schedule WHERE schedule_date >= ? AND schedule_date <= ? ORDER BY schedule_date, shift_type',
+      'SELECT * FROM on_call_schedule WHERE start_date >= ? AND start_date <= ? ORDER BY start_date, user_name',
       [startDate, endDate]
     );
     
