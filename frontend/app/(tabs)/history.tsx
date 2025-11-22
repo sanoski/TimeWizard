@@ -476,6 +476,28 @@ export default function HistoryScreen() {
                   textDayFontSize: 14,
                   textMonthFontSize: 18,
                   textDayHeaderFontSize: 12,
+                  'stylesheet.day.basic': {
+                    base: {
+                      width: 32,
+                      height: 32,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    },
+                    text: {
+                      marginTop: 4,
+                      fontSize: 14,
+                      fontWeight: '400',
+                      color: '#111827',
+                    },
+                  },
+                  'stylesheet.calendar.main': {
+                    week: {
+                      marginTop: 2,
+                      marginBottom: 2,
+                      flexDirection: 'row',
+                      justifyContent: 'space-around',
+                    }
+                  }
                 }}
               />
             )}
