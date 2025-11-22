@@ -382,6 +382,21 @@ export default function SettingsScreen() {
             <Text style={styles.sectionTitle}>On-Call Schedule</Text>
           </View>
           <View style={styles.card}>
+            {/* Auto-Sync Toggle */}
+            <View style={styles.autoSyncRow}>
+              <View style={styles.autoSyncInfo}>
+                <Text style={styles.autoSyncLabel}>Auto-Sync (Weekly)</Text>
+                <Text style={styles.autoSyncDesc}>Automatically sync when app opens (once per week)</Text>
+              </View>
+              <Switch
+                value={autoSyncEnabled}
+                onValueChange={handleAutoSyncToggle}
+                trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
+                thumbColor={autoSyncEnabled ? '#2563eb' : '#f3f4f6'}
+              />
+            </View>
+            
+            {/* Manual Sync Button */}
             <Pressable 
               style={[styles.syncButton, (!scheduleUrl.trim() || syncing) && styles.syncButtonDisabled]}
               onPress={handleSyncSchedule}
@@ -393,7 +408,7 @@ export default function SettingsScreen() {
                 <Ionicons name="sync" size={20} color="#ffffff" />
               )}
               <Text style={styles.syncButtonText}>
-                {syncing ? 'Syncing...' : 'Sync Schedule'}
+                {syncing ? 'Syncing...' : 'Sync Now (Manual)'}
               </Text>
             </Pressable>
             {lastSyncTime && (
