@@ -330,12 +330,14 @@ MONGO_URL=<not-used-in-v1.2.0>
 │   ├── app.json                     # Expo config
 │   ├── package.json                 # Dependencies
 │   └── eas.json                     # EAS Build config
-├── backend/                         # Dormant
-├── test_oncall_schedule.csv         # Test data
-├── SESSION_NOTES_NOV22_2025.md      # Today's work
-├── PHASE_1_MIGRATION_COMPLETE.md    # Migration docs
-├── APK_UPDATE_GUIDE.md              # Update guide
-└── README.md                        # This file
+├── backend/                                  # Dormant
+├── PRODUCTION_READINESS_CHECKLIST.md        # Testing checklist
+├── DATA_MIGRATION_SAFETY.md                 # Migration safety
+├── SESSION_NOTES_NOV22_2025.md              # Development notes
+├── PHASE_1_MIGRATION_COMPLETE.md            # Phase 1 docs
+├── APK_UPDATE_GUIDE.md                      # Update guide
+├── QUICK_START_TOMORROW.md                  # Quick reference
+└── README.md                                # This file
 ```
 
 ---
