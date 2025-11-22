@@ -320,8 +320,6 @@ const styles = StyleSheet.create({
     height: 56,
     fontSize: 16,
     color: '#111827',
-    border: 'none',
-    outline: 'none',
   },
   continueButton: {
     backgroundColor: '#2563eb',
