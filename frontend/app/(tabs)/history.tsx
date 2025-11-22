@@ -494,7 +494,17 @@ export default function HistoryScreen() {
             </View>
 
             <ScrollView style={styles.modalScroll}>
-              {dayDetails && (
+              {!dayDetails ? (
+                <View style={styles.emptySection}>
+                  <ActivityIndicator size="large" color="#2563eb" />
+                  <Text style={styles.emptyText}>Loading...</Text>
+                </View>
+              ) : dayDetails.loading ? (
+                <View style={styles.emptySection}>
+                  <ActivityIndicator size="large" color="#2563eb" />
+                  <Text style={styles.emptyText}>Loading day details...</Text>
+                </View>
+              ) : (
                 <>
                   {/* Hours Summary */}
                   {dayDetails.totalHours > 0 ? (
