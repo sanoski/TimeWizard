@@ -1,1500 +1,1629 @@
 diff --git a/frontend/app/(tabs)/settings.tsx b/frontend/app/(tabs)/settings.tsx
-index 12a13cb..2729d68 100644
+index 9e09120..c709cd3 100644
 --- a/frontend/app/(tabs)/settings.tsx
 +++ b/frontend/app/(tabs)/settings.tsx
-@@ -681,4 +681,39 @@ const styles = StyleSheet.create({
-     backgroundColor: '#e5e7eb',
-     marginVertical: 8,
+@@ -437,13 +437,90 @@ export default function SettingsScreen() {
+                 <Ionicons name="train" size={40} color="#2563eb" />
+               </View>
+               <Text style={styles.appName}>VRS Time Wizard</Text>
+-              <Text style={styles.appVersion}>Version 1.0.0</Text>
++              <Pressable
++                onPress={() => {
++                  const newTaps = versionTaps + 1;
++                  setVersionTaps(newTaps);
++                  if (newTaps >= 5) {
++                    setShowDevMenu(true);
++                    setVersionTaps(0);
++                    Alert.alert('Developer Menu', 'Developer menu unlocked!');
++                  }
++                }}
++              >
++                <Text style={styles.appVersion}>Version 1.0.0</Text>
++              </Pressable>
+               <Text style={styles.appDescription}>
+                 Railroad timesheet tracking for MOW crews
+               </Text>
+             </View>
+           </View>
+         </View>
++        
++        {/* Developer Menu */}
++        {showDevMenu && (
++          <View style={styles.section}>
++            <View style={styles.sectionHeader}>
++              <Ionicons name="code" size={20} color="#dc2626" />
++              <Text style={[styles.sectionTitle, { color: '#dc2626' }]}>Developer Menu</Text>
++            </View>
++            <View style={[styles.card, { borderColor: '#dc2626', borderWidth: 2 }]}>
++              <Text style={styles.inputLabel}>Master Schedule URL</Text>
++              <TextInput
++                style={styles.urlInput}
++                placeholder="https://docs.google.com/spreadsheets/.../export?format=csv"
++                value={scheduleUrl}
++                onChangeText={setScheduleUrl}
++                autoCapitalize="none"
++                autoCorrect={false}
++                multiline
++              />
++              <Pressable
++                style={[styles.actionButton, { backgroundColor: '#dc2626' }]}
++                onPress={async () => {
++                  if (scheduleUrl.trim()) {
++                    await AsyncStorage.setItem('oncall_schedule_url', scheduleUrl.trim());
++                    Alert.alert('Saved', 'Master schedule URL saved successfully');
++                  }
++                }}
++              >
++                <Ionicons name="save" size={20} color="#ffffff" />
++                <Text style={styles.actionButtonText}>Save URL</Text>
++              </Pressable>
++              <Pressable
++                style={[styles.actionButton, { backgroundColor: '#f59e0b', marginTop: 12 }]}
++                onPress={async () => {
++                  Alert.alert(
++                    'Clear All On-Call Data?',
++                    'This will delete all on-call schedule data. Are you sure?',
++                    [
++                      { text: 'Cancel', style: 'cancel' },
++                      {
++                        text: 'Clear',
++                        style: 'destructive',
++                        onPress: async () => {
++                          await db.initialize();
++                          await db.clearOnCallSchedule();
++                          Alert.alert('Cleared', 'All on-call data has been cleared');
++                        }
++                      }
++                    ]
++                  );
++                }}
++              >
++                <Ionicons name="trash" size={20} color="#ffffff" />
++                <Text style={styles.actionButtonText}>Clear On-Call Data</Text>
++              </Pressable>
++              <Pressable
++                style={[styles.actionButton, { backgroundColor: '#6b7280', marginTop: 12 }]}
++                onPress={() => setShowDevMenu(false)}
++              >
++                <Ionicons name="close" size={20} color="#ffffff" />
++                <Text style={styles.actionButtonText}>Close Developer Menu</Text>
++              </Pressable>
++            </View>
++          </View>
++        )}
+ 
+         {/* Debug Button */}
+         <View style={styles.section}>
+@@ -565,6 +642,12 @@ const styles = StyleSheet.create({
+     color: '#374151',
+     marginBottom: 8,
    },
-+  urlInput: {
-+    backgroundColor: '#f9fafb',
-+    borderWidth: 1,
-+    borderColor: '#d1d5db',
-+    borderRadius: 8,
-+    padding: 12,
++  inputLabel: {
 +    fontSize: 14,
-+    color: '#111827',
-+    minHeight: 80,
-+    textAlignVertical: 'top',
-+    marginBottom: 12,
++    fontWeight: '600',
++    color: '#374151',
++    marginBottom: 8,
 +  },
-+  syncButton: {
-+    flexDirection: 'row',
-+    alignItems: 'center',
+   inputRow: {
+     flexDirection: 'row',
+     gap: 8,
+@@ -612,9 +695,12 @@ const styles = StyleSheet.create({
+   },
+   actionButton: {
+     flexDirection: 'row',
+-    justifyContent: 'space-between',
 +    justifyContent: 'center',
-+    backgroundColor: '#2563eb',
-+    padding: 16,
+     alignItems: 'center',
+-    paddingVertical: 8,
++    paddingVertical: 12,
++    paddingHorizontal: 16,
 +    borderRadius: 8,
 +    gap: 8,
-+  },
-+  syncButtonDisabled: {
-+    backgroundColor: '#9ca3af',
-+  },
-+  syncButtonText: {
-+    color: '#ffffff',
-+    fontSize: 16,
-+    fontWeight: '600',
-+  },
-+  lastSyncText: {
-+    marginTop: 12,
-+    fontSize: 12,
-+    color: '#6b7280',
-+    textAlign: 'center',
-+  },
- });
+   },
+   actionButtonContent: {
+     flexDirection: 'row',
 diff --git a/model.patch b/model.patch
-index 2b2d71e..e69de29 100644
+index 371d48e..3ca3398 100644
 --- a/model.patch
 +++ b/model.patch
-@@ -1,1451 +0,0 @@
+@@ -1,1500 +0,0 @@
+-diff --git a/frontend/app/(tabs)/settings.tsx b/frontend/app/(tabs)/settings.tsx
+-index 12a13cb..2729d68 100644
+---- a/frontend/app/(tabs)/settings.tsx
+-+++ b/frontend/app/(tabs)/settings.tsx
+-@@ -681,4 +681,39 @@ const styles = StyleSheet.create({
+-     backgroundColor: '#e5e7eb',
+-     marginVertical: 8,
+-   },
+-+  urlInput: {
+-+    backgroundColor: '#f9fafb',
+-+    borderWidth: 1,
+-+    borderColor: '#d1d5db',
+-+    borderRadius: 8,
+-+    padding: 12,
+-+    fontSize: 14,
+-+    color: '#111827',
+-+    minHeight: 80,
+-+    textAlignVertical: 'top',
+-+    marginBottom: 12,
+-+  },
+-+  syncButton: {
+-+    flexDirection: 'row',
+-+    alignItems: 'center',
+-+    justifyContent: 'center',
+-+    backgroundColor: '#2563eb',
+-+    padding: 16,
+-+    borderRadius: 8,
+-+    gap: 8,
+-+  },
+-+  syncButtonDisabled: {
+-+    backgroundColor: '#9ca3af',
+-+  },
+-+  syncButtonText: {
+-+    color: '#ffffff',
+-+    fontSize: 16,
+-+    fontWeight: '600',
+-+  },
+-+  lastSyncText: {
+-+    marginTop: 12,
+-+    fontSize: 12,
+-+    color: '#6b7280',
+-+    textAlign: 'center',
+-+  },
+- });
 -diff --git a/model.patch b/model.patch
--index cdb912c..e69de29 100644
+-index 2b2d71e..e69de29 100644
 ---- a/model.patch
 -+++ b/model.patch
--@@ -1,1446 +0,0 @@
---diff --git a/frontend/app/(tabs)/oncall.tsx b/frontend/app/(tabs)/oncall.tsx
---index 45e7412..3b21aa7 100644
------ a/frontend/app/(tabs)/oncall.tsx
---+++ b/frontend/app/(tabs)/oncall.tsx
---@@ -124,11 +124,13 @@ export default function OnCallScreen() {
---           
---           <View style={styles.inputContainer}>
---             <Ionicons name="person" size={20} color="#6b7280" style={styles.inputIcon} />
----            <input
---+            <TextInput
---               style={styles.input}
---               placeholder="Enter your full name"
---               value={userName}
----              onChange={(e: any) => setUserName(e.target.value)}
---+              onChangeText={setUserName}
---+              autoCapitalize="words"
---+              autoCorrect={false}
---             />
---           </View>
--- 
+-@@ -1,1451 +0,0 @@
 --diff --git a/model.patch b/model.patch
---index 1e75aa0..e69de29 100644
+--index cdb912c..e69de29 100644
 ----- a/model.patch
 --+++ b/model.patch
---@@ -1,1421 +0,0 @@
+--@@ -1,1446 +0,0 @@
+---diff --git a/frontend/app/(tabs)/oncall.tsx b/frontend/app/(tabs)/oncall.tsx
+---index 45e7412..3b21aa7 100644
+------ a/frontend/app/(tabs)/oncall.tsx
+---+++ b/frontend/app/(tabs)/oncall.tsx
+---@@ -124,11 +124,13 @@ export default function OnCallScreen() {
+---           
+---           <View style={styles.inputContainer}>
+---             <Ionicons name="person" size={20} color="#6b7280" style={styles.inputIcon} />
+----            <input
+---+            <TextInput
+---               style={styles.input}
+---               placeholder="Enter your full name"
+---               value={userName}
+----              onChange={(e: any) => setUserName(e.target.value)}
+---+              onChangeText={setUserName}
+---+              autoCapitalize="words"
+---+              autoCorrect={false}
+---             />
+---           </View>
+--- 
 ---diff --git a/model.patch b/model.patch
----index 08ff87f..e69de29 100644
+---index 1e75aa0..e69de29 100644
 ------ a/model.patch
 ---+++ b/model.patch
----@@ -1,1416 +0,0 @@
+---@@ -1,1421 +0,0 @@
 ----diff --git a/model.patch b/model.patch
-----index 854b5e5..e69de29 100644
+----index 08ff87f..e69de29 100644
 ------- a/model.patch
 ----+++ b/model.patch
-----@@ -1,1411 +0,0 @@
+----@@ -1,1416 +0,0 @@
 -----diff --git a/model.patch b/model.patch
------index d6195e8..e69de29 100644
+-----index 854b5e5..e69de29 100644
 -------- a/model.patch
 -----+++ b/model.patch
------@@ -1,1406 +0,0 @@
-------diff --git a/backend/timesheet.db b/backend/timesheet.db
-------index ebe300a..e4a300e 100644
-------Binary files a/backend/timesheet.db and b/backend/timesheet.db differ
+-----@@ -1,1411 +0,0 @@
 ------diff --git a/model.patch b/model.patch
-------index 232b544..e69de29 100644
+------index d6195e8..e69de29 100644
 --------- a/model.patch
 ------+++ b/model.patch
-------@@ -1,1384 +0,0 @@
+------@@ -1,1406 +0,0 @@
+-------diff --git a/backend/timesheet.db b/backend/timesheet.db
+-------index ebe300a..e4a300e 100644
+-------Binary files a/backend/timesheet.db and b/backend/timesheet.db differ
 -------diff --git a/model.patch b/model.patch
--------index 3e0d25d..e69de29 100644
+-------index 232b544..e69de29 100644
 ---------- a/model.patch
 -------+++ b/model.patch
--------@@ -1,1379 +0,0 @@
---------diff --git a/NEXT_STEPS.md b/NEXT_STEPS.md
---------index 46eb583..863370b 100644
------------ a/NEXT_STEPS.md
---------+++ b/NEXT_STEPS.md
---------@@ -1,403 +1,357 @@
----------# 🚨 CRITICAL NEXT STEPS - DO NOT SKIP
---------+# VRS Time Wizard - Next Steps & Future Roadmap
--------- 
----------## Current State: NOT READY FOR PRODUCTION
---------+## ✅ Current Status: Production Ready (Offline-First)
--------- 
----------**Status**: App works with backend server but is NOT offline-capable
---------+The app has been successfully refactored to an offline-first architecture. All core functionality is complete and tested on physical devices.
--------- 
----------**Problem**: 
----------- Data stored on backend server, not on phone
----------- Requires internet connection and running backend
----------- Won't work as standalone app without server
----------- Railroad workers need offline functionality
---------+### Completed Phases
---------+- ✅ **Phase 1**: Local SQLite database setup
---------+- ✅ **Phase 2**: Business logic migration from backend to frontend
---------+- ✅ **Phase 3**: One-time data migration system
---------+- ✅ **Phase 4**: Export/import backup functionality
---------+- ✅ **Bug Fixes**: Pay week calculation, grid alignment, data consistency
--------- 
-------------
---------+### What Works Now
---------+- 100% offline functionality
---------+- Local data storage with expo-sqlite
---------+- Week navigation and hour entry
---------+- Pay week detection (timezone-safe)
---------+- History with auto-refresh
---------+- Backup/restore via JSON files
---------+- Debug information screen
--------- 
----------## Priority 1: Convert to Offline App (REQUIRED)
---------+## 🚀 Future Enhancements
--------- 
----------### Why This Is Critical:
----------1. Original spec required: "All data stored locally on your device"
----------2. Original spec required: "No requirement for server or cloud sync"
----------3. Railroad workers may not have reliable internet access
----------4. Standalone app won't work without this change
---------+### Priority 1: User Experience Improvements
--------- 
----------### Implementation Steps:
---------+#### PDF Generation 📄
---------+**Goal**: Generate PDF timesheets from data
--------- 
----------#### Step 1: Install expo-sqlite
---------+**Implementation**:
--------- ```bash
----------cd /app/frontend
----------yarn add expo-sqlite
----------```
----------
----------#### Step 2: Create Database Service
----------Create `/app/frontend/services/database.ts`:
----------
----------```typescript
----------import * as SQLite from 'expo-sqlite';
----------
----------const db = SQLite.openDatabase('timesheet.db');
----------
----------// Initialize database with tables
----------export const initDatabase = (): Promise<void> => {
----------  return new Promise((resolve, reject) => {
----------    db.transaction(tx => {
----------      // Create time_entries table
----------      tx.executeSql(
----------        `CREATE TABLE IF NOT EXISTS time_entries (
----------          id INTEGER PRIMARY KEY AUTOINCREMENT,
----------          work_date TEXT NOT NULL,
----------          week_ending_date TEXT NOT NULL,
----------          line_code TEXT NOT NULL,
----------          st_hours INTEGER DEFAULT 0,
----------          ot_hours INTEGER DEFAULT 0,
----------          is_pay_week INTEGER DEFAULT 0,
----------          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
----------          updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
----------          UNIQUE(work_date, line_code)
----------        );`
----------      );
----------
----------      // Create line_codes table
----------      tx.executeSql(
----------        `CREATE TABLE IF NOT EXISTS line_codes (
----------          line_code TEXT PRIMARY KEY,
----------          label TEXT NOT NULL,
----------          is_project INTEGER DEFAULT 0,
----------          is_visible INTEGER DEFAULT 1,
----------          sort_order INTEGER DEFAULT 0,
----------          created_at TEXT DEFAULT CURRENT_TIMESTAMP
----------        );`
----------      );
----------
----------      // Create settings table
----------      tx.executeSql(
----------        `CREATE TABLE IF NOT EXISTS settings (
----------          key TEXT PRIMARY KEY,
----------          value TEXT NOT NULL,
----------          updated_at TEXT DEFAULT CURRENT_TIMESTAMP
----------        );`
----------      );
----------
----------      // Insert default line codes
----------      const defaultLines = [
----------        ['VTR', 'VTR', 0, 1, 1],
----------        ['GMRC', 'GMRC', 0, 1, 2],
----------        ['CLP', 'CLP', 0, 1, 3],
----------        ['WACR', 'WACR', 0, 1, 4],
----------        ['WACR-CRD', 'WACR-CRD', 0, 1, 5],
----------        ['NEGS', 'NEGS', 0, 1, 6],
----------        ['NHC', 'NHC', 0, 1, 7],
----------        ['NYOG', 'NYOG', 0, 1, 8],
----------        ['PTO', 'PTO', 0, 1, 9],
----------        ['HOLIDAY', 'HOLIDAY', 0, 1, 10],
----------      ];
----------
----------      defaultLines.forEach(([code, label, isProject, isVisible, sortOrder]) => {
----------        tx.executeSql(
----------          'INSERT OR IGNORE INTO line_codes (line_code, label, is_project, is_visible, sort_order) VALUES (?, ?, ?, ?, ?)',
----------          [code, label, isProject, isVisible, sortOrder]
----------        );
----------      });
----------
----------      // Insert default settings
----------      tx.executeSql(
----------        'INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)',
----------        ['base_pay_week_ending', '2025-11-29']
----------      );
----------      tx.executeSql(
----------        'INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)',
----------        ['pay_frequency_days', '14']
----------      );
----------    },
----------    error => reject(error),
----------    () => resolve());
----------  });
----------};
----------
----------// Example: Get entries for a week
----------export const getEntriesByWeek = (weekEnding: string): Promise<any[]> => {
----------  return new Promise((resolve, reject) => {
----------    db.transaction(tx => {
----------      tx.executeSql(
----------        'SELECT * FROM time_entries WHERE week_ending_date = ? ORDER BY work_date, line_code',
----------        [weekEnding],
----------        (_, { rows }) => resolve(rows._array),
----------        (_, error) => reject(error)
----------      );
----------    });
----------  });
----------};
----------
----------// Example: Create or update entry
----------export const upsertEntry = (workDate: string, lineCode: string, stHours: number, otHours: number, weekEnding: string, isPayWeek: boolean): Promise<void> => {
----------  return new Promise((resolve, reject) => {
----------    db.transaction(tx => {
----------      tx.executeSql(
----------        `INSERT INTO time_entries (work_date, line_code, st_hours, ot_hours, week_ending_date, is_pay_week)
----------         VALUES (?, ?, ?, ?, ?, ?)
----------         ON CONFLICT(work_date, line_code) DO UPDATE SET
----------           st_hours = excluded.st_hours,
----------           ot_hours = excluded.ot_hours,
----------           week_ending_date = excluded.week_ending_date,
----------           is_pay_week = excluded.is_pay_week,
----------           updated_at = CURRENT_TIMESTAMP`,
----------        [workDate, lineCode, stHours, otHours, weekEnding, isPayWeek ? 1 : 0],
----------        () => resolve(),
----------        (_, error) => reject(error)
----------      );
----------    });
----------  });
----------};
----------
----------// Add more functions for:
----------// - getLines()
----------// - addProjectLine()
----------// - toggleLineVisibility()
----------// - deleteProjectLine()
----------// - getWeeklySummary()
----------// - exportData()
----------// - importData()
---------+# Install dependencies
---------+npm install react-native-pdf-lib
---------+# or
---------+npm install expo-print
--------- ```
--------- 
----------#### Step 3: Update Zustand Store
----------Modify `/app/frontend/store/timesheetStore.ts`:
----------
----------```typescript
----------import { create } from 'zustand';
----------import * as DB from '../services/database';
----------
----------// Remove BACKEND_URL completely
----------// Replace all fetch() calls with DB function calls
----------
----------interface TimesheetState {
----------  // ... keep existing state shape
----------  
----------  fetchEntries: (weekEnding: string) => Promise<void>;
----------  // ... other methods
----------}
----------
----------export const useTimesheetStore = create<TimesheetState>((set, get) => ({
----------  entries: [],
----------  lines: [],
----------  // ... existing state
----------
----------  fetchEntries: async (weekEnding: string) => {
----------    try {
----------      set({ loading: true, error: null });
----------      const entries = await DB.getEntriesByWeek(weekEnding);
----------      set({ entries, loading: false });
----------    } catch (error: any) {
----------      set({ error: error.message, loading: false });
----------    }
----------  },
----------
----------  updateEntry: async (workDate: string, lineCode: string, stHours: number, otHours: number) => {
----------    try {
----------      set({ error: null });
----------      
----------      // Calculate week ending and pay week status
----------      const weekInfo = get().weekInfo;
----------      if (!weekInfo) return;
----------      
----------      await DB.upsertEntry(
----------        workDate,
----------        lineCode,
----------        stHours,
----------        otHours,
----------        weekInfo.week_ending_date,
----------        weekInfo.is_pay_week
----------      );
----------      
----------      // Refresh data
----------      await get().fetchEntries(weekInfo.week_ending_date);
----------      await get().fetchWeeklySummary(weekInfo.week_ending_date);
----------    } catch (error: any) {
----------      set({ error: error.message });
----------      throw error;
----------    }
----------  },
----------
----------  // Update all other methods similarly
----------}));
----------```
---------+**Features**:
---------+- Generate PDF matching paper timesheet format
---------+- Include all weekly data
---------+- Add signature lines
---------+- Share via email or save to device
--------- 
----------#### Step 4: Initialize Database on App Start
----------Update `/app/frontend/app/_layout.tsx`:
----------
----------```typescript
----------import { useEffect } from 'react';
----------import * as DB from '../services/database';
----------
----------export default function RootLayout() {
----------  useEffect(() => {
----------    // Initialize database when app starts
----------    DB.initDatabase()
----------      .then(() => console.log('Database initialized'))
----------      .catch(error => console.error('Database init error:', error));
----------  }, []);
----------
----------  return (
----------    // ... existing layout
----------  );
----------}
----------```
---------+**Estimated Effort**: 2-3 days
--------- 
----------#### Step 5: Remove Backend Dependency
----------- Keep `/app/backend/` folder for reference
----------- Add comment: "DEPRECATED - Database logic moved to frontend"
----------- Update documentation to reflect offline-first architecture
----------
----------#### Step 6: Test Offline Functionality
----------1. Build app with `eas build --platform android --profile preview`
----------2. Install APK on test device
----------3. Turn OFF WiFi and mobile data
----------4. Test all features:
----------   - [ ] Add time entries
----------   - [ ] View weekly summaries
----------   - [ ] Navigate between weeks
----------   - [ ] Add project lines
----------   - [ ] Toggle line visibility
----------   - [ ] Export data
----------5. Restart app and verify data persists
----------6. Test on multiple devices
---------+#### Enhanced Validation Messages 🚨
---------+**Goal**: Better user feedback for constraint violations
--------- 
-------------
---------+**Current**: Basic Alert dialogs  
---------+**Proposed**: 
---------+- Toast notifications
---------+- Inline validation messages
---------+- Visual indicators on form fields
---------+- Suggested corrections
--------- 
----------## Priority 2: Fine-Tune Grid Alignment
---------+**Estimated Effort**: 1 day
--------- 
----------### Current Issue:
----------Line names and data rows drift out of sync slightly as you scroll down.
---------+#### Undo/Redo for Hour Entries ↩️
---------+**Goal**: Allow users to undo accidental changes
--------- 
----------### Root Cause:
----------- PTO/HOLIDAY rows are shorter (60px) than regular rows (100px)
----------- Heights may need exact measurements from actual rendered components
---------+**Implementation**:
---------+- Add action history stack in Zustand
---------+- Undo/Redo buttons in UI
---------+- Keyboard shortcuts (optional)
--------- 
----------### Solution Options:
---------+**Estimated Effort**: 2 days
--------- 
----------#### Option A: Fixed Heights (Current)
----------- Keep fixed heights but measure exact rendered heights
----------- Adjust `lineNameCell` and `lineNameCellShort` to match data rows precisely
---------+### Priority 2: Advanced Features
--------- 
----------#### Option B: Dynamic Heights
----------- Use `onLayout` to measure actual row heights
----------- Dynamically adjust line name cell heights to match
---------+#### Cloud Sync 🔄
---------+**Goal**: Optional multi-device synchronization
--------- 
----------```typescript
----------const [rowHeights, setRowHeights] = useState<Record<string, number>>({});
----------
----------// In data row:
----------<View 
----------  onLayout={(e) => {
----------    const height = e.nativeEvent.layout.height;
----------    setRowHeights(prev => ({...prev, [line.line_code]: height}));
----------  }}
---------->
----------  {/* row content */}
----------</View>
---------+**Architecture**:
---------+```
---------+Device 1          Backend          Device 2
---------+   |                 |                |
---------+   |-- Push changes->|                |
---------+   |                 |<--Pull changes-|
---------+   |                 |                |
---------+```
--------- 
----------// In line name cell:
----------<View style={[styles.lineNameCell, { height: rowHeights[line.line_code] || 100 }]}>
----------  {/* line name */}
----------</View>
---------+**Implementation**:
---------+- Use existing FastAPI backend
---------+- Add sync timestamps to database
---------+- Conflict resolution strategy
---------+- Background sync service
---------+- Offline queue for pending changes
---------+
---------+**Key Decisions**:
---------+- Sync frequency (manual, automatic, scheduled)
---------+- Conflict resolution (last-write-wins, merge, user choice)
---------+- Authentication mechanism
---------+
---------+**Estimated Effort**: 1-2 weeks
---------+
---------+#### Multi-User Support 👥
---------+**Goal**: Team/supervisor features
---------+
---------+**Features**:
---------+- User accounts and authentication
---------+- Supervisor dashboard
---------+- Bulk timesheet review
---------+- Approval workflow
---------+- Team reports
---------+
---------+**Backend Changes**:
---------+- User table with roles
---------+- Multi-tenant data isolation
---------+- Approval status tracking
---------+
---------+**Estimated Effort**: 2-3 weeks
---------+
---------+### Priority 3: Quality of Life
---------+
---------+#### Search/Filter in History 🔍
---------+**Current**: Shows last 8 weeks  
---------+**Proposed**:
---------+- Search by date range
---------+- Filter by line code
---------+- Search by hours (show weeks over X hours)
---------+- Export filtered results
---------+
---------+**Estimated Effort**: 3-4 days
---------+
---------+#### Configurable Pay Settings ⚙️
---------+**Current**: Hardcoded in database  
---------+**Proposed**:
---------+- UI to change base pay week date
---------+- UI to change pay frequency
---------+- Recalculate all weeks when changed
---------+- Warning about impacts
---------+
---------+**Implementation**:
---------+- Add settings screen section
---------+- Date picker for base date
---------+- Dropdown for frequency (7, 14, 30 days)
---------+- Confirmation dialog
---------+
---------+**Estimated Effort**: 2 days
---------+
---------+#### Time Entry Notes/Comments 📝
---------+**Goal**: Add context to hour entries
---------+
---------+**Schema Changes**:
---------+```sql
---------+ALTER TABLE time_entries ADD COLUMN notes TEXT;
--------- ```
--------- 
-------------
---------+**UI Changes**:
---------+- Note icon on entries with comments
---------+- Modal or expandable view for notes
---------+- Character limit (e.g., 500 chars)
--------- 
----------## Priority 3: Additional Features
---------+**Estimated Effort**: 2 days
--------- 
----------### PDF Export (From Original Spec)
----------- Load PDF template of official timesheet
----------- Fill in values programmatically
----------- Export as PDF matching paper form
----------- Library suggestion: `react-native-pdf` or `expo-print`
---------+#### Photo Attachments 📸
---------+**Goal**: Attach photos to time entries
--------- 
----------### Paycheck Estimator (From Original Spec)
----------- Calculate federal withholding
----------- Calculate VT state withholding
----------- Railroad Retirement Tier I / Tier II
----------- Union dues
----------- Healthcare deductions
----------- Display on pay week dashboard
---------+**Implementation**:
---------+- expo-image-picker for photo selection
---------+- Store as base64 or file references
---------+- Thumbnail view in grid
---------+- Full-size modal view
--------- 
-------------
---------+**Considerations**:
---------+- Database size impact
---------+- Export/import handling
--------- 
----------## Testing Checklist Before Release
----------
----------### Offline Functionality
----------- [ ] App works with no internet connection
----------- [ ] Data persists across app restarts
----------- [ ] All CRUD operations work offline
----------- [ ] Export/import works offline
----------
----------### Data Validation
----------- [ ] ST max 8 hours/day per line enforced
----------- [ ] ST max 40 hours/week enforced
----------- [ ] PTO/HOLIDAY cannot have OT
----------- [ ] Pay week detection accurate for all dates
----------
----------### UI/UX
----------- [ ] Line names align with data rows
----------- [ ] Day headers stay visible when scrolling down
----------- [ ] Line names stay visible when scrolling right
----------- [ ] No jittery scrolling
----------- [ ] Touch targets are large enough (44px minimum)
----------
----------### Cross-Device Testing
----------- [ ] Test on Android phone
----------- [ ] Test on Android tablet
----------- [ ] Test on iPhone (if applicable)
----------- [ ] Test on iPad (if applicable)
----------- [ ] Test different screen sizes
---------+**Estimated Effort**: 4-5 days
--------- 
-------------
---------+### Priority 4: Analytics & Reporting
--------- 
----------## Known Issues to Address
---------+#### Advanced Reports 📊
---------+- Monthly summaries
---------+- Year-to-date totals
---------+- Line code usage analytics
---------+- OT trends
---------+- Comparison charts
--------- 
----------1. **Metro Cache Issues**
----------   - Clear cache frequently during development
----------   - Document workaround for users
---------+**Tools**: react-native-chart-kit or Victory Native
--------- 
----------2. **Date Timezone Handling**
----------   - Always use 'T00:00:00' suffix when parsing dates
----------   - Document this pattern for future developers
---------+**Estimated Effort**: 1 week
--------- 
----------3. **Grid Alignment**
----------   - PTO/HOLIDAY rows slightly shorter
----------   - May need dynamic height measurement
---------+#### Export Formats 📤
---------+**Current**: JSON  
---------+**Additional**:
---------+- CSV for Excel
---------+- PDF reports
---------+- Email integration
--------- 
-------------
---------+**Estimated Effort**: 3 days
--------- 
----------## Long-Term Considerations
---------+### Priority 5: Platform Enhancements
--------- 
----------### Cloud Sync (Optional Future Feature)
----------- Allow users to optionally sync data to cloud
----------- Useful for backup or multi-device access
----------- Should be optional, not required
----------- Offline-first, sync when available
---------+#### Standalone Builds 📱
---------+**Goal**: Installable apps (not just Expo Go)
--------- 
----------### Multi-User Support
----------- If multiple crew members use same device
----------- Add user profiles
----------- Separate data per user
---------+**Process**:
---------+```bash
---------+# EAS Build
---------+eas build --platform android
---------+eas build --platform ios
---------+```
--------- 
----------### Reporting Features
----------- Monthly summaries
----------- Year-to-date totals
----------- Export to Excel/CSV
---------+**Benefits**:
---------+- Faster startup
---------+- Better performance
---------+- App store distribution
---------+- Custom splash screen
---------+- No Expo Go dependency
--------- 
-------------
---------+**Estimated Effort**: 2-3 days (setup & testing)
--------- 
----------## Remember:
---------+#### Push Notifications 🔔
---------+**Use Cases**:
---------+- Reminder to submit timesheet
---------+- Pay week alerts
---------+- Supervisor approvals (if multi-user)
---------+
---------+**Implementation**:
---------+- expo-notifications
---------+- Backend notification service
---------+- User preferences
---------+
---------+**Estimated Effort**: 4-5 days
---------+
---------+## 🛠️ Technical Debt
---------+
---------+### Code Quality
---------+- [ ] Add TypeScript strict mode
---------+- [ ] Improve error handling
---------+- [ ] Add unit tests (Jest)
---------+- [ ] Add E2E tests (Detox)
---------+- [ ] Refactor large components
---------+- [ ] Extract reusable hooks
---------+
---------+### Performance
---------+- [ ] Optimize timesheet grid rendering
---------+- [ ] Add database indexes
---------+- [ ] Implement virtual scrolling for large lists
---------+- [ ] Profile and optimize re-renders
---------+
---------+### Documentation
---------+- [x] README with setup instructions
---------+- [x] Architecture documentation
---------+- [x] Changelog
---------+- [x] GitHub summary
---------+- [ ] API documentation (if backend used)
---------+- [ ] User manual/help screens
---------+
---------+## 📋 Decision Log
---------+
---------+### Architecture Decisions
---------+
---------+**Q: Why expo-sqlite instead of Realm or WatermelonDB?**  
---------+A: expo-sqlite is native to Expo, simpler for this use case, and sufficient for the data volume.
---------+
---------+**Q: Why Zustand instead of Redux?**  
---------+A: Lighter weight, simpler API, less boilerplate, sufficient for app complexity.
---------+
---------+**Q: Why keep the backend?**  
---------+A: Reserved for future cloud sync, multi-user features, and supervisor portal.
---------+
---------+### Design Decisions
---------+
---------+**Q: Why top tabs instead of bottom tabs?**  
---------+A: Bottom tabs conflicted with Android system navigation buttons. Top tabs work better.
---------+
---------+**Q: Why sticky headers in timesheet?**  
---------+A: Users get lost scrolling large grids. Sticky headers maintain context.
---------+
---------+**Q: Why Paper Timesheet Helper?**  
---------+A: Users still need to manually fill paper forms. This format makes transcription easy.
---------+
---------+## 🐛 Known Issues
---------+
---------+### Non-Critical
---------+1. Web preview has mock data only (SQLite not supported)
---------+2. One-time migration cannot be re-run without reinstall
---------+3. No undo for accidental deletions
---------+4. No bulk operations (e.g., copy week)
---------+
---------+### Future Monitoring
---------+- Database size growth over time
---------+- Performance with 100+ weeks of data
---------+- Battery usage
---------+- Memory leaks
---------+
---------+## 📚 Resources for Future Work
---------+
---------+### Expo Documentation
---------+- [Expo Router](https://docs.expo.dev/router/introduction/)
---------+- [expo-sqlite](https://docs.expo.dev/versions/latest/sdk/sqlite/)
---------+- [EAS Build](https://docs.expo.dev/build/introduction/)
---------+- [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/)
---------+
---------+### Libraries to Consider
---------+- **Charts**: victory-native, react-native-chart-kit
---------+- **PDF**: expo-print, react-native-pdf-lib
---------+- **Auth**: expo-auth-session, Firebase Auth
---------+- **Forms**: react-hook-form
---------+- **Testing**: Jest, Detox
---------+
---------+### Backend (Optional Sync)
---------+- FastAPI documentation
---------+- SQLAlchemy (if switching from raw SQL)
---------+- Authentication: JWT, OAuth
---------+- Real-time sync: WebSockets, Server-Sent Events
---------+
---------+## 🎯 Milestones
---------+
---------+### Milestone 1: Enhanced UX (2-3 weeks)
---------+- PDF generation
---------+- Undo/redo
---------+- Search/filter
---------+- Better validation
---------+
---------+### Milestone 2: Cloud Sync (3-4 weeks)
---------+- Backend sync implementation
---------+- Conflict resolution
---------+- Offline queue
---------+- Multi-device testing
---------+
---------+### Milestone 3: Multi-User (4-6 weeks)
---------+- User accounts
---------+- Supervisor portal
---------+- Approval workflow
---------+- Team reports
---------+
---------+### Milestone 4: Production Release (1-2 weeks)
---------+- Standalone builds
---------+- App store submission
---------+- User documentation
---------+- Training materials
---------+
---------+## 📝 Contributing
---------+
---------+When adding features:
---------+1. Update this document with new items
---------+2. Document decisions in Decision Log
---------+3. Add tests for new functionality
---------+4. Update CHANGELOG.md
---------+5. Test on physical devices
---------+
---------+## 🎓 Learning Resources
--------- 
----------1. **DO NOT release app without offline functionality**
----------2. Test thoroughly on physical devices
----------3. Verify data persistence across app restarts
----------4. Document any issues encountered during offline conversion
----------5. Keep backend code as reference for database logic
---------+For new developers:
---------+- Review ARCHITECTURE.md for technical details
---------+- Check CHANGELOG.md for recent changes
---------+- Use Debug Information screen to inspect data
---------+- Test changes on physical device (not web preview)
--------- 
--------- ---
--------- 
----------**Next Session Priority**: Convert to expo-sqlite for offline functionality
----------
----------**Estimated Time**: 4-6 hours for full offline conversion and testing
----------
----------**Blocker**: Cannot release as standalone app until offline conversion complete
---------+**Status**: ✅ Production Ready (Offline Mode)  
---------+**Last Updated**: November 17, 2024  
---------+**Next Review**: After first production deployment
+-------@@ -1,1384 +0,0 @@
 --------diff --git a/model.patch b/model.patch
---------index ff26fb8..ba3b4a5 100644
+--------index 3e0d25d..e69de29 100644
 ----------- a/model.patch
 --------+++ b/model.patch
---------@@ -1,654 +0,0 @@
----------diff --git a/frontend/services/migration.ts b/frontend/services/migration.ts
----------index 7ae1e63..2c1b2dd 100644
------------- a/frontend/services/migration.ts
----------+++ b/frontend/services/migration.ts
----------@@ -1,4 +1,4 @@
-----------import { db } from './database';
----------+import { db } from './databaseWrapper';
---------- import Constants from 'expo-constants';
+--------@@ -1,1379 +0,0 @@
+---------diff --git a/NEXT_STEPS.md b/NEXT_STEPS.md
+---------index 46eb583..863370b 100644
+------------ a/NEXT_STEPS.md
+---------+++ b/NEXT_STEPS.md
+---------@@ -1,403 +1,357 @@
+----------# 🚨 CRITICAL NEXT STEPS - DO NOT SKIP
+---------+# VRS Time Wizard - Next Steps & Future Roadmap
 --------- 
---------- const BACKEND_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_PUBLIC_BACKEND_URL || '';
+----------## Current State: NOT READY FOR PRODUCTION
+---------+## ✅ Current Status: Production Ready (Offline-First)
+--------- 
+----------**Status**: App works with backend server but is NOT offline-capable
+---------+The app has been successfully refactored to an offline-first architecture. All core functionality is complete and tested on physical devices.
+--------- 
+----------**Problem**: 
+----------- Data stored on backend server, not on phone
+----------- Requires internet connection and running backend
+----------- Won't work as standalone app without server
+----------- Railroad workers need offline functionality
+---------+### Completed Phases
+---------+- ✅ **Phase 1**: Local SQLite database setup
+---------+- ✅ **Phase 2**: Business logic migration from backend to frontend
+---------+- ✅ **Phase 3**: One-time data migration system
+---------+- ✅ **Phase 4**: Export/import backup functionality
+---------+- ✅ **Bug Fixes**: Pay week calculation, grid alignment, data consistency
+--------- 
+-------------
+---------+### What Works Now
+---------+- 100% offline functionality
+---------+- Local data storage with expo-sqlite
+---------+- Week navigation and hour entry
+---------+- Pay week detection (timezone-safe)
+---------+- History with auto-refresh
+---------+- Backup/restore via JSON files
+---------+- Debug information screen
+--------- 
+----------## Priority 1: Convert to Offline App (REQUIRED)
+---------+## 🚀 Future Enhancements
+--------- 
+----------### Why This Is Critical:
+----------1. Original spec required: "All data stored locally on your device"
+----------2. Original spec required: "No requirement for server or cloud sync"
+----------3. Railroad workers may not have reliable internet access
+----------4. Standalone app won't work without this change
+---------+### Priority 1: User Experience Improvements
+--------- 
+----------### Implementation Steps:
+---------+#### PDF Generation 📄
+---------+**Goal**: Generate PDF timesheets from data
+--------- 
+----------#### Step 1: Install expo-sqlite
+---------+**Implementation**:
+--------- ```bash
+----------cd /app/frontend
+----------yarn add expo-sqlite
+----------```
+----------
+----------#### Step 2: Create Database Service
+----------Create `/app/frontend/services/database.ts`:
+----------
+----------```typescript
+----------import * as SQLite from 'expo-sqlite';
+----------
+----------const db = SQLite.openDatabase('timesheet.db');
+----------
+----------// Initialize database with tables
+----------export const initDatabase = (): Promise<void> => {
+----------  return new Promise((resolve, reject) => {
+----------    db.transaction(tx => {
+----------      // Create time_entries table
+----------      tx.executeSql(
+----------        `CREATE TABLE IF NOT EXISTS time_entries (
+----------          id INTEGER PRIMARY KEY AUTOINCREMENT,
+----------          work_date TEXT NOT NULL,
+----------          week_ending_date TEXT NOT NULL,
+----------          line_code TEXT NOT NULL,
+----------          st_hours INTEGER DEFAULT 0,
+----------          ot_hours INTEGER DEFAULT 0,
+----------          is_pay_week INTEGER DEFAULT 0,
+----------          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+----------          updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+----------          UNIQUE(work_date, line_code)
+----------        );`
+----------      );
+----------
+----------      // Create line_codes table
+----------      tx.executeSql(
+----------        `CREATE TABLE IF NOT EXISTS line_codes (
+----------          line_code TEXT PRIMARY KEY,
+----------          label TEXT NOT NULL,
+----------          is_project INTEGER DEFAULT 0,
+----------          is_visible INTEGER DEFAULT 1,
+----------          sort_order INTEGER DEFAULT 0,
+----------          created_at TEXT DEFAULT CURRENT_TIMESTAMP
+----------        );`
+----------      );
+----------
+----------      // Create settings table
+----------      tx.executeSql(
+----------        `CREATE TABLE IF NOT EXISTS settings (
+----------          key TEXT PRIMARY KEY,
+----------          value TEXT NOT NULL,
+----------          updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+----------        );`
+----------      );
+----------
+----------      // Insert default line codes
+----------      const defaultLines = [
+----------        ['VTR', 'VTR', 0, 1, 1],
+----------        ['GMRC', 'GMRC', 0, 1, 2],
+----------        ['CLP', 'CLP', 0, 1, 3],
+----------        ['WACR', 'WACR', 0, 1, 4],
+----------        ['WACR-CRD', 'WACR-CRD', 0, 1, 5],
+----------        ['NEGS', 'NEGS', 0, 1, 6],
+----------        ['NHC', 'NHC', 0, 1, 7],
+----------        ['NYOG', 'NYOG', 0, 1, 8],
+----------        ['PTO', 'PTO', 0, 1, 9],
+----------        ['HOLIDAY', 'HOLIDAY', 0, 1, 10],
+----------      ];
+----------
+----------      defaultLines.forEach(([code, label, isProject, isVisible, sortOrder]) => {
+----------        tx.executeSql(
+----------          'INSERT OR IGNORE INTO line_codes (line_code, label, is_project, is_visible, sort_order) VALUES (?, ?, ?, ?, ?)',
+----------          [code, label, isProject, isVisible, sortOrder]
+----------        );
+----------      });
+----------
+----------      // Insert default settings
+----------      tx.executeSql(
+----------        'INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)',
+----------        ['base_pay_week_ending', '2025-11-29']
+----------      );
+----------      tx.executeSql(
+----------        'INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)',
+----------        ['pay_frequency_days', '14']
+----------      );
+----------    },
+----------    error => reject(error),
+----------    () => resolve());
+----------  });
+----------};
+----------
+----------// Example: Get entries for a week
+----------export const getEntriesByWeek = (weekEnding: string): Promise<any[]> => {
+----------  return new Promise((resolve, reject) => {
+----------    db.transaction(tx => {
+----------      tx.executeSql(
+----------        'SELECT * FROM time_entries WHERE week_ending_date = ? ORDER BY work_date, line_code',
+----------        [weekEnding],
+----------        (_, { rows }) => resolve(rows._array),
+----------        (_, error) => reject(error)
+----------      );
+----------    });
+----------  });
+----------};
+----------
+----------// Example: Create or update entry
+----------export const upsertEntry = (workDate: string, lineCode: string, stHours: number, otHours: number, weekEnding: string, isPayWeek: boolean): Promise<void> => {
+----------  return new Promise((resolve, reject) => {
+----------    db.transaction(tx => {
+----------      tx.executeSql(
+----------        `INSERT INTO time_entries (work_date, line_code, st_hours, ot_hours, week_ending_date, is_pay_week)
+----------         VALUES (?, ?, ?, ?, ?, ?)
+----------         ON CONFLICT(work_date, line_code) DO UPDATE SET
+----------           st_hours = excluded.st_hours,
+----------           ot_hours = excluded.ot_hours,
+----------           week_ending_date = excluded.week_ending_date,
+----------           is_pay_week = excluded.is_pay_week,
+----------           updated_at = CURRENT_TIMESTAMP`,
+----------        [workDate, lineCode, stHours, otHours, weekEnding, isPayWeek ? 1 : 0],
+----------        () => resolve(),
+----------        (_, error) => reject(error)
+----------      );
+----------    });
+----------  });
+----------};
+----------
+----------// Add more functions for:
+----------// - getLines()
+----------// - addProjectLine()
+----------// - toggleLineVisibility()
+----------// - deleteProjectLine()
+----------// - getWeeklySummary()
+----------// - exportData()
+----------// - importData()
+---------+# Install dependencies
+---------+npm install react-native-pdf-lib
+---------+# or
+---------+npm install expo-print
+--------- ```
+--------- 
+----------#### Step 3: Update Zustand Store
+----------Modify `/app/frontend/store/timesheetStore.ts`:
+----------
+----------```typescript
+----------import { create } from 'zustand';
+----------import * as DB from '../services/database';
+----------
+----------// Remove BACKEND_URL completely
+----------// Replace all fetch() calls with DB function calls
+----------
+----------interface TimesheetState {
+----------  // ... keep existing state shape
+----------  
+----------  fetchEntries: (weekEnding: string) => Promise<void>;
+----------  // ... other methods
+----------}
+----------
+----------export const useTimesheetStore = create<TimesheetState>((set, get) => ({
+----------  entries: [],
+----------  lines: [],
+----------  // ... existing state
+----------
+----------  fetchEntries: async (weekEnding: string) => {
+----------    try {
+----------      set({ loading: true, error: null });
+----------      const entries = await DB.getEntriesByWeek(weekEnding);
+----------      set({ entries, loading: false });
+----------    } catch (error: any) {
+----------      set({ error: error.message, loading: false });
+----------    }
+----------  },
+----------
+----------  updateEntry: async (workDate: string, lineCode: string, stHours: number, otHours: number) => {
+----------    try {
+----------      set({ error: null });
+----------      
+----------      // Calculate week ending and pay week status
+----------      const weekInfo = get().weekInfo;
+----------      if (!weekInfo) return;
+----------      
+----------      await DB.upsertEntry(
+----------        workDate,
+----------        lineCode,
+----------        stHours,
+----------        otHours,
+----------        weekInfo.week_ending_date,
+----------        weekInfo.is_pay_week
+----------      );
+----------      
+----------      // Refresh data
+----------      await get().fetchEntries(weekInfo.week_ending_date);
+----------      await get().fetchWeeklySummary(weekInfo.week_ending_date);
+----------    } catch (error: any) {
+----------      set({ error: error.message });
+----------      throw error;
+----------    }
+----------  },
+----------
+----------  // Update all other methods similarly
+----------}));
+----------```
+---------+**Features**:
+---------+- Generate PDF matching paper timesheet format
+---------+- Include all weekly data
+---------+- Add signature lines
+---------+- Share via email or save to device
+--------- 
+----------#### Step 4: Initialize Database on App Start
+----------Update `/app/frontend/app/_layout.tsx`:
+----------
+----------```typescript
+----------import { useEffect } from 'react';
+----------import * as DB from '../services/database';
+----------
+----------export default function RootLayout() {
+----------  useEffect(() => {
+----------    // Initialize database when app starts
+----------    DB.initDatabase()
+----------      .then(() => console.log('Database initialized'))
+----------      .catch(error => console.error('Database init error:', error));
+----------  }, []);
+----------
+----------  return (
+----------    // ... existing layout
+----------  );
+----------}
+----------```
+---------+**Estimated Effort**: 2-3 days
+--------- 
+----------#### Step 5: Remove Backend Dependency
+----------- Keep `/app/backend/` folder for reference
+----------- Add comment: "DEPRECATED - Database logic moved to frontend"
+----------- Update documentation to reflect offline-first architecture
+----------
+----------#### Step 6: Test Offline Functionality
+----------1. Build app with `eas build --platform android --profile preview`
+----------2. Install APK on test device
+----------3. Turn OFF WiFi and mobile data
+----------4. Test all features:
+----------   - [ ] Add time entries
+----------   - [ ] View weekly summaries
+----------   - [ ] Navigate between weeks
+----------   - [ ] Add project lines
+----------   - [ ] Toggle line visibility
+----------   - [ ] Export data
+----------5. Restart app and verify data persists
+----------6. Test on multiple devices
+---------+#### Enhanced Validation Messages 🚨
+---------+**Goal**: Better user feedback for constraint violations
+--------- 
+-------------
+---------+**Current**: Basic Alert dialogs  
+---------+**Proposed**: 
+---------+- Toast notifications
+---------+- Inline validation messages
+---------+- Visual indicators on form fields
+---------+- Suggested corrections
+--------- 
+----------## Priority 2: Fine-Tune Grid Alignment
+---------+**Estimated Effort**: 1 day
+--------- 
+----------### Current Issue:
+----------Line names and data rows drift out of sync slightly as you scroll down.
+---------+#### Undo/Redo for Hour Entries ↩️
+---------+**Goal**: Allow users to undo accidental changes
+--------- 
+----------### Root Cause:
+----------- PTO/HOLIDAY rows are shorter (60px) than regular rows (100px)
+----------- Heights may need exact measurements from actual rendered components
+---------+**Implementation**:
+---------+- Add action history stack in Zustand
+---------+- Undo/Redo buttons in UI
+---------+- Keyboard shortcuts (optional)
+--------- 
+----------### Solution Options:
+---------+**Estimated Effort**: 2 days
+--------- 
+----------#### Option A: Fixed Heights (Current)
+----------- Keep fixed heights but measure exact rendered heights
+----------- Adjust `lineNameCell` and `lineNameCellShort` to match data rows precisely
+---------+### Priority 2: Advanced Features
+--------- 
+----------#### Option B: Dynamic Heights
+----------- Use `onLayout` to measure actual row heights
+----------- Dynamically adjust line name cell heights to match
+---------+#### Cloud Sync 🔄
+---------+**Goal**: Optional multi-device synchronization
+--------- 
+----------```typescript
+----------const [rowHeights, setRowHeights] = useState<Record<string, number>>({});
+----------
+----------// In data row:
+----------<View 
+----------  onLayout={(e) => {
+----------    const height = e.nativeEvent.layout.height;
+----------    setRowHeights(prev => ({...prev, [line.line_code]: height}));
+----------  }}
+---------->
+----------  {/* row content */}
+----------</View>
+---------+**Architecture**:
+---------+```
+---------+Device 1          Backend          Device 2
+---------+   |                 |                |
+---------+   |-- Push changes->|                |
+---------+   |                 |<--Pull changes-|
+---------+   |                 |                |
+---------+```
+--------- 
+----------// In line name cell:
+----------<View style={[styles.lineNameCell, { height: rowHeights[line.line_code] || 100 }]}>
+----------  {/* line name */}
+----------</View>
+---------+**Implementation**:
+---------+- Use existing FastAPI backend
+---------+- Add sync timestamps to database
+---------+- Conflict resolution strategy
+---------+- Background sync service
+---------+- Offline queue for pending changes
+---------+
+---------+**Key Decisions**:
+---------+- Sync frequency (manual, automatic, scheduled)
+---------+- Conflict resolution (last-write-wins, merge, user choice)
+---------+- Authentication mechanism
+---------+
+---------+**Estimated Effort**: 1-2 weeks
+---------+
+---------+#### Multi-User Support 👥
+---------+**Goal**: Team/supervisor features
+---------+
+---------+**Features**:
+---------+- User accounts and authentication
+---------+- Supervisor dashboard
+---------+- Bulk timesheet review
+---------+- Approval workflow
+---------+- Team reports
+---------+
+---------+**Backend Changes**:
+---------+- User table with roles
+---------+- Multi-tenant data isolation
+---------+- Approval status tracking
+---------+
+---------+**Estimated Effort**: 2-3 weeks
+---------+
+---------+### Priority 3: Quality of Life
+---------+
+---------+#### Search/Filter in History 🔍
+---------+**Current**: Shows last 8 weeks  
+---------+**Proposed**:
+---------+- Search by date range
+---------+- Filter by line code
+---------+- Search by hours (show weeks over X hours)
+---------+- Export filtered results
+---------+
+---------+**Estimated Effort**: 3-4 days
+---------+
+---------+#### Configurable Pay Settings ⚙️
+---------+**Current**: Hardcoded in database  
+---------+**Proposed**:
+---------+- UI to change base pay week date
+---------+- UI to change pay frequency
+---------+- Recalculate all weeks when changed
+---------+- Warning about impacts
+---------+
+---------+**Implementation**:
+---------+- Add settings screen section
+---------+- Date picker for base date
+---------+- Dropdown for frequency (7, 14, 30 days)
+---------+- Confirmation dialog
+---------+
+---------+**Estimated Effort**: 2 days
+---------+
+---------+#### Time Entry Notes/Comments 📝
+---------+**Goal**: Add context to hour entries
+---------+
+---------+**Schema Changes**:
+---------+```sql
+---------+ALTER TABLE time_entries ADD COLUMN notes TEXT;
+--------- ```
+--------- 
+-------------
+---------+**UI Changes**:
+---------+- Note icon on entries with comments
+---------+- Modal or expandable view for notes
+---------+- Character limit (e.g., 500 chars)
+--------- 
+----------## Priority 3: Additional Features
+---------+**Estimated Effort**: 2 days
+--------- 
+----------### PDF Export (From Original Spec)
+----------- Load PDF template of official timesheet
+----------- Fill in values programmatically
+----------- Export as PDF matching paper form
+----------- Library suggestion: `react-native-pdf` or `expo-print`
+---------+#### Photo Attachments 📸
+---------+**Goal**: Attach photos to time entries
+--------- 
+----------### Paycheck Estimator (From Original Spec)
+----------- Calculate federal withholding
+----------- Calculate VT state withholding
+----------- Railroad Retirement Tier I / Tier II
+----------- Union dues
+----------- Healthcare deductions
+----------- Display on pay week dashboard
+---------+**Implementation**:
+---------+- expo-image-picker for photo selection
+---------+- Store as base64 or file references
+---------+- Thumbnail view in grid
+---------+- Full-size modal view
+--------- 
+-------------
+---------+**Considerations**:
+---------+- Database size impact
+---------+- Export/import handling
+--------- 
+----------## Testing Checklist Before Release
+----------
+----------### Offline Functionality
+----------- [ ] App works with no internet connection
+----------- [ ] Data persists across app restarts
+----------- [ ] All CRUD operations work offline
+----------- [ ] Export/import works offline
+----------
+----------### Data Validation
+----------- [ ] ST max 8 hours/day per line enforced
+----------- [ ] ST max 40 hours/week enforced
+----------- [ ] PTO/HOLIDAY cannot have OT
+----------- [ ] Pay week detection accurate for all dates
+----------
+----------### UI/UX
+----------- [ ] Line names align with data rows
+----------- [ ] Day headers stay visible when scrolling down
+----------- [ ] Line names stay visible when scrolling right
+----------- [ ] No jittery scrolling
+----------- [ ] Touch targets are large enough (44px minimum)
+----------
+----------### Cross-Device Testing
+----------- [ ] Test on Android phone
+----------- [ ] Test on Android tablet
+----------- [ ] Test on iPhone (if applicable)
+----------- [ ] Test on iPad (if applicable)
+----------- [ ] Test different screen sizes
+---------+**Estimated Effort**: 4-5 days
+--------- 
+-------------
+---------+### Priority 4: Analytics & Reporting
+--------- 
+----------## Known Issues to Address
+---------+#### Advanced Reports 📊
+---------+- Monthly summaries
+---------+- Year-to-date totals
+---------+- Line code usage analytics
+---------+- OT trends
+---------+- Comparison charts
+--------- 
+----------1. **Metro Cache Issues**
+----------   - Clear cache frequently during development
+----------   - Document workaround for users
+---------+**Tools**: react-native-chart-kit or Victory Native
+--------- 
+----------2. **Date Timezone Handling**
+----------   - Always use 'T00:00:00' suffix when parsing dates
+----------   - Document this pattern for future developers
+---------+**Estimated Effort**: 1 week
+--------- 
+----------3. **Grid Alignment**
+----------   - PTO/HOLIDAY rows slightly shorter
+----------   - May need dynamic height measurement
+---------+#### Export Formats 📤
+---------+**Current**: JSON  
+---------+**Additional**:
+---------+- CSV for Excel
+---------+- PDF reports
+---------+- Email integration
+--------- 
+-------------
+---------+**Estimated Effort**: 3 days
+--------- 
+----------## Long-Term Considerations
+---------+### Priority 5: Platform Enhancements
+--------- 
+----------### Cloud Sync (Optional Future Feature)
+----------- Allow users to optionally sync data to cloud
+----------- Useful for backup or multi-device access
+----------- Should be optional, not required
+----------- Offline-first, sync when available
+---------+#### Standalone Builds 📱
+---------+**Goal**: Installable apps (not just Expo Go)
+--------- 
+----------### Multi-User Support
+----------- If multiple crew members use same device
+----------- Add user profiles
+----------- Separate data per user
+---------+**Process**:
+---------+```bash
+---------+# EAS Build
+---------+eas build --platform android
+---------+eas build --platform ios
+---------+```
+--------- 
+----------### Reporting Features
+----------- Monthly summaries
+----------- Year-to-date totals
+----------- Export to Excel/CSV
+---------+**Benefits**:
+---------+- Faster startup
+---------+- Better performance
+---------+- App store distribution
+---------+- Custom splash screen
+---------+- No Expo Go dependency
+--------- 
+-------------
+---------+**Estimated Effort**: 2-3 days (setup & testing)
+--------- 
+----------## Remember:
+---------+#### Push Notifications 🔔
+---------+**Use Cases**:
+---------+- Reminder to submit timesheet
+---------+- Pay week alerts
+---------+- Supervisor approvals (if multi-user)
+---------+
+---------+**Implementation**:
+---------+- expo-notifications
+---------+- Backend notification service
+---------+- User preferences
+---------+
+---------+**Estimated Effort**: 4-5 days
+---------+
+---------+## 🛠️ Technical Debt
+---------+
+---------+### Code Quality
+---------+- [ ] Add TypeScript strict mode
+---------+- [ ] Improve error handling
+---------+- [ ] Add unit tests (Jest)
+---------+- [ ] Add E2E tests (Detox)
+---------+- [ ] Refactor large components
+---------+- [ ] Extract reusable hooks
+---------+
+---------+### Performance
+---------+- [ ] Optimize timesheet grid rendering
+---------+- [ ] Add database indexes
+---------+- [ ] Implement virtual scrolling for large lists
+---------+- [ ] Profile and optimize re-renders
+---------+
+---------+### Documentation
+---------+- [x] README with setup instructions
+---------+- [x] Architecture documentation
+---------+- [x] Changelog
+---------+- [x] GitHub summary
+---------+- [ ] API documentation (if backend used)
+---------+- [ ] User manual/help screens
+---------+
+---------+## 📋 Decision Log
+---------+
+---------+### Architecture Decisions
+---------+
+---------+**Q: Why expo-sqlite instead of Realm or WatermelonDB?**  
+---------+A: expo-sqlite is native to Expo, simpler for this use case, and sufficient for the data volume.
+---------+
+---------+**Q: Why Zustand instead of Redux?**  
+---------+A: Lighter weight, simpler API, less boilerplate, sufficient for app complexity.
+---------+
+---------+**Q: Why keep the backend?**  
+---------+A: Reserved for future cloud sync, multi-user features, and supervisor portal.
+---------+
+---------+### Design Decisions
+---------+
+---------+**Q: Why top tabs instead of bottom tabs?**  
+---------+A: Bottom tabs conflicted with Android system navigation buttons. Top tabs work better.
+---------+
+---------+**Q: Why sticky headers in timesheet?**  
+---------+A: Users get lost scrolling large grids. Sticky headers maintain context.
+---------+
+---------+**Q: Why Paper Timesheet Helper?**  
+---------+A: Users still need to manually fill paper forms. This format makes transcription easy.
+---------+
+---------+## 🐛 Known Issues
+---------+
+---------+### Non-Critical
+---------+1. Web preview has mock data only (SQLite not supported)
+---------+2. One-time migration cannot be re-run without reinstall
+---------+3. No undo for accidental deletions
+---------+4. No bulk operations (e.g., copy week)
+---------+
+---------+### Future Monitoring
+---------+- Database size growth over time
+---------+- Performance with 100+ weeks of data
+---------+- Battery usage
+---------+- Memory leaks
+---------+
+---------+## 📚 Resources for Future Work
+---------+
+---------+### Expo Documentation
+---------+- [Expo Router](https://docs.expo.dev/router/introduction/)
+---------+- [expo-sqlite](https://docs.expo.dev/versions/latest/sdk/sqlite/)
+---------+- [EAS Build](https://docs.expo.dev/build/introduction/)
+---------+- [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/)
+---------+
+---------+### Libraries to Consider
+---------+- **Charts**: victory-native, react-native-chart-kit
+---------+- **PDF**: expo-print, react-native-pdf-lib
+---------+- **Auth**: expo-auth-session, Firebase Auth
+---------+- **Forms**: react-hook-form
+---------+- **Testing**: Jest, Detox
+---------+
+---------+### Backend (Optional Sync)
+---------+- FastAPI documentation
+---------+- SQLAlchemy (if switching from raw SQL)
+---------+- Authentication: JWT, OAuth
+---------+- Real-time sync: WebSockets, Server-Sent Events
+---------+
+---------+## 🎯 Milestones
+---------+
+---------+### Milestone 1: Enhanced UX (2-3 weeks)
+---------+- PDF generation
+---------+- Undo/redo
+---------+- Search/filter
+---------+- Better validation
+---------+
+---------+### Milestone 2: Cloud Sync (3-4 weeks)
+---------+- Backend sync implementation
+---------+- Conflict resolution
+---------+- Offline queue
+---------+- Multi-device testing
+---------+
+---------+### Milestone 3: Multi-User (4-6 weeks)
+---------+- User accounts
+---------+- Supervisor portal
+---------+- Approval workflow
+---------+- Team reports
+---------+
+---------+### Milestone 4: Production Release (1-2 weeks)
+---------+- Standalone builds
+---------+- App store submission
+---------+- User documentation
+---------+- Training materials
+---------+
+---------+## 📝 Contributing
+---------+
+---------+When adding features:
+---------+1. Update this document with new items
+---------+2. Document decisions in Decision Log
+---------+3. Add tests for new functionality
+---------+4. Update CHANGELOG.md
+---------+5. Test on physical devices
+---------+
+---------+## 🎓 Learning Resources
+--------- 
+----------1. **DO NOT release app without offline functionality**
+----------2. Test thoroughly on physical devices
+----------3. Verify data persistence across app restarts
+----------4. Document any issues encountered during offline conversion
+----------5. Keep backend code as reference for database logic
+---------+For new developers:
+---------+- Review ARCHITECTURE.md for technical details
+---------+- Check CHANGELOG.md for recent changes
+---------+- Use Debug Information screen to inspect data
+---------+- Test changes on physical device (not web preview)
+--------- 
+--------- ---
+--------- 
+----------**Next Session Priority**: Convert to expo-sqlite for offline functionality
+----------
+----------**Estimated Time**: 4-6 hours for full offline conversion and testing
+----------
+----------**Blocker**: Cannot release as standalone app until offline conversion complete
+---------+**Status**: ✅ Production Ready (Offline Mode)  
+---------+**Last Updated**: November 17, 2024  
+---------+**Next Review**: After first production deployment
 ---------diff --git a/model.patch b/model.patch
----------index 85b95d9..e69de29 100644
+---------index ff26fb8..ba3b4a5 100644
 ------------ a/model.patch
 ---------+++ b/model.patch
----------@@ -1,639 +0,0 @@
-----------diff --git a/frontend/app/(tabs)/timesheet.tsx b/frontend/app/(tabs)/timesheet.tsx
-----------index 7adcf67..c79f2b8 100644
-------------- a/frontend/app/(tabs)/timesheet.tsx
-----------+++ b/frontend/app/(tabs)/timesheet.tsx
+---------@@ -1,654 +0,0 @@
+----------diff --git a/frontend/services/migration.ts b/frontend/services/migration.ts
+----------index 7ae1e63..2c1b2dd 100644
+------------- a/frontend/services/migration.ts
+----------+++ b/frontend/services/migration.ts
 ----------@@ -1,4 +1,4 @@
------------import React, { useEffect, useState } from 'react';
-----------+import React, { useEffect, useState, useRef } from 'react';
----------- import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Pressable, Alert, TextInput } from 'react-native';
----------- import { SafeAreaView } from 'react-native-safe-area-context';
----------- import { Ionicons } from '@expo/vector-icons';
-----------@@ -21,11 +21,12 @@ export default function TimesheetScreen() {
-----------     addProjectLine
-----------   } = useTimesheetStore();
+-----------import { db } from './database';
+----------+import { db } from './databaseWrapper';
+---------- import Constants from 'expo-constants';
 ---------- 
------------  const [showAddProject, setShowAddProject] = React.useState(false);
------------  const [projectNumber, setProjectNumber] = React.useState('');
-----------+  const [showAddProject, setShowAddProject] = useState(false);
-----------+  const [projectNumber, setProjectNumber] = useState('');
----------- 
-----------   // Refs for synchronized scrolling
------------  const headerDayScroll = React.useRef<any>(null);
-----------+  const headerDayScroll = useRef<any>(null);
-----------+  const sideLineScroll = useRef<any>(null);
----------- 
-----------   useEffect(() => {
-----------     const today = new Date().toISOString().split('T')[0];
-----------@@ -554,12 +555,6 @@ const styles = StyleSheet.create({
-----------   totalsRow: {
-----------     backgroundColor: '#f9fafb',
-----------   },
------------  dayHeaderContainer: {
------------    flexDirection: 'row',
------------    backgroundColor: '#f9fafb',
------------    borderBottomWidth: 2,
------------    borderBottomColor: '#e5e7eb',
------------  },
-----------   contentArea: {
-----------     flex: 1,
-----------     flexDirection: 'row',
+---------- const BACKEND_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_PUBLIC_BACKEND_URL || '';
 ----------diff --git a/model.patch b/model.patch
-----------index 338a674..e69de29 100644
+----------index 85b95d9..e69de29 100644
 ------------- a/model.patch
 ----------+++ b/model.patch
-----------@@ -1,595 +0,0 @@
+----------@@ -1,639 +0,0 @@
 -----------diff --git a/frontend/app/(tabs)/timesheet.tsx b/frontend/app/(tabs)/timesheet.tsx
------------index d66446c..9ba473c 100644
+-----------index 7adcf67..c79f2b8 100644
 -------------- a/frontend/app/(tabs)/timesheet.tsx
 -----------+++ b/frontend/app/(tabs)/timesheet.tsx
------------@@ -25,13 +25,7 @@ export default function TimesheetScreen() {
------------   const [projectNumber, setProjectNumber] = React.useState('');
+-----------@@ -1,4 +1,4 @@
+------------import React, { useEffect, useState } from 'react';
+-----------+import React, { useEffect, useState, useRef } from 'react';
+----------- import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Pressable, Alert, TextInput } from 'react-native';
+----------- import { SafeAreaView } from 'react-native-safe-area-context';
+----------- import { Ionicons } from '@expo/vector-icons';
+-----------@@ -21,11 +21,12 @@ export default function TimesheetScreen() {
+-----------     addProjectLine
+-----------   } = useTimesheetStore();
+----------- 
+------------  const [showAddProject, setShowAddProject] = React.useState(false);
+------------  const [projectNumber, setProjectNumber] = React.useState('');
+-----------+  const [showAddProject, setShowAddProject] = useState(false);
+-----------+  const [projectNumber, setProjectNumber] = useState('');
 ----------- 
 -----------   // Refs for synchronized scrolling
-------------  const mainHorizontalScroll = React.useRef<any>(null);
-------------  const mainVerticalScroll = React.useRef<any>(null);
------------   const headerDayScroll = React.useRef<any>(null);
-------------  const sideLineScroll = React.useRef<any>(null);
-------------  
-------------  // Flag to prevent scroll feedback loop
-------------  const isScrolling = React.useRef(false);
+------------  const headerDayScroll = React.useRef<any>(null);
+-----------+  const headerDayScroll = useRef<any>(null);
+-----------+  const sideLineScroll = useRef<any>(null);
 ----------- 
 -----------   useEffect(() => {
 -----------     const today = new Date().toISOString().split('T')[0];
------------@@ -236,15 +230,11 @@ export default function TimesheetScreen() {
------------ 
------------       {/* Grid with Sticky Headers */}
------------       <View style={styles.gridContainer}>
-------------        {/* Fixed Top-Left Corner */}
-------------        <View style={styles.fixedCorner}>
------------+        {/* Fixed Day Headers */}
------------+        <View style={styles.dayHeaderContainer}>
------------           <View style={styles.cornerCell}>
------------             <Text style={styles.lineHeaderText}>Line</Text>
------------           </View>
-------------        </View>
-------------
-------------        {/* Fixed Day Headers (Top Row) */}
-------------        <View style={styles.fixedDayHeaders}>
------------           <ScrollView 
------------             horizontal 
------------             showsHorizontalScrollIndicator={false}
------------@@ -268,76 +258,29 @@ export default function TimesheetScreen() {
------------           </ScrollView>
------------         </View>
------------ 
-------------        {/* Scrollable Content Area */}
-------------        <View style={styles.scrollableArea}>
-------------          {/* Fixed Line Names (Left Column) */}
-------------          <View style={styles.fixedLineNames}>
-------------            <ScrollView 
-------------              showsVerticalScrollIndicator={false}
-------------              scrollEnabled={true}
-------------              scrollEventThrottle={16}
-------------              onScroll={(e) => {
-------------                // Sync main content when user scrolls line names
-------------                const offsetY = e.nativeEvent.contentOffset.y;
-------------                if (mainVerticalScroll.current && mainVerticalScroll.current.scrollTo) {
-------------                  mainVerticalScroll.current.scrollTo({ y: offsetY, animated: false });
-------------                }
-------------              }}
-------------              ref={(ref) => { sideLineScroll.current = ref; }}
-------------            >
-------------              {visibleLines.map((line) => (
-------------                <View key={line.line_code} style={styles.lineNameCell}>
-------------                  <Text style={styles.lineNameText}>{line.label}</Text>
-------------                </View>
-------------              ))}
-------------              <View style={[styles.lineNameCell, styles.totalsRow]}>
-------------                <Text style={styles.totalLabelText}>Totals</Text>
-------------              </View>
-------------            </ScrollView>
-------------          </View>
-------------
-------------          {/* Main Scrollable Grid */}
------------+        {/* Main Scrollable Grid with Line Names */}
------------+        <ScrollView style={styles.mainScroll} showsVerticalScrollIndicator={true}>
------------           <ScrollView
------------             horizontal
------------             showsHorizontalScrollIndicator={true}
------------             scrollEventThrottle={16}
------------             onScroll={(e) => {
-------------              if (!isScrolling.current) {
-------------                isScrolling.current = true;
-------------                const offsetX = e.nativeEvent.contentOffset.x;
-------------                if (headerDayScroll.current) {
-------------                  headerDayScroll.current.scrollTo({ x: offsetX, animated: false });
-------------                }
-------------                requestAnimationFrame(() => {
-------------                  isScrolling.current = false;
-------------                });
------------+              const offsetX = e.nativeEvent.contentOffset.x;
------------+              if (headerDayScroll.current) {
------------+                headerDayScroll.current.scrollTo({ x: offsetX, animated: false });
------------               }
------------             }}
-------------            ref={(ref) => { mainHorizontalScroll.current = ref; }}
------------           >
-------------            <ScrollView
-------------              showsVerticalScrollIndicator={true}
-------------              scrollEventThrottle={16}
-------------              onScroll={(e) => {
-------------                if (!isScrolling.current) {
-------------                  isScrolling.current = true;
-------------                  const offsetY = e.nativeEvent.contentOffset.y;
-------------                  if (sideLineScroll.current) {
-------------                    sideLineScroll.current.scrollTo({ y: offsetY, animated: false });
-------------                  }
-------------                  requestAnimationFrame(() => {
-------------                    isScrolling.current = false;
-------------                  });
-------------                }
-------------              }}
-------------              ref={(ref) => { mainVerticalScroll.current = ref; }}
-------------            >
-------------
------------+            <View>
------------               {visibleLines.map((line) => {
------------                 const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
------------                 
------------                 return (
------------                   <View key={line.line_code} style={styles.dataRow}>
------------+                    {/* Line Name Cell */}
------------+                    <View style={styles.lineNameCell}>
------------+                      <Text style={styles.lineNameText}>{line.label}</Text>
------------+                    </View>
------------                     {weekDays.map((day, dayIndex) => {
------------                     const isWeekend = dayIndex === 0 || dayIndex === 6;
------------                     const stHours = getEntryHours(day, line.line_code, 'st');
------------@@ -397,6 +340,10 @@ export default function TimesheetScreen() {
------------ 
------------               {/* Daily Totals Row */}
------------               <View style={[styles.dataRow, styles.totalsRow]}>
------------+                {/* Totals Label Cell */}
------------+                <View style={[styles.lineNameCell, styles.totalsRow]}>
------------+                  <Text style={styles.totalLabelText}>Totals</Text>
------------+                </View>
------------                 {weekDays.map((day, dayIndex) => {
------------                   const isWeekend = dayIndex === 0 || dayIndex === 6;
------------                   const dayST = getDayTotal(day, 'st');
------------@@ -513,46 +460,24 @@ const styles = StyleSheet.create({
------------     flex: 1,
------------     position: 'relative',
+-----------@@ -554,12 +555,6 @@ const styles = StyleSheet.create({
+-----------   totalsRow: {
+-----------     backgroundColor: '#f9fafb',
 -----------   },
-------------  fixedCorner: {
-------------    position: 'absolute',
-------------    top: 0,
-------------    left: 0,
-------------    zIndex: 3,
+------------  dayHeaderContainer: {
+------------    flexDirection: 'row',
 ------------    backgroundColor: '#f9fafb',
 ------------    borderBottomWidth: 2,
-------------    borderRightWidth: 1,
 ------------    borderBottomColor: '#e5e7eb',
-------------    borderRightColor: '#e5e7eb',
 ------------  },
------------   cornerCell: {
------------     width: 100,
------------     height: 60,
------------     padding: 12,
------------     justifyContent: 'center',
------------     alignItems: 'center',
------------+    borderRightWidth: 1,
------------+    borderRightColor: '#e5e7eb',
------------   },
-------------  fixedDayHeaders: {
-------------    position: 'absolute',
-------------    top: 0,
-------------    left: 100,
-------------    right: 0,
-------------    height: 60,
-------------    zIndex: 2,
------------+  dayHeaderContainer: {
------------+    flexDirection: 'row',
------------     backgroundColor: '#f9fafb',
------------     borderBottomWidth: 2,
------------     borderBottomColor: '#e5e7eb',
------------+    zIndex: 2,
------------   },
-------------  scrollableArea: {
------------+  mainScroll: {
+-----------   contentArea: {
 -----------     flex: 1,
-------------    marginTop: 60, // Height of day headers
-------------    flexDirection: 'row',
-------------  },
-------------  fixedLineNames: {
-------------    width: 100,
-------------    zIndex: 1,
-------------    backgroundColor: '#ffffff',
-------------    borderRightWidth: 1,
-------------    borderRightColor: '#e5e7eb',
------------   },
------------   dataRow: {
 -----------     flexDirection: 'row',
 -----------diff --git a/model.patch b/model.patch
------------index 204ee33..1a40f1e 100644
+-----------index 338a674..e69de29 100644
 -------------- a/model.patch
 -----------+++ b/model.patch
------------@@ -1,403 +0,0 @@
+-----------@@ -1,595 +0,0 @@
 ------------diff --git a/frontend/app/(tabs)/timesheet.tsx b/frontend/app/(tabs)/timesheet.tsx
-------------index 9be9bdf..41a9b98 100644
+------------index d66446c..9ba473c 100644
 --------------- a/frontend/app/(tabs)/timesheet.tsx
 ------------+++ b/frontend/app/(tabs)/timesheet.tsx
-------------@@ -504,6 +504,7 @@ const styles = StyleSheet.create({
-------------   },
-------------   gridContainer: {
+------------@@ -25,13 +25,7 @@ export default function TimesheetScreen() {
+------------   const [projectNumber, setProjectNumber] = React.useState('');
+------------ 
+------------   // Refs for synchronized scrolling
+-------------  const mainHorizontalScroll = React.useRef<any>(null);
+-------------  const mainVerticalScroll = React.useRef<any>(null);
+------------   const headerDayScroll = React.useRef<any>(null);
+-------------  const sideLineScroll = React.useRef<any>(null);
+-------------  
+-------------  // Flag to prevent scroll feedback loop
+-------------  const isScrolling = React.useRef(false);
+------------ 
+------------   useEffect(() => {
+------------     const today = new Date().toISOString().split('T')[0];
+------------@@ -236,15 +230,11 @@ export default function TimesheetScreen() {
+------------ 
+------------       {/* Grid with Sticky Headers */}
+------------       <View style={styles.gridContainer}>
+-------------        {/* Fixed Top-Left Corner */}
+-------------        <View style={styles.fixedCorner}>
+------------+        {/* Fixed Day Headers */}
+------------+        <View style={styles.dayHeaderContainer}>
+------------           <View style={styles.cornerCell}>
+------------             <Text style={styles.lineHeaderText}>Line</Text>
+------------           </View>
+-------------        </View>
+-------------
+-------------        {/* Fixed Day Headers (Top Row) */}
+-------------        <View style={styles.fixedDayHeaders}>
+------------           <ScrollView 
+------------             horizontal 
+------------             showsHorizontalScrollIndicator={false}
+------------@@ -268,76 +258,29 @@ export default function TimesheetScreen() {
+------------           </ScrollView>
+------------         </View>
+------------ 
+-------------        {/* Scrollable Content Area */}
+-------------        <View style={styles.scrollableArea}>
+-------------          {/* Fixed Line Names (Left Column) */}
+-------------          <View style={styles.fixedLineNames}>
+-------------            <ScrollView 
+-------------              showsVerticalScrollIndicator={false}
+-------------              scrollEnabled={true}
+-------------              scrollEventThrottle={16}
+-------------              onScroll={(e) => {
+-------------                // Sync main content when user scrolls line names
+-------------                const offsetY = e.nativeEvent.contentOffset.y;
+-------------                if (mainVerticalScroll.current && mainVerticalScroll.current.scrollTo) {
+-------------                  mainVerticalScroll.current.scrollTo({ y: offsetY, animated: false });
+-------------                }
+-------------              }}
+-------------              ref={(ref) => { sideLineScroll.current = ref; }}
+-------------            >
+-------------              {visibleLines.map((line) => (
+-------------                <View key={line.line_code} style={styles.lineNameCell}>
+-------------                  <Text style={styles.lineNameText}>{line.label}</Text>
+-------------                </View>
+-------------              ))}
+-------------              <View style={[styles.lineNameCell, styles.totalsRow]}>
+-------------                <Text style={styles.totalLabelText}>Totals</Text>
+-------------              </View>
+-------------            </ScrollView>
+-------------          </View>
+-------------
+-------------          {/* Main Scrollable Grid */}
+------------+        {/* Main Scrollable Grid with Line Names */}
+------------+        <ScrollView style={styles.mainScroll} showsVerticalScrollIndicator={true}>
+------------           <ScrollView
+------------             horizontal
+------------             showsHorizontalScrollIndicator={true}
+------------             scrollEventThrottle={16}
+------------             onScroll={(e) => {
+-------------              if (!isScrolling.current) {
+-------------                isScrolling.current = true;
+-------------                const offsetX = e.nativeEvent.contentOffset.x;
+-------------                if (headerDayScroll.current) {
+-------------                  headerDayScroll.current.scrollTo({ x: offsetX, animated: false });
+-------------                }
+-------------                requestAnimationFrame(() => {
+-------------                  isScrolling.current = false;
+-------------                });
+------------+              const offsetX = e.nativeEvent.contentOffset.x;
+------------+              if (headerDayScroll.current) {
+------------+                headerDayScroll.current.scrollTo({ x: offsetX, animated: false });
+------------               }
+------------             }}
+-------------            ref={(ref) => { mainHorizontalScroll.current = ref; }}
+------------           >
+-------------            <ScrollView
+-------------              showsVerticalScrollIndicator={true}
+-------------              scrollEventThrottle={16}
+-------------              onScroll={(e) => {
+-------------                if (!isScrolling.current) {
+-------------                  isScrolling.current = true;
+-------------                  const offsetY = e.nativeEvent.contentOffset.y;
+-------------                  if (sideLineScroll.current) {
+-------------                    sideLineScroll.current.scrollTo({ y: offsetY, animated: false });
+-------------                  }
+-------------                  requestAnimationFrame(() => {
+-------------                    isScrolling.current = false;
+-------------                  });
+-------------                }
+-------------              }}
+-------------              ref={(ref) => { mainVerticalScroll.current = ref; }}
+-------------            >
+-------------
+------------+            <View>
+------------               {visibleLines.map((line) => {
+------------                 const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
+------------                 
+------------                 return (
+------------                   <View key={line.line_code} style={styles.dataRow}>
+------------+                    {/* Line Name Cell */}
+------------+                    <View style={styles.lineNameCell}>
+------------+                      <Text style={styles.lineNameText}>{line.label}</Text>
+------------+                    </View>
+------------                     {weekDays.map((day, dayIndex) => {
+------------                     const isWeekend = dayIndex === 0 || dayIndex === 6;
+------------                     const stHours = getEntryHours(day, line.line_code, 'st');
+------------@@ -397,6 +340,10 @@ export default function TimesheetScreen() {
+------------ 
+------------               {/* Daily Totals Row */}
+------------               <View style={[styles.dataRow, styles.totalsRow]}>
+------------+                {/* Totals Label Cell */}
+------------+                <View style={[styles.lineNameCell, styles.totalsRow]}>
+------------+                  <Text style={styles.totalLabelText}>Totals</Text>
+------------+                </View>
+------------                 {weekDays.map((day, dayIndex) => {
+------------                   const isWeekend = dayIndex === 0 || dayIndex === 6;
+------------                   const dayST = getDayTotal(day, 'st');
+------------@@ -513,46 +460,24 @@ const styles = StyleSheet.create({
 ------------     flex: 1,
-------------+    position: 'relative',
+------------     position: 'relative',
 ------------   },
-------------   fixedCorner: {
-------------     position: 'absolute',
-------------@@ -518,6 +519,7 @@ const styles = StyleSheet.create({
-------------   },
+-------------  fixedCorner: {
+-------------    position: 'absolute',
+-------------    top: 0,
+-------------    left: 0,
+-------------    zIndex: 3,
+-------------    backgroundColor: '#f9fafb',
+-------------    borderBottomWidth: 2,
+-------------    borderRightWidth: 1,
+-------------    borderBottomColor: '#e5e7eb',
+-------------    borderRightColor: '#e5e7eb',
+-------------  },
 ------------   cornerCell: {
 ------------     width: 100,
-------------+    height: 60,
+------------     height: 60,
 ------------     padding: 12,
 ------------     justifyContent: 'center',
 ------------     alignItems: 'center',
-------------@@ -527,6 +529,7 @@ const styles = StyleSheet.create({
-------------     top: 0,
-------------     left: 100,
-------------     right: 0,
-------------+    height: 60,
-------------     zIndex: 2,
+------------+    borderRightWidth: 1,
+------------+    borderRightColor: '#e5e7eb',
+------------   },
+-------------  fixedDayHeaders: {
+-------------    position: 'absolute',
+-------------    top: 0,
+-------------    left: 100,
+-------------    right: 0,
+-------------    height: 60,
+-------------    zIndex: 2,
+------------+  dayHeaderContainer: {
+------------+    flexDirection: 'row',
 ------------     backgroundColor: '#f9fafb',
 ------------     borderBottomWidth: 2,
+------------     borderBottomColor: '#e5e7eb',
+------------+    zIndex: 2,
+------------   },
+-------------  scrollableArea: {
+------------+  mainScroll: {
+------------     flex: 1,
+-------------    marginTop: 60, // Height of day headers
+-------------    flexDirection: 'row',
+-------------  },
+-------------  fixedLineNames: {
+-------------    width: 100,
+-------------    zIndex: 1,
+-------------    backgroundColor: '#ffffff',
+-------------    borderRightWidth: 1,
+-------------    borderRightColor: '#e5e7eb',
+------------   },
+------------   dataRow: {
+------------     flexDirection: 'row',
 ------------diff --git a/model.patch b/model.patch
-------------index 6a5feb8..e69de29 100644
+------------index 204ee33..1a40f1e 100644
 --------------- a/model.patch
 ------------+++ b/model.patch
-------------@@ -1,370 +0,0 @@
+------------@@ -1,403 +0,0 @@
 -------------diff --git a/frontend/app/(tabs)/timesheet.tsx b/frontend/app/(tabs)/timesheet.tsx
--------------index 9b71f59..2df0914 100644
+-------------index 9be9bdf..41a9b98 100644
 ---------------- a/frontend/app/(tabs)/timesheet.tsx
 -------------+++ b/frontend/app/(tabs)/timesheet.tsx
--------------@@ -24,6 +24,11 @@ export default function TimesheetScreen() {
--------------   const [showAddProject, setShowAddProject] = React.useState(false);
--------------   const [projectNumber, setProjectNumber] = React.useState('');
-------------- 
--------------+  // Refs for synchronized scrolling
--------------+  const mainScrollRef = React.useRef(null);
--------------+  const dayHeaderScrollRef = React.useRef(null);
--------------+  const lineNameScrollRef = React.useRef(null);
--------------+
--------------   useEffect(() => {
--------------     const today = new Date().toISOString().split('T')[0];
--------------     fetchLines();
--------------@@ -227,39 +232,102 @@ export default function TimesheetScreen() {
-------------- 
--------------       {/* Grid with Sticky Headers */}
--------------       <View style={styles.gridContainer}>
---------------        {/* Sticky Day Headers */}
---------------        <View style={styles.stickyDayHeaders}>
---------------          <View style={styles.lineHeaderCell}>
--------------+        {/* Fixed Top-Left Corner */}
--------------+        <View style={styles.fixedCorner}>
--------------+          <View style={styles.cornerCell}>
--------------             <Text style={styles.lineHeaderText}>Line</Text>
--------------           </View>
---------------          <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={false} style={styles.dayHeaderScroll}>
---------------            <View style={styles.dayHeaderRow}>
---------------              {weekDays.map((day, index) => {
---------------                const isWeekend = index === 0 || index === 6;
---------------                const dayDate = new Date(day + 'T00:00:00');
---------------                return (
---------------                  <View key={day} style={[styles.dayHeaderCell, isWeekend && styles.weekendHeader]}>
---------------                    <Text style={[styles.dayHeaderText, isWeekend && styles.weekendHeaderText]}>
---------------                      {dayNames[index]}
---------------                    </Text>
---------------                    <Text style={[styles.dateText, isWeekend && styles.weekendHeaderText]}>
---------------                      {format(dayDate, 'M/d')}
---------------                    </Text>
---------------                  </View>
---------------                );
---------------              })}
---------------            </View>
--------------+        </View>
-------------- 
---------------            {/* Line Rows */}
---------------            {visibleLines.map((line) => {
---------------              const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
---------------              
--------------+        {/* Fixed Day Headers (Top Row) */}
--------------+        <View style={styles.fixedDayHeaders}>
--------------+          <ScrollView 
--------------+            horizontal 
--------------+            showsHorizontalScrollIndicator={false}
--------------+            scrollEventThrottle={16}
--------------+            onScroll={(e) => {
--------------+              // Sync with main content scroll
--------------+              const offsetX = e.nativeEvent.contentOffset.x;
--------------+              if (mainScrollRef.current) {
--------------+                mainScrollRef.current.scrollTo({ x: offsetX, animated: false });
--------------+              }
--------------+            }}
--------------+            ref={(ref) => { dayHeaderScrollRef.current = ref; }}
--------------+          >
--------------+            {weekDays.map((day, index) => {
--------------+              const isWeekend = index === 0 || index === 6;
--------------+              const dayDate = new Date(day + 'T00:00:00');
--------------               return (
---------------                <View key={line.line_code} style={styles.lineRow}>
---------------                  <View style={styles.lineNameCell}>
---------------                    <Text style={styles.lineNameText}>{line.label}</Text>
---------------                  </View>
---------------                  {weekDays.map((day, dayIndex) => {
--------------+                <View key={day} style={[styles.dayHeaderCell, isWeekend && styles.weekendHeader]}>
--------------+                  <Text style={[styles.dayHeaderText, isWeekend && styles.weekendHeaderText]}>
--------------+                    {dayNames[index]}
--------------+                  </Text>
--------------+                  <Text style={[styles.dateText, isWeekend && styles.weekendHeaderText]}>
--------------+                    {format(dayDate, 'M/d')}
--------------+                  </Text>
--------------+                </View>
--------------+              );
--------------+            })}
--------------+          </ScrollView>
--------------+        </View>
--------------+
--------------+        {/* Scrollable Content Area */}
--------------+        <View style={styles.scrollableArea}>
--------------+          {/* Fixed Line Names (Left Column) */}
--------------+          <View style={styles.fixedLineNames}>
--------------+            <ScrollView 
--------------+              showsVerticalScrollIndicator={false}
--------------+              scrollEventThrottle={16}
--------------+              onScroll={(e) => {
--------------+                // Sync with main content scroll
--------------+                const offsetY = e.nativeEvent.contentOffset.y;
--------------+                if (mainScrollRef.current) {
--------------+                  mainScrollRef.current.scrollTo({ y: offsetY, animated: false });
--------------+                }
--------------+              }}
--------------+              ref={(ref) => { lineNameScrollRef.current = ref; }}
--------------+            >
--------------+              {visibleLines.map((line) => (
--------------+                <View key={line.line_code} style={styles.lineNameCell}>
--------------+                  <Text style={styles.lineNameText}>{line.label}</Text>
--------------+                </View>
--------------+              ))}
--------------+              <View style={[styles.lineNameCell, styles.totalsRow]}>
--------------+                <Text style={styles.totalLabelText}>Totals</Text>
--------------+              </View>
--------------+            </ScrollView>
--------------+          </View>
--------------+
--------------+          {/* Main Scrollable Grid */}
--------------+          <ScrollView
--------------+            horizontal
--------------+            showsHorizontalScrollIndicator={true}
--------------+            scrollEventThrottle={16}
--------------+            onScroll={(e) => {
--------------+              const offsetX = e.nativeEvent.contentOffset.x;
--------------+              if (dayHeaderScrollRef.current) {
--------------+                dayHeaderScrollRef.current.scrollTo({ x: offsetX, animated: false });
--------------+              }
--------------+            }}
--------------+            ref={(ref) => { mainScrollRef.current = ref; }}
--------------+          >
--------------+            <ScrollView
--------------+              showsVerticalScrollIndicator={true}
--------------+              scrollEventThrottle={16}
--------------+              onScroll={(e) => {
--------------+                const offsetY = e.nativeEvent.contentOffset.y;
--------------+                if (lineNameScrollRef.current) {
--------------+                  lineNameScrollRef.current.scrollTo({ y: offsetY, animated: false });
--------------+                }
--------------+              }}
--------------+            >
--------------+
--------------+              {visibleLines.map((line) => {
--------------+                const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
--------------+                
--------------+                return (
--------------+                  <View key={line.line_code} style={styles.dataRow}>
--------------+                    {weekDays.map((day, dayIndex) => {
--------------                     const isWeekend = dayIndex === 0 || dayIndex === 6;
--------------                     const stHours = getEntryHours(day, line.line_code, 'st');
--------------                     const otHours = getEntryHours(day, line.line_code, 'ot');
--------------@@ -316,11 +384,8 @@ export default function TimesheetScreen() {
--------------               );
--------------             })}
-------------- 
---------------            {/* Daily Totals Row */}
---------------            <View style={[styles.lineRow, styles.totalsRow]}>
---------------              <View style={styles.lineNameCell}>
---------------                <Text style={styles.totalLabelText}>Daily Totals</Text>
---------------              </View>
--------------+              {/* Daily Totals Row */}
--------------+              <View style={[styles.dataRow, styles.totalsRow]}>
--------------               {weekDays.map((day, dayIndex) => {
--------------                 const isWeekend = dayIndex === 0 || dayIndex === 6;
--------------                 const dayST = getDayTotal(day, 'st');
--------------@@ -334,10 +399,10 @@ export default function TimesheetScreen() {
--------------                   </View>
--------------                 );
--------------               })}
---------------            </View>
---------------          </View>
---------------        </ScrollView>
---------------      </ScrollView>
--------------+            </ScrollView>
--------------+          </ScrollView>
--------------+        </View>
--------------+      </View>
--------------     </SafeAreaView>
--------------   );
-------------- }
--------------@@ -435,6 +500,50 @@ const styles = StyleSheet.create({
+-------------@@ -504,6 +504,7 @@ const styles = StyleSheet.create({
+-------------   },
 -------------   gridContainer: {
 -------------     flex: 1,
+-------------+    position: 'relative',
 -------------   },
--------------+  fixedCorner: {
--------------+    position: 'absolute',
--------------+    top: 0,
--------------+    left: 0,
--------------+    zIndex: 3,
--------------+    backgroundColor: '#f9fafb',
--------------+    borderBottomWidth: 2,
--------------+    borderRightWidth: 1,
--------------+    borderBottomColor: '#e5e7eb',
--------------+    borderRightColor: '#e5e7eb',
--------------+  },
--------------+  cornerCell: {
--------------+    width: 100,
--------------+    padding: 12,
--------------+    justifyContent: 'center',
--------------+    alignItems: 'center',
--------------+  },
--------------+  fixedDayHeaders: {
--------------+    position: 'absolute',
--------------+    top: 0,
--------------+    left: 100,
--------------+    right: 0,
--------------+    zIndex: 2,
--------------+    backgroundColor: '#f9fafb',
--------------+    borderBottomWidth: 2,
--------------+    borderBottomColor: '#e5e7eb',
--------------+  },
--------------+  scrollableArea: {
--------------+    flex: 1,
--------------+    marginTop: 60, // Height of day headers
--------------+    flexDirection: 'row',
--------------+  },
--------------+  fixedLineNames: {
--------------+    width: 100,
--------------+    zIndex: 1,
--------------+    backgroundColor: '#ffffff',
--------------+    borderRightWidth: 1,
--------------+    borderRightColor: '#e5e7eb',
--------------+  },
--------------+  dataRow: {
--------------+    flexDirection: 'row',
--------------+    borderBottomWidth: 1,
--------------+    borderBottomColor: '#e5e7eb',
--------------+  },
--------------   headerRow: {
--------------     flexDirection: 'row',
+-------------   fixedCorner: {
+-------------     position: 'absolute',
+-------------@@ -518,6 +519,7 @@ const styles = StyleSheet.create({
+-------------   },
+-------------   cornerCell: {
+-------------     width: 100,
+-------------+    height: 60,
+-------------     padding: 12,
+-------------     justifyContent: 'center',
+-------------     alignItems: 'center',
+-------------@@ -527,6 +529,7 @@ const styles = StyleSheet.create({
+-------------     top: 0,
+-------------     left: 100,
+-------------     right: 0,
+-------------+    height: 60,
+-------------     zIndex: 2,
 -------------     backgroundColor: '#f9fafb',
+-------------     borderBottomWidth: 2,
 -------------diff --git a/model.patch b/model.patch
--------------index 37717e6..a1d6264 100644
+-------------index 6a5feb8..e69de29 100644
 ---------------- a/model.patch
 -------------+++ b/model.patch
--------------@@ -1,137 +0,0 @@
---------------diff --git a/backend/timesheet.db b/backend/timesheet.db
---------------index 66d6a43..776bbea 100644
---------------Binary files a/backend/timesheet.db and b/backend/timesheet.db differ
---------------diff --git a/test_result.md b/test_result.md
---------------index 320c181..e54f46d 100644
------------------ a/test_result.md
---------------+++ b/test_result.md
---------------@@ -107,75 +107,93 @@ user_problem_statement: "Build VRS Time Wizard - A mobile railroad timesheet tra
--------------- backend:
---------------   - task: "SQLite database setup with time_entries, line_codes, and settings tables"
---------------     implemented: true
----------------    working: "NA"
---------------+    working: true
---------------     file: "server.py"
---------------     stuck_count: 0
---------------     priority: "high"
----------------    needs_retesting: true
---------------+    needs_retesting: false
---------------     status_history:
---------------       - working: "NA"
---------------         agent: "main"
---------------         comment: "Created SQLite database with proper schema for time entries, line codes, and settings. Initialized default line codes and pay week settings."
---------------+      - working: true
---------------+        agent: "testing"
---------------+        comment: "✅ Database initialization working correctly. All 10 default line codes created (VTR, GMRC, CLP, WACR, WACR-CRD, NEGS, NHC, NYOG, PTO, HOLIDAY). Settings table initialized with base_pay_week_ending=2025-11-22 and pay_frequency_days=14."
---------------   
---------------   - task: "Week ending and pay week calculation endpoints"
---------------     implemented: true
----------------    working: "NA"
---------------+    working: true
---------------     file: "server.py"
---------------     stuck_count: 0
---------------     priority: "high"
----------------    needs_retesting: true
---------------+    needs_retesting: false
---------------     status_history:
---------------       - working: "NA"
---------------         agent: "main"
---------------         comment: "Implemented /api/week-info endpoint that calculates week ending Saturday and determines if it's a pay week based on Nov 22, 2025 base date."
---------------+      - working: true
---------------+        agent: "testing"
---------------+        comment: "✅ Week calculation logic working perfectly. Tested multiple dates: Nov 16 (week ending Nov 22, pay week), Nov 23 (week ending Nov 29, not pay week), Nov 30 (week ending Dec 6, pay week), Dec 6 (pay week), Dec 20 (pay week). All calculations correct with 14-day pay cycle."
---------------   
---------------   - task: "Time entries CRUD endpoints"
---------------     implemented: true
----------------    working: "NA"
---------------+    working: true
---------------     file: "server.py"
---------------     stuck_count: 0
---------------     priority: "high"
----------------    needs_retesting: true
---------------+    needs_retesting: false
---------------     status_history:
---------------       - working: "NA"
---------------         agent: "main"
---------------         comment: "Created POST /api/entries for create/update, GET /api/entries for fetching by week or date range. Automatically calculates week ending and pay week status."
---------------+      - working: true
---------------+        agent: "testing"
---------------+        comment: "✅ Time entries CRUD fully functional. POST creates new entries and updates existing ones (same work_date + line_code). GET retrieves by week_ending correctly. All entries have proper week_ending_date and is_pay_week calculations. Tested with multiple entries across different days and lines."
---------------   
---------------   - task: "Weekly summary endpoint"
---------------     implemented: true
----------------    working: "NA"
---------------+    working: true
---------------     file: "server.py"
---------------     stuck_count: 0
---------------     priority: "high"
----------------    needs_retesting: true
---------------+    needs_retesting: false
---------------     status_history:
---------------       - working: "NA"
---------------         agent: "main"
---------------         comment: "Implemented GET /api/weekly-summary to calculate total ST/OT, lines used, daily totals, and line totals for a given week."
---------------+      - working: true
---------------+        agent: "testing"
---------------+        comment: "✅ Weekly summary calculations working correctly. Tested with populated week (29 ST, 7 OT, 36 total hours, 3 lines used) and empty week (all zeros). Daily totals and line totals properly aggregated. All required fields present in response."
---------------   
---------------   - task: "Line codes management endpoints"
---------------     implemented: true
----------------    working: "NA"
---------------+    working: true
---------------     file: "server.py"
---------------     stuck_count: 0
---------------     priority: "medium"
----------------    needs_retesting: true
---------------+    needs_retesting: false
---------------     status_history:
---------------       - working: "NA"
---------------         agent: "main"
---------------         comment: "Created GET/POST/PUT/DELETE /api/lines endpoints for managing line codes and project lines. Supports visibility toggling and project line addition/deletion."
---------------+      - working: true
---------------+        agent: "testing"
---------------+        comment: "✅ Line codes management fully working. GET returns all lines with proper sorting. POST creates project lines successfully. PUT toggles visibility correctly. DELETE removes project lines but correctly prevents deletion of standard lines (returns 400 error). All CRUD operations validated."
---------------   
---------------   - task: "Data export/import endpoints"
---------------     implemented: true
----------------    working: "NA"
---------------+    working: true
---------------     file: "server.py"
---------------     stuck_count: 0
---------------     priority: "medium"
----------------    needs_retesting: true
---------------+    needs_retesting: false
---------------     status_history:
---------------       - working: "NA"
---------------         agent: "main"
---------------         comment: "Implemented GET /api/export and POST /api/import for JSON data export/import functionality."
---------------+      - working: true
---------------+        agent: "testing"
---------------+        comment: "✅ Export/import functionality working perfectly. Export returns complete JSON with entries, line_codes, settings, and export_date. Import successfully processes and stores all data. Tested full export-import cycle with data persistence verified."
+-------------@@ -1,370 +0,0 @@
+--------------diff --git a/frontend/app/(tabs)/timesheet.tsx b/frontend/app/(tabs)/timesheet.tsx
+--------------index 9b71f59..2df0914 100644
+----------------- a/frontend/app/(tabs)/timesheet.tsx
+--------------+++ b/frontend/app/(tabs)/timesheet.tsx
+--------------@@ -24,6 +24,11 @@ export default function TimesheetScreen() {
+--------------   const [showAddProject, setShowAddProject] = React.useState(false);
+--------------   const [projectNumber, setProjectNumber] = React.useState('');
 -------------- 
--------------- frontend:
---------------   - task: "Dashboard screen with week overview and pay week indicator"
---------------@@ -245,16 +263,13 @@ metadata:
---------------   run_ui: false
+--------------+  // Refs for synchronized scrolling
+--------------+  const mainScrollRef = React.useRef(null);
+--------------+  const dayHeaderScrollRef = React.useRef(null);
+--------------+  const lineNameScrollRef = React.useRef(null);
+--------------+
+--------------   useEffect(() => {
+--------------     const today = new Date().toISOString().split('T')[0];
+--------------     fetchLines();
+--------------@@ -227,39 +232,102 @@ export default function TimesheetScreen() {
 -------------- 
--------------- test_plan:
----------------  current_focus:
----------------    - "Week ending and pay week calculation endpoints"
----------------    - "Time entries CRUD endpoints"
----------------    - "Weekly summary endpoint"
----------------    - "Line codes management endpoints"
----------------    - "Data export/import endpoints"
---------------+  current_focus: []
---------------   stuck_tasks: []
----------------  test_all: true
---------------+  test_all: false
---------------   test_priority: "high_first"
+--------------       {/* Grid with Sticky Headers */}
+--------------       <View style={styles.gridContainer}>
+---------------        {/* Sticky Day Headers */}
+---------------        <View style={styles.stickyDayHeaders}>
+---------------          <View style={styles.lineHeaderCell}>
+--------------+        {/* Fixed Top-Left Corner */}
+--------------+        <View style={styles.fixedCorner}>
+--------------+          <View style={styles.cornerCell}>
+--------------             <Text style={styles.lineHeaderText}>Line</Text>
+--------------           </View>
+---------------          <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={false} style={styles.dayHeaderScroll}>
+---------------            <View style={styles.dayHeaderRow}>
+---------------              {weekDays.map((day, index) => {
+---------------                const isWeekend = index === 0 || index === 6;
+---------------                const dayDate = new Date(day + 'T00:00:00');
+---------------                return (
+---------------                  <View key={day} style={[styles.dayHeaderCell, isWeekend && styles.weekendHeader]}>
+---------------                    <Text style={[styles.dayHeaderText, isWeekend && styles.weekendHeaderText]}>
+---------------                      {dayNames[index]}
+---------------                    </Text>
+---------------                    <Text style={[styles.dateText, isWeekend && styles.weekendHeaderText]}>
+---------------                      {format(dayDate, 'M/d')}
+---------------                    </Text>
+---------------                  </View>
+---------------                );
+---------------              })}
+---------------            </View>
+--------------+        </View>
 -------------- 
--------------- agent_communication:
---------------   - agent: "main"
----------------    message: "Completed initial implementation of VRS Time Wizard mobile app. Backend uses SQLite with all core functionality: time entry tracking, week calculations, pay week detection (Nov 22, 2025 base), line management, and data export/import. Frontend has 4 tabs: Dashboard (week overview), Timesheet (grid with +/- controls), History (past 8 weeks), and Settings (line visibility, projects). Ready for backend testing."
---------------\ No newline at end of file
---------------+    message: "Completed initial implementation of VRS Time Wizard mobile app. Backend uses SQLite with all core functionality: time entry tracking, week calculations, pay week detection (Nov 22, 2025 base), line management, and data export/import. Frontend has 4 tabs: Dashboard (week overview), Timesheet (grid with +/- controls), History (past 8 weeks), and Settings (line visibility, projects). Ready for backend testing."
---------------+  - agent: "testing"
---------------+    message: "✅ BACKEND TESTING COMPLETE - All 6 backend tasks tested and working perfectly! Comprehensive testing performed: 26 test cases with 100% success rate. All API endpoints functional: week-info calculations, time entries CRUD, weekly summaries, line codes management, settings, and export/import. Pay week logic validated with multiple date scenarios. Database operations, error handling, and edge cases all working correctly. Backend is production-ready."
---------------\ No newline at end of file
-------diff --git a/test_result.md b/test_result.md
-------index 950fe5b..67d278d 100644
---------- a/test_result.md
-------+++ b/test_result.md
-------@@ -295,4 +295,6 @@ agent_communication:
-------   - agent: "main"
-------     message: "✅ PHASE 2 COMPLETE - API Calls Replaced with Local Database: Updated Zustand store (store/timesheetStore.ts) to use local database instead of backend fetch calls. All functions now use db service: fetchLines, fetchWeekInfo, fetchEntries, fetchWeeklySummary, updateEntry, addProjectLine, toggleLineVisibility, deleteProjectLine, exportData, importData. Updated root layout (app/_layout.tsx) to initialize database on app start and redirect to migration screen if needed. App is now fully functional offline with local data persistence. Backend remains available for future sync features."
-------   - agent: "main"
--------    message: "✅ PHASE 3 COMPLETE - Export/Import UI for Backup & Restore: Installed expo-file-system, expo-sharing, and expo-document-picker packages. Added import functionality to Settings tab alongside existing export. Export creates JSON backup file with timestamp and allows sharing via native share sheet. Import allows selecting backup file, validates format, confirms with user before replacing data, and refreshes UI after import. Both features work completely offline. Users can now backup their timesheet data and restore it on new devices or after reinstallation."
-------\ No newline at end of file
-------+    message: "✅ PHASE 3 COMPLETE - Export/Import UI for Backup & Restore: Installed expo-file-system, expo-sharing, and expo-document-picker packages. Added import functionality to Settings tab alongside existing export. Export creates JSON backup file with timestamp and allows sharing via native share sheet. Import allows selecting backup file, validates format, confirms with user before replacing data, and refreshes UI after import. Both features work completely offline. Users can now backup their timesheet data and restore it on new devices or after reinstallation."
-------+  - agent: "testing"
-------+    message: "✅ BACKEND TESTING COMPLETE (v1.1.0 Notes Feature Review) - Backend tests all passing (26/26, 100% success rate). However, CRITICAL FINDING: The Notes feature (v1.1.0) requested for testing is NOT implemented in the backend. Notes functionality exists ONLY in the frontend local SQLite database (/app/frontend/services/database.ts) with work_notes table and all required methods (saveNote, getNote, getNotesByDate, getNotesByWeek, deleteNote, hasNote). The app has moved to a fully offline architecture where Notes are stored locally, not on the backend server. Backend remains functional for existing features but has no Notes endpoints or work_notes table."
-------\ No newline at end of file
+---------------            {/* Line Rows */}
+---------------            {visibleLines.map((line) => {
+---------------              const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
+---------------              
+--------------+        {/* Fixed Day Headers (Top Row) */}
+--------------+        <View style={styles.fixedDayHeaders}>
+--------------+          <ScrollView 
+--------------+            horizontal 
+--------------+            showsHorizontalScrollIndicator={false}
+--------------+            scrollEventThrottle={16}
+--------------+            onScroll={(e) => {
+--------------+              // Sync with main content scroll
+--------------+              const offsetX = e.nativeEvent.contentOffset.x;
+--------------+              if (mainScrollRef.current) {
+--------------+                mainScrollRef.current.scrollTo({ x: offsetX, animated: false });
+--------------+              }
+--------------+            }}
+--------------+            ref={(ref) => { dayHeaderScrollRef.current = ref; }}
+--------------+          >
+--------------+            {weekDays.map((day, index) => {
+--------------+              const isWeekend = index === 0 || index === 6;
+--------------+              const dayDate = new Date(day + 'T00:00:00');
+--------------               return (
+---------------                <View key={line.line_code} style={styles.lineRow}>
+---------------                  <View style={styles.lineNameCell}>
+---------------                    <Text style={styles.lineNameText}>{line.label}</Text>
+---------------                  </View>
+---------------                  {weekDays.map((day, dayIndex) => {
+--------------+                <View key={day} style={[styles.dayHeaderCell, isWeekend && styles.weekendHeader]}>
+--------------+                  <Text style={[styles.dayHeaderText, isWeekend && styles.weekendHeaderText]}>
+--------------+                    {dayNames[index]}
+--------------+                  </Text>
+--------------+                  <Text style={[styles.dateText, isWeekend && styles.weekendHeaderText]}>
+--------------+                    {format(dayDate, 'M/d')}
+--------------+                  </Text>
+--------------+                </View>
+--------------+              );
+--------------+            })}
+--------------+          </ScrollView>
+--------------+        </View>
+--------------+
+--------------+        {/* Scrollable Content Area */}
+--------------+        <View style={styles.scrollableArea}>
+--------------+          {/* Fixed Line Names (Left Column) */}
+--------------+          <View style={styles.fixedLineNames}>
+--------------+            <ScrollView 
+--------------+              showsVerticalScrollIndicator={false}
+--------------+              scrollEventThrottle={16}
+--------------+              onScroll={(e) => {
+--------------+                // Sync with main content scroll
+--------------+                const offsetY = e.nativeEvent.contentOffset.y;
+--------------+                if (mainScrollRef.current) {
+--------------+                  mainScrollRef.current.scrollTo({ y: offsetY, animated: false });
+--------------+                }
+--------------+              }}
+--------------+              ref={(ref) => { lineNameScrollRef.current = ref; }}
+--------------+            >
+--------------+              {visibleLines.map((line) => (
+--------------+                <View key={line.line_code} style={styles.lineNameCell}>
+--------------+                  <Text style={styles.lineNameText}>{line.label}</Text>
+--------------+                </View>
+--------------+              ))}
+--------------+              <View style={[styles.lineNameCell, styles.totalsRow]}>
+--------------+                <Text style={styles.totalLabelText}>Totals</Text>
+--------------+              </View>
+--------------+            </ScrollView>
+--------------+          </View>
+--------------+
+--------------+          {/* Main Scrollable Grid */}
+--------------+          <ScrollView
+--------------+            horizontal
+--------------+            showsHorizontalScrollIndicator={true}
+--------------+            scrollEventThrottle={16}
+--------------+            onScroll={(e) => {
+--------------+              const offsetX = e.nativeEvent.contentOffset.x;
+--------------+              if (dayHeaderScrollRef.current) {
+--------------+                dayHeaderScrollRef.current.scrollTo({ x: offsetX, animated: false });
+--------------+              }
+--------------+            }}
+--------------+            ref={(ref) => { mainScrollRef.current = ref; }}
+--------------+          >
+--------------+            <ScrollView
+--------------+              showsVerticalScrollIndicator={true}
+--------------+              scrollEventThrottle={16}
+--------------+              onScroll={(e) => {
+--------------+                const offsetY = e.nativeEvent.contentOffset.y;
+--------------+                if (lineNameScrollRef.current) {
+--------------+                  lineNameScrollRef.current.scrollTo({ y: offsetY, animated: false });
+--------------+                }
+--------------+              }}
+--------------+            >
+--------------+
+--------------+              {visibleLines.map((line) => {
+--------------+                const isPTOOrHoliday = line.line_code === 'PTO' || line.line_code === 'HOLIDAY';
+--------------+                
+--------------+                return (
+--------------+                  <View key={line.line_code} style={styles.dataRow}>
+--------------+                    {weekDays.map((day, dayIndex) => {
+--------------                     const isWeekend = dayIndex === 0 || dayIndex === 6;
+--------------                     const stHours = getEntryHours(day, line.line_code, 'st');
+--------------                     const otHours = getEntryHours(day, line.line_code, 'ot');
+--------------@@ -316,11 +384,8 @@ export default function TimesheetScreen() {
+--------------               );
+--------------             })}
+-------------- 
+---------------            {/* Daily Totals Row */}
+---------------            <View style={[styles.lineRow, styles.totalsRow]}>
+---------------              <View style={styles.lineNameCell}>
+---------------                <Text style={styles.totalLabelText}>Daily Totals</Text>
+---------------              </View>
+--------------+              {/* Daily Totals Row */}
+--------------+              <View style={[styles.dataRow, styles.totalsRow]}>
+--------------               {weekDays.map((day, dayIndex) => {
+--------------                 const isWeekend = dayIndex === 0 || dayIndex === 6;
+--------------                 const dayST = getDayTotal(day, 'st');
+--------------@@ -334,10 +399,10 @@ export default function TimesheetScreen() {
+--------------                   </View>
+--------------                 );
+--------------               })}
+---------------            </View>
+---------------          </View>
+---------------        </ScrollView>
+---------------      </ScrollView>
+--------------+            </ScrollView>
+--------------+          </ScrollView>
+--------------+        </View>
+--------------+      </View>
+--------------     </SafeAreaView>
+--------------   );
+-------------- }
+--------------@@ -435,6 +500,50 @@ const styles = StyleSheet.create({
+--------------   gridContainer: {
+--------------     flex: 1,
+--------------   },
+--------------+  fixedCorner: {
+--------------+    position: 'absolute',
+--------------+    top: 0,
+--------------+    left: 0,
+--------------+    zIndex: 3,
+--------------+    backgroundColor: '#f9fafb',
+--------------+    borderBottomWidth: 2,
+--------------+    borderRightWidth: 1,
+--------------+    borderBottomColor: '#e5e7eb',
+--------------+    borderRightColor: '#e5e7eb',
+--------------+  },
+--------------+  cornerCell: {
+--------------+    width: 100,
+--------------+    padding: 12,
+--------------+    justifyContent: 'center',
+--------------+    alignItems: 'center',
+--------------+  },
+--------------+  fixedDayHeaders: {
+--------------+    position: 'absolute',
+--------------+    top: 0,
+--------------+    left: 100,
+--------------+    right: 0,
+--------------+    zIndex: 2,
+--------------+    backgroundColor: '#f9fafb',
+--------------+    borderBottomWidth: 2,
+--------------+    borderBottomColor: '#e5e7eb',
+--------------+  },
+--------------+  scrollableArea: {
+--------------+    flex: 1,
+--------------+    marginTop: 60, // Height of day headers
+--------------+    flexDirection: 'row',
+--------------+  },
+--------------+  fixedLineNames: {
+--------------+    width: 100,
+--------------+    zIndex: 1,
+--------------+    backgroundColor: '#ffffff',
+--------------+    borderRightWidth: 1,
+--------------+    borderRightColor: '#e5e7eb',
+--------------+  },
+--------------+  dataRow: {
+--------------+    flexDirection: 'row',
+--------------+    borderBottomWidth: 1,
+--------------+    borderBottomColor: '#e5e7eb',
+--------------+  },
+--------------   headerRow: {
+--------------     flexDirection: 'row',
+--------------     backgroundColor: '#f9fafb',
+--------------diff --git a/model.patch b/model.patch
+--------------index 37717e6..a1d6264 100644
+----------------- a/model.patch
+--------------+++ b/model.patch
+--------------@@ -1,137 +0,0 @@
+---------------diff --git a/backend/timesheet.db b/backend/timesheet.db
+---------------index 66d6a43..776bbea 100644
+---------------Binary files a/backend/timesheet.db and b/backend/timesheet.db differ
+---------------diff --git a/test_result.md b/test_result.md
+---------------index 320c181..e54f46d 100644
+------------------ a/test_result.md
+---------------+++ b/test_result.md
+---------------@@ -107,75 +107,93 @@ user_problem_statement: "Build VRS Time Wizard - A mobile railroad timesheet tra
+--------------- backend:
+---------------   - task: "SQLite database setup with time_entries, line_codes, and settings tables"
+---------------     implemented: true
+----------------    working: "NA"
+---------------+    working: true
+---------------     file: "server.py"
+---------------     stuck_count: 0
+---------------     priority: "high"
+----------------    needs_retesting: true
+---------------+    needs_retesting: false
+---------------     status_history:
+---------------       - working: "NA"
+---------------         agent: "main"
+---------------         comment: "Created SQLite database with proper schema for time entries, line codes, and settings. Initialized default line codes and pay week settings."
+---------------+      - working: true
+---------------+        agent: "testing"
+---------------+        comment: "✅ Database initialization working correctly. All 10 default line codes created (VTR, GMRC, CLP, WACR, WACR-CRD, NEGS, NHC, NYOG, PTO, HOLIDAY). Settings table initialized with base_pay_week_ending=2025-11-22 and pay_frequency_days=14."
+---------------   
+---------------   - task: "Week ending and pay week calculation endpoints"
+---------------     implemented: true
+----------------    working: "NA"
+---------------+    working: true
+---------------     file: "server.py"
+---------------     stuck_count: 0
+---------------     priority: "high"
+----------------    needs_retesting: true
+---------------+    needs_retesting: false
+---------------     status_history:
+---------------       - working: "NA"
+---------------         agent: "main"
+---------------         comment: "Implemented /api/week-info endpoint that calculates week ending Saturday and determines if it's a pay week based on Nov 22, 2025 base date."
+---------------+      - working: true
+---------------+        agent: "testing"
+---------------+        comment: "✅ Week calculation logic working perfectly. Tested multiple dates: Nov 16 (week ending Nov 22, pay week), Nov 23 (week ending Nov 29, not pay week), Nov 30 (week ending Dec 6, pay week), Dec 6 (pay week), Dec 20 (pay week). All calculations correct with 14-day pay cycle."
+---------------   
+---------------   - task: "Time entries CRUD endpoints"
+---------------     implemented: true
+----------------    working: "NA"
+---------------+    working: true
+---------------     file: "server.py"
+---------------     stuck_count: 0
+---------------     priority: "high"
+----------------    needs_retesting: true
+---------------+    needs_retesting: false
+---------------     status_history:
+---------------       - working: "NA"
+---------------         agent: "main"
+---------------         comment: "Created POST /api/entries for create/update, GET /api/entries for fetching by week or date range. Automatically calculates week ending and pay week status."
+---------------+      - working: true
+---------------+        agent: "testing"
+---------------+        comment: "✅ Time entries CRUD fully functional. POST creates new entries and updates existing ones (same work_date + line_code). GET retrieves by week_ending correctly. All entries have proper week_ending_date and is_pay_week calculations. Tested with multiple entries across different days and lines."
+---------------   
+---------------   - task: "Weekly summary endpoint"
+---------------     implemented: true
+----------------    working: "NA"
+---------------+    working: true
+---------------     file: "server.py"
+---------------     stuck_count: 0
+---------------     priority: "high"
+----------------    needs_retesting: true
+---------------+    needs_retesting: false
+---------------     status_history:
+---------------       - working: "NA"
+---------------         agent: "main"
+---------------         comment: "Implemented GET /api/weekly-summary to calculate total ST/OT, lines used, daily totals, and line totals for a given week."
+---------------+      - working: true
+---------------+        agent: "testing"
+---------------+        comment: "✅ Weekly summary calculations working correctly. Tested with populated week (29 ST, 7 OT, 36 total hours, 3 lines used) and empty week (all zeros). Daily totals and line totals properly aggregated. All required fields present in response."
+---------------   
+---------------   - task: "Line codes management endpoints"
+---------------     implemented: true
+----------------    working: "NA"
+---------------+    working: true
+---------------     file: "server.py"
+---------------     stuck_count: 0
+---------------     priority: "medium"
+----------------    needs_retesting: true
+---------------+    needs_retesting: false
+---------------     status_history:
+---------------       - working: "NA"
+---------------         agent: "main"
+---------------         comment: "Created GET/POST/PUT/DELETE /api/lines endpoints for managing line codes and project lines. Supports visibility toggling and project line addition/deletion."
+---------------+      - working: true
+---------------+        agent: "testing"
+---------------+        comment: "✅ Line codes management fully working. GET returns all lines with proper sorting. POST creates project lines successfully. PUT toggles visibility correctly. DELETE removes project lines but correctly prevents deletion of standard lines (returns 400 error). All CRUD operations validated."
+---------------   
+---------------   - task: "Data export/import endpoints"
+---------------     implemented: true
+----------------    working: "NA"
+---------------+    working: true
+---------------     file: "server.py"
+---------------     stuck_count: 0
+---------------     priority: "medium"
+----------------    needs_retesting: true
+---------------+    needs_retesting: false
+---------------     status_history:
+---------------       - working: "NA"
+---------------         agent: "main"
+---------------         comment: "Implemented GET /api/export and POST /api/import for JSON data export/import functionality."
+---------------+      - working: true
+---------------+        agent: "testing"
+---------------+        comment: "✅ Export/import functionality working perfectly. Export returns complete JSON with entries, line_codes, settings, and export_date. Import successfully processes and stores all data. Tested full export-import cycle with data persistence verified."
+--------------- 
+--------------- frontend:
+---------------   - task: "Dashboard screen with week overview and pay week indicator"
+---------------@@ -245,16 +263,13 @@ metadata:
+---------------   run_ui: false
+--------------- 
+--------------- test_plan:
+----------------  current_focus:
+----------------    - "Week ending and pay week calculation endpoints"
+----------------    - "Time entries CRUD endpoints"
+----------------    - "Weekly summary endpoint"
+----------------    - "Line codes management endpoints"
+----------------    - "Data export/import endpoints"
+---------------+  current_focus: []
+---------------   stuck_tasks: []
+----------------  test_all: true
+---------------+  test_all: false
+---------------   test_priority: "high_first"
+--------------- 
+--------------- agent_communication:
+---------------   - agent: "main"
+----------------    message: "Completed initial implementation of VRS Time Wizard mobile app. Backend uses SQLite with all core functionality: time entry tracking, week calculations, pay week detection (Nov 22, 2025 base), line management, and data export/import. Frontend has 4 tabs: Dashboard (week overview), Timesheet (grid with +/- controls), History (past 8 weeks), and Settings (line visibility, projects). Ready for backend testing."
+---------------\ No newline at end of file
+---------------+    message: "Completed initial implementation of VRS Time Wizard mobile app. Backend uses SQLite with all core functionality: time entry tracking, week calculations, pay week detection (Nov 22, 2025 base), line management, and data export/import. Frontend has 4 tabs: Dashboard (week overview), Timesheet (grid with +/- controls), History (past 8 weeks), and Settings (line visibility, projects). Ready for backend testing."
+---------------+  - agent: "testing"
+---------------+    message: "✅ BACKEND TESTING COMPLETE - All 6 backend tasks tested and working perfectly! Comprehensive testing performed: 26 test cases with 100% success rate. All API endpoints functional: week-info calculations, time entries CRUD, weekly summaries, line codes management, settings, and export/import. Pay week logic validated with multiple date scenarios. Database operations, error handling, and edge cases all working correctly. Backend is production-ready."
+---------------\ No newline at end of file
+-------diff --git a/test_result.md b/test_result.md
+-------index 950fe5b..67d278d 100644
+---------- a/test_result.md
+-------+++ b/test_result.md
+-------@@ -295,4 +295,6 @@ agent_communication:
+-------   - agent: "main"
+-------     message: "✅ PHASE 2 COMPLETE - API Calls Replaced with Local Database: Updated Zustand store (store/timesheetStore.ts) to use local database instead of backend fetch calls. All functions now use db service: fetchLines, fetchWeekInfo, fetchEntries, fetchWeeklySummary, updateEntry, addProjectLine, toggleLineVisibility, deleteProjectLine, exportData, importData. Updated root layout (app/_layout.tsx) to initialize database on app start and redirect to migration screen if needed. App is now fully functional offline with local data persistence. Backend remains available for future sync features."
+-------   - agent: "main"
+--------    message: "✅ PHASE 3 COMPLETE - Export/Import UI for Backup & Restore: Installed expo-file-system, expo-sharing, and expo-document-picker packages. Added import functionality to Settings tab alongside existing export. Export creates JSON backup file with timestamp and allows sharing via native share sheet. Import allows selecting backup file, validates format, confirms with user before replacing data, and refreshes UI after import. Both features work completely offline. Users can now backup their timesheet data and restore it on new devices or after reinstallation."
+-------\ No newline at end of file
+-------+    message: "✅ PHASE 3 COMPLETE - Export/Import UI for Backup & Restore: Installed expo-file-system, expo-sharing, and expo-document-picker packages. Added import functionality to Settings tab alongside existing export. Export creates JSON backup file with timestamp and allows sharing via native share sheet. Import allows selecting backup file, validates format, confirms with user before replacing data, and refreshes UI after import. Both features work completely offline. Users can now backup their timesheet data and restore it on new devices or after reinstallation."
+-------+  - agent: "testing"
+-------+    message: "✅ BACKEND TESTING COMPLETE (v1.1.0 Notes Feature Review) - Backend tests all passing (26/26, 100% success rate). However, CRITICAL FINDING: The Notes feature (v1.1.0) requested for testing is NOT implemented in the backend. Notes functionality exists ONLY in the frontend local SQLite database (/app/frontend/services/database.ts) with work_notes table and all required methods (saveNote, getNote, getNotesByDate, getNotesByWeek, deleteNote, hasNote). The app has moved to a fully offline architecture where Notes are stored locally, not on the backend server. Backend remains functional for existing features but has no Notes endpoints or work_notes table."
+-------\ No newline at end of file
