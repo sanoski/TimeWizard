@@ -735,11 +735,12 @@ class DatabaseService {
     
     if (startDate && endDate) {
       await this.db.runAsync(
-        'DELETE FROM on_call_schedule WHERE schedule_date >= ? AND schedule_date <= ?',
+        'DELETE FROM on_call_schedule WHERE start_date >= ? AND start_date <= ?',
         [startDate, endDate]
       );
     } else {
       await this.db.runAsync('DELETE FROM on_call_schedule');
+      console.log('🗑️ Cleared all on-call schedule data');
     }
   }
 }
