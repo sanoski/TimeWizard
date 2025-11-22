@@ -146,20 +146,28 @@ export default function ReportsView({ currentUser }: ReportsViewProps) {
         csv += `${entry.work_date},${entry.line_code},${entry.st_hours || 0},${entry.ot_hours || 0},${(entry.st_hours || 0) + (entry.ot_hours || 0)},"${cleanNote}"\n`;
       });
       
-      // Save to file
+      // Save to file using cacheDirectory for sharing
       const fileName = `work_hours_report_${reportData.startDate}_to_${reportData.endDate}.csv`;
-      const fileUri = FileSystem.documentDirectory + fileName;
+      const fileUri = FileSystem.cacheDirectory + fileName;
       
-      await FileSystem.writeAsStringAsync(fileUri, csv);
+      await FileSystem.writeAsStringAsync(fileUri, csv, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+      
+      console.log('CSV file created:', fileUri);
       
       if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(fileUri);
+        await Sharing.shareAsync(fileUri, {
+          mimeType: 'text/csv',
+          dialogTitle: 'Share Work Hours Report CSV',
+          UTI: 'public.comma-separated-values-text',
+        });
       } else {
-        Alert.alert('Success', `Report saved to ${fileUri}`);
+        Alert.alert('Success', `CSV saved to ${fileUri}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error exporting CSV:', error);
-      Alert.alert('Error', 'Failed to export CSV');
+      Alert.alert('Error', `Failed to export CSV: ${error.message}`);
     }
   };
 
