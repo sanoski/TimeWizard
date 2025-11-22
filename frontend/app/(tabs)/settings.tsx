@@ -689,9 +689,12 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    gap: 8,
   },
   actionButtonContent: {
     flexDirection: 'row',
