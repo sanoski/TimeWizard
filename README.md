@@ -503,13 +503,19 @@ For issues, questions, or feature requests:
 ## Version History
 
 ### v1.2.0 (November 22, 2025)
-- Added on-call schedule feature
-- Google Sheets sync integration
-- Unified calendar view in History tab
+**Major Release: On-Call & Reports**
+- Added on-call schedule feature with Google Sheets sync
+- Auto-sync (weekly, on app open) with toggle control
+- Hardcoded master schedule URL (zero user setup)
+- Unified calendar view (list/calendar/reports toggle)
+- **Reports feature** with PDF/CSV export
+  - Date range selection (presets + custom)
+  - Monthly summary or detailed daily formats
+  - Professional PDF output for documentation
 - Developer menu for admin configuration
-- Database migration system
+- Database migration system (v2.0 schema)
 - Performance improvements (haptics, debouncing)
-- Bug fixes (buttons, modal, sync)
+- Bug fixes (buttons, modal, sync, calendar navigation)
 
 ### v1.1.0 (November 19, 2025)
 - Added work notes feature
