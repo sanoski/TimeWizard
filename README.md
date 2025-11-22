@@ -197,21 +197,46 @@ on_call_schedule (
 
 ### On-Call Schedule Management
 
-#### For Administrators:
-1. **Create Google Sheet** with columns: `start_date`, `end_date`, `user`, `notes`
-2. **Publish as CSV**: File → Share → Publish to web → CSV format
-3. **Copy URL** (looks like: `https://docs.google.com/spreadsheets/.../export?format=csv`)
-4. **Configure in App**:
-   - Go to Settings → Scroll to About section
-   - Tap "Version 1.2.0" **5 times** (unlocks developer menu)
-   - Paste URL in "Master Schedule URL" field
-   - Tap "Save URL"
+#### For Regular Users (Zero Setup):
+1. **App auto-syncs weekly** - Schedule updates automatically when app opens
+2. **Manual sync** - Go to Settings → On-Call Schedule → "Sync Now"
+3. **View shifts** - On-Call tab shows your upcoming weekends
+4. **Calendar view** - History tab displays all on-call assignments
+5. **Toggle auto-sync** - Settings → Auto-Sync toggle (weekly updates)
 
-#### For Regular Users:
-1. **Go to Settings**
-2. **Tap "Sync Schedule"** (uses pre-configured URL)
-3. **View On-Call Tab** to see your shifts
-4. **Check Calendar** (History tab) for visual overview
+#### For Administrators:
+**Master Schedule URL is hardcoded** - No user setup needed!
+
+**To Update Master Schedule:**
+1. **Edit Google Sheet** with columns: `start_date`, `end_date`, `user`, `notes`
+2. **Already published as CSV** - URL hardcoded in app
+3. **Users auto-sync** - Changes appear within 7 days (or manual sync)
+
+**To Use Custom URL (Testing):**
+1. Go to Settings → About section
+2. Tap "Version 1.2.0" **5 times** (unlocks developer menu)
+3. Paste test URL in "Master Schedule URL" field
+4. Tap "Save URL"
+
+### Generating Reports
+
+1. **Navigate to History Tab** → Tap "Reports"
+2. **Select Date Range**:
+   - Quick presets: Last 30 days, 3 months, 6 months, year, YTD, all time
+   - Custom range: Select specific start/end dates
+3. **Optional**: Enter your name for PDF header
+4. **Tap "Generate Report"** → View summary statistics
+5. **Export Options**:
+   - **CSV**: Complete data export (all days with details)
+   - **PDF**: 
+     - Ranges ≤ 90 days: Detailed daily breakdown
+     - Ranges > 90 days: Monthly summary format
+
+**Use Cases:**
+- Tax records (overtime tracking)
+- Raise negotiations (prove hours worked)
+- Dispute resolution (comprehensive records)
+- Year-end summaries
 
 ### Viewing History
 
