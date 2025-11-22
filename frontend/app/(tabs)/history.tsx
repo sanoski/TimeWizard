@@ -1,17 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator, Modal, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { Calendar, DateData } from 'react-native-calendars';
 import { useTimesheetStore } from '../../store/timesheetStore';
-import { format, subWeeks } from 'date-fns';
+import { format, subWeeks, parseISO, eachDayOfInterval, isSaturday, isSunday } from 'date-fns';
 import { useFocusEffect } from 'expo-router';
 import { db } from '../../services/databaseWrapper';
+
+type ViewMode = 'list' | 'calendar';
 
 export default function HistoryScreen() {
   const { weekInfo, fetchWeekInfo, loading } = useTimesheetStore();
   const [selectedWeek, setSelectedWeek] = useState<string>('');
   const [weekSummaries, setWeekSummaries] = useState<any[]>([]);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
+  
+  // Calendar state
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [dayDetails, setDayDetails] = useState<any>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [markedDates, setMarkedDates] = useState<any>({});
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
