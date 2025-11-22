@@ -55,6 +55,13 @@ VRS Time Wizard is an offline-first mobile timesheet application designed for ra
   - react-native-calendars (calendar view)
   - expo-haptics (button feedback)
 - **Storage**: @react-native-async-storage/async-storage
+- **Reports**: 
+  - expo-print (PDF generation)
+  - expo-sharing (file sharing)
+  - @react-native-community/datetimepicker (date selection)
+- **Utilities**:
+  - expo-document-picker (CSV import)
+  - expo-file-system (file operations)
 
 ### Backend (Dormant)
 - **Framework**: FastAPI (Python) - Not used in v1.2.0
