@@ -156,15 +156,16 @@ const migration_v2: Migration = {
     await db.runAsync(`
       CREATE TABLE IF NOT EXISTS on_call_schedule (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        schedule_date TEXT NOT NULL,
+        start_date TEXT NOT NULL,
+        end_date TEXT NOT NULL,
         user_name TEXT NOT NULL,
-        shift_type TEXT DEFAULT 'primary',
+        location TEXT NOT NULL,
         notes TEXT,
         is_swapped INTEGER DEFAULT 0,
         original_user_name TEXT,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(schedule_date, user_name, shift_type)
+        UNIQUE(start_date, end_date, user_name, location)
       )
     `);
     console.log('✅ on_call_schedule table created');
