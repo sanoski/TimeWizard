@@ -188,7 +188,7 @@ export default function OnCallScreen() {
             style={styles.navButton}
             onPress={() => setCurrentMonth(addMonths(currentMonth, 1))}
           >
-            <Ionicons name="chevron-forward" size="24" color="#2563eb" />
+            <Ionicons name="chevron-forward" size={24} color="#2563eb" />
           </TouchableOpacity>
         </View>
 
