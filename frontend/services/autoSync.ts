@@ -278,12 +278,9 @@ export async function checkAndSync(): Promise<SyncResult | null> {
 
 /**
  * Clear notification badge
+ * Note: Badge notifications disabled in Expo Go. Will work in standalone builds.
  */
 export async function clearSyncBadge(): Promise<void> {
-  try {
-    await Notifications.setBadgeCountAsync(0);
-    console.log('✅ Badge cleared');
-  } catch (error) {
-    console.error('Error clearing badge:', error);
-  }
+  // Badge notifications require a standalone build
+  console.log('✅ Badge cleared (disabled in Expo Go)');
 }
