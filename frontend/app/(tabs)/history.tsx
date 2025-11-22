@@ -457,11 +457,6 @@ export default function HistoryScreen() {
                 markingType={'multi-dot'}
                 markedDates={markedDates}
                 onDayPress={handleDayPress}
-                onMonthChange={(month) => {
-                  console.log('📅 Month changed to:', month);
-                  const monthDate = new Date(month.year, month.month - 1, 1);
-                  loadCalendarData(monthDate);
-                }}
                 theme={{
                   backgroundColor: '#ffffff',
                   calendarBackground: '#ffffff',
