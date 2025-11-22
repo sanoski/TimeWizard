@@ -7,10 +7,7 @@ import { useTimesheetStore } from '../../store/timesheetStore';
 import { format, parseISO, eachDayOfInterval, isSaturday, isSunday, startOfMonth, endOfMonth, subMonths, subDays, startOfYear } from 'date-fns';
 import { useFocusEffect } from 'expo-router';
 import { db } from '../../services/databaseWrapper';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
+import ReportsView from '../../components/ReportsView';
 
 type ViewMode = 'list' | 'calendar' | 'reports';
 
