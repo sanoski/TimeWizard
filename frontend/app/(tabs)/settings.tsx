@@ -7,10 +7,18 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 
+import { db } from '../../services/databaseWrapper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export default function SettingsScreen() {
   const { lines, fetchLines, toggleLineVisibility, addProjectLine, deleteProjectLine, exportData, importData } = useTimesheetStore();
   const [projectNumber, setProjectNumber] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // On-Call Sync state
+  const [scheduleUrl, setScheduleUrl] = useState('');
+  const [syncing, setSyncing] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
 
   useEffect(() => {
     fetchLines();
