@@ -18,6 +18,7 @@ export default function OnCallScreen() {
 
   useEffect(() => {
     initializeOnCall();
+    checkDevMenuStatus();
   }, []);
 
   useEffect(() => {
@@ -25,6 +26,15 @@ export default function OnCallScreen() {
       loadSchedule();
     }
   }, [currentMonth, currentUser]);
+
+  const checkDevMenuStatus = async () => {
+    try {
+      const devMenuEnabled = await AsyncStorage.getItem('dev_menu_enabled');
+      setShowDevFeatures(devMenuEnabled === 'true');
+    } catch (error) {
+      console.error('Error checking dev menu status:', error);
+    }
+  };
 
   const initializeOnCall = async () => {
     try {
