@@ -84,57 +84,80 @@ export default function OnCallScreen() {
     }
   };
 
-  const handleLoadTestData = async () => {
+  const handleImportCSV = async () => {
     try {
-      // Test data matching the provided schedule
-      const testSchedule = [
-        { start_date: '2025-12-06', end_date: '2025-12-07', user: 'Mark Ellison', notes: '' },
-        { start_date: '2025-12-06', end_date: '2025-12-07', user: 'Amy Crawford', notes: '' },
-        { start_date: '2025-12-13', end_date: '2025-12-14', user: 'David Harper', notes: '' },
-        { start_date: '2025-12-13', end_date: '2025-12-14', user: 'Laura McIntyre', notes: '' },
-        { start_date: '2025-12-20', end_date: '2025-12-21', user: 'Brandon Keller', notes: '' },
-        { start_date: '2025-12-20', end_date: '2025-12-21', user: 'Kate Durham', notes: '' },
-        { start_date: '2025-12-27', end_date: '2025-12-28', user: 'Jose Ramirez', notes: '' },
-        { start_date: '2025-12-27', end_date: '2025-12-28', user: 'Sophie Lambert', notes: '' },
-        { start_date: '2026-01-03', end_date: '2026-01-04', user: 'Cole Matthews', notes: '' },
-        { start_date: '2026-01-03', end_date: '2026-01-04', user: 'Emily Rhodes', notes: '' },
-        { start_date: '2026-01-10', end_date: '2026-01-11', user: 'Troy Lindgren', notes: '' },
-        { start_date: '2026-01-10', end_date: '2026-01-11', user: 'Michelle Barrett', notes: '' },
-        { start_date: '2026-01-17', end_date: '2026-01-18', user: 'Henry Ross', notes: '' },
-        { start_date: '2026-01-17', end_date: '2026-01-18', user: 'Brianna Shaw', notes: '' },
-        { start_date: '2026-01-24', end_date: '2026-01-25', user: 'Evan Morrison', notes: '' },
-        { start_date: '2026-01-24', end_date: '2026-01-25', user: 'Chloe Bennett', notes: '' },
-        { start_date: '2026-01-31', end_date: '2026-02-01', user: 'Roger Flynn', notes: '' },
-        { start_date: '2026-01-31', end_date: '2026-02-01', user: 'Isabella Cortez', notes: '' },
-        { start_date: '2026-02-07', end_date: '2026-02-08', user: 'Connor Blake', notes: '' },
-        { start_date: '2026-02-07', end_date: '2026-02-08', user: 'Megan Holloway', notes: '' },
-        { start_date: '2026-02-14', end_date: '2026-02-15', user: 'Shawn Turner', notes: '' },
-        { start_date: '2026-02-14', end_date: '2026-02-15', user: 'Rachel Kim', notes: '' },
-        { start_date: '2026-02-21', end_date: '2026-02-22', user: 'Adam Foster', notes: '' },
-        { start_date: '2026-02-21', end_date: '2026-02-22', user: 'Jasmine Patel', notes: '' },
-        { start_date: '2026-02-28', end_date: '2026-03-01', user: 'Caleb Johnson', notes: '' },
-        { start_date: '2026-02-28', end_date: '2026-03-01', user: 'Kendra Lee', notes: '' },
-      ];
+      // Open document picker for CSV files
+      const result = await DocumentPicker.getDocumentAsync({
+        type: 'text/csv',
+        copyToCacheDirectory: true,
+      });
 
-      // Import the schedule
-      await db.importOnCallSchedule(testSchedule);
+      if (result.canceled) {
+        return;
+      }
 
+      const fileUri = result.assets[0].uri;
+      
+      // Read the CSV file
+      const fileContent = await fetch(fileUri);
+      const csvText = await fileContent.text();
+      
+      console.log('📄 CSV file loaded, parsing...');
+      
+      // Parse CSV
+      const lines = csvText.trim().split('\n');
+      const headers = lines[0].split(',').map(h => h.trim());
+      
+      const scheduleData: any[] = [];
+      
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim());
+        const row: any = {};
+        
+        headers.forEach((header, index) => {
+          row[header] = values[index] || '';
+        });
+        
+        scheduleData.push({
+          start_date: row.start_date,
+          end_date: row.end_date,
+          user: row.user,
+          notes: row.notes || ''
+        });
+      }
+      
+      console.log(`📅 Parsed ${scheduleData.length} schedule entries`);
+      
+      // Import into database
+      await db.initialize();
+      
+      // Clear existing schedule before importing (replace, don't add)
+      console.log('🗑️ Clearing existing on-call schedule...');
+      await db.clearOnCallSchedule();
+      
+      await db.importOnCallSchedule(scheduleData);
+      
       // Extract unique users and add them
-      const uniqueUsers = [...new Set(testSchedule.map(s => s.user))];
+      const uniqueUsers = [...new Set(scheduleData.map(s => s.user))];
       for (const user of uniqueUsers) {
         await db.addOnCallUser(user, false);
       }
-
+      
       // Reload schedule
       await loadSchedule();
-
+      
       Alert.alert(
-        'Test Data Loaded!',
-        `Loaded ${testSchedule.length} schedule entries with ${uniqueUsers.length} users.\n\nCoverage: Dec 2025 - Mar 2026`
+        'Import Complete!',
+        `Successfully imported ${scheduleData.length} schedule entries with ${uniqueUsers.length} users.`
       );
-    } catch (error) {
-      console.error('Error loading test data:', error);
-      Alert.alert('Error', 'Failed to load test data');
+      
+      console.log('✅ CSV import complete');
+    } catch (error: any) {
+      console.error('❌ CSV import error:', error);
+      Alert.alert(
+        'Import Failed',
+        error.message || 'Failed to import CSV file. Please check the file format and try again.'
+      );
     }
   };
 
