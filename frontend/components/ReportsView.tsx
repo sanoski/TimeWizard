@@ -191,23 +191,17 @@ export default function ReportsView({ currentUser }: ReportsViewProps) {
       // Generate PDF using expo-print
       const { uri } = await Print.printToFileAsync({ html: htmlContent });
       
-      // Save with proper filename
-      const fileName = `work_hours_report_${reportData.startDate}_to_${reportData.endDate}.pdf`;
-      const newPath = FileSystem.documentDirectory + fileName;
+      console.log('PDF file created:', uri);
       
-      await FileSystem.moveAsync({
-        from: uri,
-        to: newPath,
-      });
-      
-      // Share the PDF
+      // Share the PDF directly
       if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(newPath, {
+        await Sharing.shareAsync(uri, {
           mimeType: 'application/pdf',
           dialogTitle: 'Share Work Hours Report',
+          UTI: 'com.adobe.pdf',
         });
       } else {
-        Alert.alert('Success', `PDF saved to ${newPath}`);
+        Alert.alert('Success', `PDF saved to ${uri}`);
       }
     } catch (error) {
       console.error('Error exporting PDF:', error);
