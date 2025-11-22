@@ -14,6 +14,11 @@ export const DEFAULT_ONCALL_SCHEDULE_URL = 'https://docs.google.com/spreadsheets
 export const AUTO_SYNC_INTERVAL_DAYS = 7;
 
 /**
- * App version
+ * App version - should match version in app.json
  */
 export const APP_VERSION = '1.2.0';
+
+/**
+ * App name
+ */
+export const APP_NAME = 'VRS Time Wizard';
