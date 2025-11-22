@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Calendar, DateData } from 'react-native-calendars';
 import { useTimesheetStore } from '../../store/timesheetStore';
-import { format, subWeeks, parseISO, eachDayOfInterval, isSaturday, isSunday } from 'date-fns';
+import { format, parseISO, eachDayOfInterval, isSaturday, isSunday } from 'date-fns';
 import { useFocusEffect } from 'expo-router';
 import { db } from '../../services/databaseWrapper';
 
@@ -16,12 +16,15 @@ export default function HistoryScreen() {
   const [weekSummaries, setWeekSummaries] = useState<any[]>([]);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
   
-  // Calendar state
+  // View mode toggle
   const [viewMode, setViewMode] = useState<ViewMode>('list');
+  
+  // Calendar state
   const [selectedDate, setSelectedDate] = useState('');
   const [dayDetails, setDayDetails] = useState<any>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [markedDates, setMarkedDates] = useState<any>({});
+  const [loadingCalendar, setLoadingCalendar] = useState(false);
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -34,7 +37,10 @@ export default function HistoryScreen() {
       if (weekInfo) {
         loadRecentWeeks();
       }
-    }, [weekInfo])
+      if (viewMode === 'calendar') {
+        loadCalendarData();
+      }
+    }, [weekInfo, viewMode])
   );
 
   useEffect(() => {
@@ -42,6 +48,12 @@ export default function HistoryScreen() {
       loadRecentWeeks();
     }
   }, [weekInfo]);
+
+  useEffect(() => {
+    if (viewMode === 'calendar') {
+      loadCalendarData();
+    }
+  }, [viewMode]);
 
   const loadRecentWeeks = async () => {
     if (!weekInfo) return;
@@ -67,8 +79,147 @@ export default function HistoryScreen() {
     setLoadingSummaries(false);
   };
 
+  const loadCalendarData = async () => {
+    setLoadingCalendar(true);
+    try {
+      await db.initialize();
+      
+      // Get current month range
+      const today = new Date();
+      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      
+      const startDate = format(startOfMonth, 'yyyy-MM-dd');
+      const endDate = format(endOfMonth, 'yyyy-MM-dd');
+      
+      // Get all dates with hours logged
+      const entriesWithHours = await db.db.getAllAsync(
+        'SELECT DISTINCT work_date FROM time_entries WHERE work_date >= ? AND work_date <= ? ORDER BY work_date',
+        [startDate, endDate]
+      );
+      
+      // Get all dates with notes
+      const datesWithNotes = await db.db.getAllAsync(
+        'SELECT DISTINCT work_date FROM work_notes WHERE work_date >= ? AND work_date <= ?',
+        [startDate, endDate]
+      );
+      
+      // Load on-call schedule
+      const onCallSchedule = await db.getOnCallSchedule(startDate, endDate);
+      const currentUser = await db.getCurrentUser();
+      
+      // Build marked dates object
+      const marked: any = {};
+      
+      // Mark dates with hours logged
+      entriesWithHours.forEach((entry: any) => {
+        if (!marked[entry.work_date]) {
+          marked[entry.work_date] = { dots: [] };
+        }
+        marked[entry.work_date].dots.push({ color: '#2563eb', key: 'hours' });
+      });
+      
+      // Mark dates with notes
+      datesWithNotes.forEach((note: any) => {
+        if (!marked[note.work_date]) {
+          marked[note.work_date] = { dots: [] };
+        }
+        if (!marked[note.work_date].dots.find((d: any) => d.key === 'notes')) {
+          marked[note.work_date].dots.push({ color: '#f59e0b', key: 'notes' });
+        }
+      });
+      
+      // Mark weekends and on-call days
+      const monthDays = eachDayOfInterval({ start: startOfMonth, end: endOfMonth });
+      monthDays.forEach(day => {
+        const dateStr = format(day, 'yyyy-MM-dd');
+        const isWeekend = isSaturday(day) || isSunday(day);
+        
+        if (isWeekend) {
+          // Check if user is on-call this weekend
+          const onCall = onCallSchedule.find((s: any) => 
+            s.start_date <= dateStr && s.end_date >= dateStr && s.user_name === currentUser?.user_name
+          );
+          
+          if (onCall) {
+            if (!marked[dateStr]) {
+              marked[dateStr] = { dots: [] };
+            }
+            marked[dateStr].dots.push({ color: '#10b981', key: 'oncall' });
+            marked[dateStr].customStyles = {
+              container: { backgroundColor: '#d1fae5' },
+              text: { color: '#065f46', fontWeight: '700' }
+            };
+          } else {
+            // Regular weekend (not on-call)
+            if (!marked[dateStr]) {
+              marked[dateStr] = {};
+            }
+            marked[dateStr].customStyles = {
+              container: { backgroundColor: '#f3f4f6' },
+              text: { color: '#6b7280' }
+            };
+          }
+        }
+      });
+      
+      setMarkedDates(marked);
+    } catch (error) {
+      console.error('Error loading calendar data:', error);
+    } finally {
+      setLoadingCalendar(false);
+    }
+  };
+
+  const handleDayPress = async (day: DateData) => {
+    setSelectedDate(day.dateString);
+    setLoadingCalendar(true);
+    
+    try {
+      // Get hours/lines for this day
+      const entries = await db.db.getAllAsync(
+        'SELECT * FROM time_entries WHERE work_date = ? ORDER BY line_code',
+        [day.dateString]
+      );
+      
+      // Get notes for this day
+      const notes = await db.db.getAllAsync(
+        'SELECT * FROM work_notes WHERE work_date = ? ORDER BY line_code',
+        [day.dateString]
+      );
+      
+      // Get on-call info for this day
+      const onCallInfo = await db.getOnCallForDate(day.dateString);
+      const currentUser = await db.getCurrentUser();
+      
+      // Calculate totals
+      let totalST = 0;
+      let totalOT = 0;
+      entries.forEach((e: any) => {
+        totalST += e.st_hours || 0;
+        totalOT += e.ot_hours || 0;
+      });
+      
+      setDayDetails({
+        date: day.dateString,
+        entries,
+        notes,
+        onCallInfo,
+        currentUser,
+        totalST,
+        totalOT,
+        totalHours: totalST + totalOT
+      });
+      
+      setShowDetailModal(true);
+    } catch (error) {
+      console.error('Error loading day details:', error);
+    } finally {
+      setLoadingCalendar(false);
+    }
+  };
+
   const getWeekLabel = (weekEndingDate: string): string => {
-    // Add time component to prevent timezone shifting
     const endDate = new Date(weekEndingDate + 'T00:00:00');
     const startDate = new Date(endDate);
     startDate.setDate(startDate.getDate() - 6);
@@ -90,118 +241,319 @@ export default function HistoryScreen() {
       <View style={styles.header}>
         <View>
           <Text style={styles.headerTitle}>History</Text>
-          <Text style={styles.headerSubtitle}>View past timesheets</Text>
+          <Text style={styles.headerSubtitle}>
+            {viewMode === 'list' ? 'View past timesheets' : 'Calendar view'}
+          </Text>
         </View>
-        <Ionicons name="time-outline" size={32} color="#2563eb" />
+        <Ionicons name={viewMode === 'list' ? 'time-outline' : 'calendar-outline'} size={32} color="#2563eb" />
       </View>
 
-      <ScrollView style={styles.scrollView}>
-        {loadingSummaries ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#2563eb" />
-            <Text style={styles.loadingText}>Loading history...</Text>
-          </View>
-        ) : (
-          <View style={styles.weeksList}>
-            {weekSummaries.map((summary, index) => (
-              <Pressable
-                key={summary.week_ending_date}
-                style={styles.weekCard}
-                onPress={() => setSelectedWeek(
-                  selectedWeek === summary.week_ending_date ? '' : summary.week_ending_date
-                )}
-              >
-                <View style={styles.weekCardHeader}>
-                  <View style={styles.weekCardLeft}>
-                    <Text style={styles.weekLabel}>
-                      {getWeekLabel(summary.week_ending_date)}
-                    </Text>
-                    {summary.is_pay_week && (
-                      <View style={styles.payWeekBadge}>
-                        <Ionicons name="cash" size={12} color="#ffffff" />
-                        <Text style={styles.payWeekText}>PAY</Text>
-                      </View>
-                    )}
-                  </View>
-                  <View style={styles.weekCardRight}>
-                    <Text style={styles.totalHoursText}>{summary.total_hours}h</Text>
-                    <Ionicons 
-                      name={selectedWeek === summary.week_ending_date ? 'chevron-up' : 'chevron-down'} 
-                      size={20} 
-                      color="#6b7280" 
-                    />
-                  </View>
-                </View>
+      {/* View Toggle */}
+      <View style={styles.toggleContainer}>
+        <Pressable
+          style={[styles.toggleButton, viewMode === 'list' && styles.toggleButtonActive]}
+          onPress={() => setViewMode('list')}
+        >
+          <Ionicons name="list" size={20} color={viewMode === 'list' ? '#ffffff' : '#6b7280'} />
+          <Text style={[styles.toggleText, viewMode === 'list' && styles.toggleTextActive]}>List View</Text>
+        </Pressable>
+        <Pressable
+          style={[styles.toggleButton, viewMode === 'calendar' && styles.toggleButtonActive]}
+          onPress={() => setViewMode('calendar')}
+        >
+          <Ionicons name="calendar" size={20} color={viewMode === 'calendar' ? '#ffffff' : '#6b7280'} />
+          <Text style={[styles.toggleText, viewMode === 'calendar' && styles.toggleTextActive]}>Calendar</Text>
+        </Pressable>
+      </View>
 
-                {/* Quick Stats */}
-                <View style={styles.quickStats}>
-                  <View style={styles.statPill}>
-                    <Text style={styles.statPillLabel}>ST:</Text>
-                    <Text style={styles.statPillValue}>{summary.total_st}h</Text>
+      {/* List View */}
+      {viewMode === 'list' && (
+        <ScrollView style={styles.scrollView}>
+          {loadingSummaries ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#2563eb" />
+              <Text style={styles.loadingText}>Loading history...</Text>
+            </View>
+          ) : (
+            <View style={styles.weeksList}>
+              {weekSummaries.map((summary, index) => (
+                <Pressable
+                  key={summary.week_ending_date}
+                  style={styles.weekCard}
+                  onPress={() => setSelectedWeek(
+                    selectedWeek === summary.week_ending_date ? '' : summary.week_ending_date
+                  )}
+                >
+                  <View style={styles.weekCardHeader}>
+                    <View style={styles.weekCardLeft}>
+                      <Text style={styles.weekLabel}>
+                        {getWeekLabel(summary.week_ending_date)}
+                      </Text>
+                      {summary.is_pay_week && (
+                        <View style={styles.payWeekBadge}>
+                          <Ionicons name="cash" size={12} color="#ffffff" />
+                          <Text style={styles.payWeekText}>PAY</Text>
+                        </View>
+                      )}
+                    </View>
+                    <View style={styles.weekCardRight}>
+                      <Text style={styles.totalHoursText}>{summary.total_hours}h</Text>
+                      <Ionicons 
+                        name={selectedWeek === summary.week_ending_date ? 'chevron-up' : 'chevron-down'} 
+                        size={20} 
+                        color="#6b7280" 
+                      />
+                    </View>
                   </View>
-                  <View style={[styles.statPill, { backgroundColor: '#fee2e2' }]}>
-                    <Text style={styles.statPillLabel}>OT:</Text>
-                    <Text style={[styles.statPillValue, { color: '#dc2626' }]}>{summary.total_ot}h</Text>
-                  </View>
-                  <View style={[styles.statPill, { backgroundColor: '#e0e7ff' }]}>
-                    <Text style={styles.statPillLabel}>Lines:</Text>
-                    <Text style={[styles.statPillValue, { color: '#4f46e5' }]}>{summary.lines_used.length}</Text>
-                  </View>
-                </View>
 
-                {/* Expanded Details */}
-                {selectedWeek === summary.week_ending_date && (
-                  <View style={styles.expandedDetails}>
-                    <View style={styles.divider} />
-                    
-                    {/* Lines Used */}
-                    {summary.lines_used.length > 0 && (
-                      <View style={styles.detailSection}>
-                        <Text style={styles.detailSectionTitle}>Lines Worked:</Text>
-                        <View style={styles.linesContainer}>
-                          {summary.lines_used.map((line: string) => (
-                            <View key={line} style={styles.lineChip}>
-                              <Text style={styles.lineChipText}>{line}</Text>
+                  {/* Quick Stats */}
+                  <View style={styles.quickStats}>
+                    <View style={styles.statPill}>
+                      <Text style={styles.statPillLabel}>ST:</Text>
+                      <Text style={styles.statPillValue}>{summary.total_st}h</Text>
+                    </View>
+                    <View style={[styles.statPill, { backgroundColor: '#fee2e2' }]}>
+                      <Text style={styles.statPillLabel}>OT:</Text>
+                      <Text style={[styles.statPillValue, { color: '#dc2626' }]}>{summary.total_ot}h</Text>
+                    </View>
+                    <View style={[styles.statPill, { backgroundColor: '#e0e7ff' }]}>
+                      <Text style={styles.statPillLabel}>Lines:</Text>
+                      <Text style={[styles.statPillValue, { color: '#4f46e5' }]}>{summary.lines_used.length}</Text>
+                    </View>
+                  </View>
+
+                  {/* Expanded Details */}
+                  {selectedWeek === summary.week_ending_date && (
+                    <View style={styles.expandedDetails}>
+                      <View style={styles.divider} />
+                      
+                      {summary.lines_used.length > 0 && (
+                        <View style={styles.detailSection}>
+                          <Text style={styles.detailSectionTitle}>Lines Worked:</Text>
+                          <View style={styles.linesContainer}>
+                            {summary.lines_used.map((line: string) => (
+                              <View key={line} style={styles.lineChip}>
+                                <Text style={styles.lineChipText}>{line}</Text>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                      )}
+
+                      {Object.keys(summary.line_totals).length > 0 && (
+                        <View style={styles.detailSection}>
+                          <Text style={styles.detailSectionTitle}>Hours by Line:</Text>
+                          {Object.entries(summary.line_totals).map(([lineCode, totals]: [string, any]) => (
+                            <View key={lineCode} style={styles.lineBreakdownRow}>
+                              <Text style={styles.lineBreakdownLabel}>{lineCode}</Text>
+                              <View style={styles.lineBreakdownValues}>
+                                <Text style={styles.lineBreakdownValue}>ST: {totals.st}</Text>
+                                <Text style={[styles.lineBreakdownValue, { color: '#dc2626' }]}>OT: {totals.ot}</Text>
+                                <Text style={[styles.lineBreakdownValue, { fontWeight: '600' }]}>= {totals.total}</Text>
+                              </View>
                             </View>
                           ))}
                         </View>
-                      </View>
-                    )}
+                      )}
+                    </View>
+                  )}
+                </Pressable>
+              ))}
+            </View>
+          )}
 
-                    {/* Line Breakdown */}
-                    {Object.keys(summary.line_totals).length > 0 && (
-                      <View style={styles.detailSection}>
-                        <Text style={styles.detailSectionTitle}>Hours by Line:</Text>
-                        {Object.entries(summary.line_totals).map(([lineCode, totals]: [string, any]) => (
-                          <View key={lineCode} style={styles.lineBreakdownRow}>
-                            <Text style={styles.lineBreakdownLabel}>{lineCode}</Text>
-                            <View style={styles.lineBreakdownValues}>
-                              <Text style={styles.lineBreakdownValue}>ST: {totals.st}</Text>
-                              <Text style={[styles.lineBreakdownValue, { color: '#dc2626' }]}>OT: {totals.ot}</Text>
-                              <Text style={[styles.lineBreakdownValue, { fontWeight: '600' }]}>= {totals.total}</Text>
-                            </View>
+          <View style={styles.infoCard}>
+            <View style={styles.infoHeader}>
+              <Ionicons name="information-circle" size={20} color="#2563eb" />
+              <Text style={styles.infoTitle}>About History</Text>
+            </View>
+            <Text style={styles.infoText}>
+              View your timesheet history for the past 8 weeks. Tap any week to see detailed breakdown by line code.
+            </Text>
+          </View>
+        </ScrollView>
+      )}
+
+      {/* Calendar View */}
+      {viewMode === 'calendar' && (
+        <ScrollView style={styles.scrollView}>
+          {/* Legend */}
+          <View style={styles.legend}>
+            <Text style={styles.legendTitle}>Calendar Legend:</Text>
+            <View style={styles.legendItems}>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: '#2563eb' }]} />
+                <Text style={styles.legendText}>Hours Logged</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: '#f59e0b' }]} />
+                <Text style={styles.legendText}>Notes</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: '#10b981' }]} />
+                <Text style={styles.legendText}>On-Call (You)</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendBox, { backgroundColor: '#f3f4f6' }]} />
+                <Text style={styles.legendText}>Weekend</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Calendar */}
+          <View style={styles.calendarContainer}>
+            {loadingCalendar ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#2563eb" />
+              </View>
+            ) : (
+              <Calendar
+                markingType={'multi-dot'}
+                markedDates={markedDates}
+                onDayPress={handleDayPress}
+                theme={{
+                  backgroundColor: '#ffffff',
+                  calendarBackground: '#ffffff',
+                  textSectionTitleColor: '#6b7280',
+                  selectedDayBackgroundColor: '#2563eb',
+                  selectedDayTextColor: '#ffffff',
+                  todayTextColor: '#2563eb',
+                  dayTextColor: '#111827',
+                  textDisabledColor: '#d1d5db',
+                  dotColor: '#2563eb',
+                  selectedDotColor: '#ffffff',
+                  arrowColor: '#2563eb',
+                  monthTextColor: '#111827',
+                  textDayFontWeight: '400',
+                  textMonthFontWeight: '600',
+                  textDayHeaderFontWeight: '600',
+                  textDayFontSize: 14,
+                  textMonthFontSize: 18,
+                  textDayHeaderFontSize: 12,
+                }}
+              />
+            )}
+          </View>
+
+          <View style={styles.infoCard}>
+            <View style={styles.infoHeader}>
+              <Ionicons name="information-circle" size={20} color="#2563eb" />
+              <Text style={styles.infoTitle}>How to Use</Text>
+            </View>
+            <Text style={styles.infoText}>
+              Tap any date to view detailed information including hours worked, lines used, notes, and on-call assignments. Weekends are highlighted in gray, and your on-call weekends have a green background.
+            </Text>
+          </View>
+        </ScrollView>
+      )}
+
+      {/* Day Details Modal */}
+      <Modal
+        visible={showDetailModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowDetailModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                {dayDetails && format(parseISO(dayDetails.date), 'EEEE, MMM d, yyyy')}
+              </Text>
+              <TouchableOpacity onPress={() => setShowDetailModal(false)}>
+                <Ionicons name="close-circle" size={32} color="#6b7280" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.modalScroll}>
+              {dayDetails && (
+                <>
+                  {/* Hours Summary */}
+                  {dayDetails.totalHours > 0 ? (
+                    <View style={styles.modalSection}>
+                      <Text style={styles.modalSectionTitle}>Hours Worked</Text>
+                      <View style={styles.hoursGrid}>
+                        <View style={styles.hoursStat}>
+                          <Text style={styles.hoursStatLabel}>ST</Text>
+                          <Text style={styles.hoursStatValue}>{dayDetails.totalST}h</Text>
+                        </View>
+                        <View style={styles.hoursStat}>
+                          <Text style={[styles.hoursStatLabel, { color: '#dc2626' }]}>OT</Text>
+                          <Text style={[styles.hoursStatValue, { color: '#dc2626' }]}>{dayDetails.totalOT}h</Text>
+                        </View>
+                        <View style={styles.hoursStat}>
+                          <Text style={styles.hoursStatLabel}>Total</Text>
+                          <Text style={[styles.hoursStatValue, { color: '#2563eb' }]}>{dayDetails.totalHours}h</Text>
+                        </View>
+                      </View>
+                    </View>
+                  ) : (
+                    <View style={styles.emptySection}>
+                      <Ionicons name="time-outline" size={48} color="#d1d5db" />
+                      <Text style={styles.emptyText}>No hours logged this day</Text>
+                    </View>
+                  )}
+
+                  {/* Lines Worked */}
+                  {dayDetails.entries.length > 0 && (
+                    <View style={styles.modalSection}>
+                      <Text style={styles.modalSectionTitle}>Lines Worked</Text>
+                      {dayDetails.entries.map((entry: any, index: number) => (
+                        <View key={index} style={styles.lineRow}>
+                          <Text style={styles.lineCode}>{entry.line_code}</Text>
+                          <View style={styles.lineHours}>
+                            <Text style={styles.lineHoursText}>ST: {entry.st_hours}h</Text>
+                            <Text style={[styles.lineHoursText, { color: '#dc2626' }]}>OT: {entry.ot_hours}h</Text>
                           </View>
-                        ))}
-                      </View>
-                    )}
-                  </View>
-                )}
-              </Pressable>
-            ))}
-          </View>
-        )}
+                        </View>
+                      ))}
+                    </View>
+                  )}
 
-        {/* Info Card */}
-        <View style={styles.infoCard}>
-          <View style={styles.infoHeader}>
-            <Ionicons name="information-circle" size={20} color="#2563eb" />
-            <Text style={styles.infoTitle}>About History</Text>
+                  {/* Notes */}
+                  {dayDetails.notes.length > 0 && (
+                    <View style={styles.modalSection}>
+                      <Text style={styles.modalSectionTitle}>Notes</Text>
+                      {dayDetails.notes.map((note: any, index: number) => (
+                        <View key={index} style={styles.noteCard}>
+                          <View style={styles.noteHeader}>
+                            <Ionicons name="document-text" size={16} color="#f59e0b" />
+                            <Text style={styles.noteLineCode}>{note.line_code}</Text>
+                          </View>
+                          <Text style={styles.noteText}>{note.note_text}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+
+                  {/* On-Call Info */}
+                  {dayDetails.onCallInfo.length > 0 && (
+                    <View style={styles.modalSection}>
+                      <Text style={styles.modalSectionTitle}>On-Call This Weekend</Text>
+                      {dayDetails.onCallInfo.map((person: any, index: number) => {
+                        const isYou = person.user_name === dayDetails.currentUser?.user_name;
+                        return (
+                          <View key={index} style={[styles.onCallCard, isYou && styles.onCallCardYou]}>
+                            <Ionicons name="person" size={16} color={isYou ? '#10b981' : '#6b7280'} />
+                            <Text style={[styles.onCallName, isYou && styles.onCallNameYou]}>
+                              {person.user_name} {isYou && '(You)'}
+                            </Text>
+                            {person.is_swapped === 1 && (
+                              <View style={styles.swappedBadge}>
+                                <Text style={styles.swappedText}>Swapped</Text>
+                              </View>
+                            )}
+                          </View>
+                        );
+                      })}
+                    </View>
+                  )}
+                </>
+              )}
+            </ScrollView>
           </View>
-          <Text style={styles.infoText}>
-            View your timesheet history for the past 8 weeks. Tap any week to see detailed breakdown by line code.
-          </Text>
         </View>
-      </ScrollView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -241,6 +593,34 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     marginTop: 2,
   },
+  toggleContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+    padding: 8,
+    gap: 8,
+  },
+  toggleButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: '#f3f4f6',
+  },
+  toggleButtonActive: {
+    backgroundColor: '#2563eb',
+  },
+  toggleText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  toggleTextActive: {
+    color: '#ffffff',
+  },
   scrollView: {
     flex: 1,
   },
@@ -276,26 +656,26 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   weekLabel: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '600',
     color: '#111827',
   },
   payWeekBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#22c55e',
+    gap: 4,
+    backgroundColor: '#10b981',
     paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 10,
-    gap: 3,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
   payWeekText: {
-    color: '#ffffff',
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '600',
+    color: '#ffffff',
   },
   totalHoursText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
     color: '#2563eb',
   },
@@ -304,22 +684,25 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   statPill: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f3f4f6',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 12,
+    justifyContent: 'center',
     gap: 4,
+    backgroundColor: '#dbeafe',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
   },
   statPillLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    fontWeight: '600',
+    color: '#1e40af',
   },
   statPillValue: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#111827',
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1e40af',
   },
   expandedDetails: {
     marginTop: 12,
@@ -330,10 +713,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   detailSection: {
-    marginBottom: 12,
+    marginBottom: 16,
   },
   detailSectionTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: '#374151',
     marginBottom: 8,
@@ -341,45 +724,47 @@ const styles = StyleSheet.create({
   linesContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: 8,
   },
   lineChip: {
-    backgroundColor: '#eff6ff',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    backgroundColor: '#e0e7ff',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
   },
   lineChipText: {
-    fontSize: 11,
-    color: '#2563eb',
-    fontWeight: '500',
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#4f46e5',
   },
   lineBreakdownRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#f3f4f6',
   },
   lineBreakdownLabel: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '500',
     color: '#374151',
   },
   lineBreakdownValues: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 12,
   },
   lineBreakdownValue: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#6b7280',
   },
   infoCard: {
     backgroundColor: '#eff6ff',
-    margin: 16,
     padding: 16,
+    margin: 16,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#bfdbfe',
   },
   infoHeader: {
     flexDirection: 'row',
@@ -388,13 +773,208 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   infoTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#2563eb',
+    color: '#1e40af',
   },
   infoText: {
     fontSize: 13,
     color: '#1e40af',
     lineHeight: 18,
+  },
+  // Calendar styles
+  legend: {
+    backgroundColor: '#ffffff',
+    padding: 16,
+    marginTop: 8,
+  },
+  legendTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 12,
+  },
+  legendItems: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  legendDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  legendBox: {
+    width: 16,
+    height: 16,
+    borderRadius: 4,
+  },
+  legendText: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  calendarContainer: {
+    backgroundColor: '#ffffff',
+    marginTop: 8,
+    paddingBottom: 16,
+    minHeight: 350,
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '85%',
+    paddingTop: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  modalScroll: {
+    flex: 1,
+  },
+  modalSection: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  modalSectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 12,
+  },
+  emptySection: {
+    padding: 40,
+    alignItems: 'center',
+  },
+  emptyText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: '#9ca3af',
+  },
+  hoursGrid: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  hoursStat: {
+    flex: 1,
+    backgroundColor: '#f3f4f6',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  hoursStatLabel: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  hoursStatValue: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  lineRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#f9fafb',
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  lineCode: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  lineHours: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  lineHoursText: {
+    fontSize: 13,
+    color: '#6b7280',
+  },
+  noteCard: {
+    backgroundColor: '#fffbeb',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: '#f59e0b',
+  },
+  noteHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
+  noteLineCode: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#92400e',
+  },
+  noteText: {
+    fontSize: 13,
+    color: '#78350f',
+    lineHeight: 18,
+  },
+  onCallCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 12,
+    backgroundColor: '#f3f4f6',
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  onCallCardYou: {
+    backgroundColor: '#d1fae5',
+    borderWidth: 2,
+    borderColor: '#10b981',
+  },
+  onCallName: {
+    fontSize: 14,
+    color: '#374151',
+  },
+  onCallNameYou: {
+    fontWeight: '600',
+    color: '#065f46',
+  },
+  swappedBadge: {
+    backgroundColor: '#fef3c7',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+    marginLeft: 'auto',
+  },
+  swappedText: {
+    fontSize: 11,
+    color: '#92400e',
+    fontWeight: '600',
   },
 });
