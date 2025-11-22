@@ -173,24 +173,30 @@ export default function HistoryScreen() {
 
   const handleDayPress = async (day: DateData) => {
     setSelectedDate(day.dateString);
-    setLoadingCalendar(true);
     
     try {
+      console.log('📅 Loading details for:', day.dateString);
+      
       // Get hours/lines for this day
       const entries = await db.database.getAllAsync(
         'SELECT * FROM time_entries WHERE work_date = ? ORDER BY line_code',
         [day.dateString]
       );
+      console.log('✅ Entries found:', entries.length);
       
       // Get notes for this day
       const notes = await db.database.getAllAsync(
         'SELECT * FROM work_notes WHERE work_date = ? ORDER BY line_code',
         [day.dateString]
       );
+      console.log('✅ Notes found:', notes.length);
       
       // Get on-call info for this day
       const onCallInfo = await db.getOnCallForDate(day.dateString);
+      console.log('✅ On-call info found:', onCallInfo.length);
+      
       const currentUser = await db.getCurrentUser();
+      console.log('✅ Current user:', currentUser?.user_name);
       
       // Calculate totals
       let totalST = 0;
@@ -200,22 +206,29 @@ export default function HistoryScreen() {
         totalOT += e.ot_hours || 0;
       });
       
-      setDayDetails({
+      const details = {
         date: day.dateString,
-        entries,
-        notes,
-        onCallInfo,
+        entries: entries || [],
+        notes: notes || [],
+        onCallInfo: onCallInfo || [],
         currentUser,
         totalST,
         totalOT,
         totalHours: totalST + totalOT
+      };
+      
+      console.log('📊 Day details prepared:', {
+        hasEntries: details.entries.length > 0,
+        hasNotes: details.notes.length > 0,
+        hasOnCall: details.onCallInfo.length > 0,
+        totalHours: details.totalHours
       });
       
+      setDayDetails(details);
       setShowDetailModal(true);
     } catch (error) {
-      console.error('Error loading day details:', error);
-    } finally {
-      setLoadingCalendar(false);
+      console.error('❌ Error loading day details:', error);
+      Alert.alert('Error', 'Failed to load day details');
     }
   };
 
