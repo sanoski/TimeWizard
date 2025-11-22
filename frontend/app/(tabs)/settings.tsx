@@ -642,6 +642,12 @@ const styles = StyleSheet.create({
     color: '#374151',
     marginBottom: 8,
   },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
+  },
   inputRow: {
     flexDirection: 'row',
     gap: 8,
