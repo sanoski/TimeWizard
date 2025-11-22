@@ -155,6 +155,7 @@ export default function HistoryScreen() {
           );
           
           if (onCall) {
+            console.log(`🟢 Marking ${dateStr} as ON-CALL for ${currentUser?.user_name}`);
             // Add green dot for on-call
             if (!marked[dateStr].dots.find((d: any) => d.key === 'oncall')) {
               marked[dateStr].dots.push({ color: '#10b981', key: 'oncall' });
