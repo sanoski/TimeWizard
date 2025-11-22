@@ -849,6 +849,30 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     textAlign: 'center',
   },
+  autoSyncRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#f9fafb',
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  autoSyncInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  autoSyncLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  autoSyncDesc: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
   noUrlText: {
     marginTop: 12,
     fontSize: 12,
