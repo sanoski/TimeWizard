@@ -163,17 +163,11 @@ export default function HistoryScreen() {
             if (!marked[dateStr].dots.find((d: any) => d.key === 'oncall')) {
               marked[dateStr].dots.push({ color: '#10b981', key: 'oncall' });
             }
-            // Mark as selected for on-call weekend
-            marked[dateStr].selected = true;
-            marked[dateStr].selectedColor = '#d1fae5';
-            marked[dateStr].selectedTextColor = '#065f46';
-          } else {
-            // Regular weekend - mark with disabled styling
-            marked[dateStr].disabled = false;
-            marked[dateStr].disableTouchEvent = false;
           }
         }
       });
+      
+      console.log('📊 Final marked dates:', Object.keys(marked).length, 'dates marked');
       
       setMarkedDates(marked);
     } catch (error) {
