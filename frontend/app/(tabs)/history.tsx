@@ -81,8 +81,10 @@ export default function HistoryScreen() {
 
   const loadCalendarData = async (monthDate?: Date) => {
     setLoadingCalendar(true);
+    console.log('🚀 loadCalendarData called');
     try {
       await db.initialize();
+      console.log('✅ DB initialized');
       
       // Get month range - use provided date or current month
       const targetDate = monthDate || new Date();
@@ -91,6 +93,7 @@ export default function HistoryScreen() {
       
       const startDate = format(startOfMonth, 'yyyy-MM-dd');
       const endDate = format(endOfMonth, 'yyyy-MM-dd');
+      console.log('📅 Loading calendar for:', startDate, 'to', endDate);
       
       // Get all dates with hours logged
       const entriesWithHours = await db.database.getAllAsync(
