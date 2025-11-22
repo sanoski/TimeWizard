@@ -397,9 +397,9 @@ export default function SettingsScreen() {
             
             {/* Manual Sync Button */}
             <Pressable 
-              style={[styles.syncButton, (!scheduleUrl.trim() || syncing) && styles.syncButtonDisabled]}
+              style={[styles.syncButton, syncing && styles.syncButtonDisabled]}
               onPress={handleSyncSchedule}
-              disabled={!scheduleUrl.trim() || syncing}
+              disabled={syncing}
             >
               {syncing ? (
                 <ActivityIndicator size="small" color="#ffffff" />
@@ -415,11 +415,9 @@ export default function SettingsScreen() {
                 Last synced: {new Date(lastSyncTime).toLocaleString()}
               </Text>
             )}
-            {!scheduleUrl.trim() && (
-              <Text style={styles.noUrlText}>
-                No schedule URL configured. Contact your administrator.
-              </Text>
-            )}
+            <Text style={styles.urlInfoText}>
+              📌 Using master schedule (hardcoded for all users)
+            </Text>
           </View>
         </View>
 
