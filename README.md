@@ -19,10 +19,11 @@ VRS Time Wizard is an offline-first mobile timesheet application designed for ra
 
 ### On-Call Schedule (v1.2.0)
 - **Weekend Tracking**: View and manage on-call assignments
-- **Google Sheets Sync**: Import master schedule from shared spreadsheet
-- **Visual Indicators**: Highlights your on-call weekends
+- **Google Sheets Sync**: Import master schedule from shared spreadsheet (URL hardcoded)
+- **Auto-Sync**: Weekly automatic schedule updates when app opens
+- **Visual Indicators**: Highlights your on-call weekends in calendar
 - **User Identification**: Set your name to filter relevant shifts
-- **Shift Swaps**: Record when schedules change (UI ready, logic pending)
+- **Zero Configuration**: Works out of the box with pre-configured sync URL
 
 ### Unified Calendar
 - **Toggle View**: Switch between list and calendar views in History tab
