@@ -175,7 +175,7 @@ const migration_v2: Migration = {
     // ========================================================================
     console.log('📊 Step 5: Validating new tables...');
     const usersValid = await validateTable(db, 'on_call_users', ['id', 'user_name', 'is_current_user']);
-    const scheduleValid = await validateTable(db, 'on_call_schedule', ['id', 'schedule_date', 'user_name', 'shift_type']);
+    const scheduleValid = await validateTable(db, 'on_call_schedule', ['id', 'start_date', 'end_date', 'user_name', 'location']);
     
     if (!usersValid || !scheduleValid) {
       throw new Error('New table validation failed');
