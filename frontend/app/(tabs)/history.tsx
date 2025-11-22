@@ -79,21 +79,21 @@ export default function HistoryScreen() {
     setLoadingSummaries(false);
   };
 
-  const loadCalendarData = async (monthDate?: Date) => {
+  const loadCalendarData = async () => {
     setLoadingCalendar(true);
     console.log('🚀 loadCalendarData called');
     try {
       await db.initialize();
       console.log('✅ DB initialized');
       
-      // Get month range - use provided date or current month
-      const targetDate = monthDate || new Date();
-      const startOfMonth = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
-      const endOfMonth = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
+      // Load data for 3 months: previous, current, and next month
+      const today = new Date();
+      const startOfPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      const endOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0);
       
-      const startDate = format(startOfMonth, 'yyyy-MM-dd');
-      const endDate = format(endOfMonth, 'yyyy-MM-dd');
-      console.log('📅 Loading calendar for:', startDate, 'to', endDate);
+      const startDate = format(startOfPrevMonth, 'yyyy-MM-dd');
+      const endDate = format(endOfNextMonth, 'yyyy-MM-dd');
+      console.log('📅 Loading calendar for 3 months:', startDate, 'to', endDate);
       
       // Get all dates with hours logged
       const entriesWithHours = await db.database.getAllAsync(
