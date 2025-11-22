@@ -111,12 +111,16 @@ export default function HistoryScreen() {
       const onCallSchedule = await db.getOnCallSchedule(startDate, endDate);
       const currentUser = await db.getCurrentUser();
       
-      console.log('📅 Calendar Data Loading:');
+      console.log('📅 ========== Calendar Data Loading ==========');
       console.log('  Date range:', startDate, 'to', endDate);
-      console.log('  On-call entries:', onCallSchedule.length);
+      console.log('  On-call entries found:', onCallSchedule.length);
       console.log('  Current user:', currentUser?.user_name);
       if (onCallSchedule.length > 0) {
-        console.log('  On-call schedule:', JSON.stringify(onCallSchedule, null, 2));
+        onCallSchedule.forEach((s: any, idx: number) => {
+          console.log(`  [${idx}] ${s.user_name}: ${s.start_date} to ${s.end_date}`);
+        });
+      } else {
+        console.log('  ⚠️ NO ON-CALL DATA FOUND FOR THIS MONTH!');
       }
       
       // Build marked dates object
