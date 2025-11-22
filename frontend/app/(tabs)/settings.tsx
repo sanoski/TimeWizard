@@ -20,6 +20,7 @@ export default function SettingsScreen() {
   const [scheduleUrl, setScheduleUrl] = useState('');
   const [syncing, setSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
+  const [autoSyncEnabled, setAutoSyncEnabledState] = useState(true);
   
   // Developer menu state
   const [versionTaps, setVersionTaps] = useState(0);
@@ -28,7 +29,29 @@ export default function SettingsScreen() {
   useEffect(() => {
     fetchLines();
     loadSyncSettings();
+    loadAutoSyncSettings();
   }, []);
+  
+  const loadAutoSyncSettings = async () => {
+    const enabled = await isAutoSyncEnabled();
+    setAutoSyncEnabledState(enabled);
+    
+    const lastSync = await getLastSyncTime();
+    if (lastSync) {
+      setLastSyncTime(lastSync.toISOString());
+    }
+  };
+  
+  const handleAutoSyncToggle = async (value: boolean) => {
+    setAutoSyncEnabledState(value);
+    await setAutoSyncEnabled(value);
+    Alert.alert(
+      value ? 'Auto-Sync Enabled' : 'Auto-Sync Disabled',
+      value 
+        ? 'Your schedule will automatically sync once per week when the app opens.' 
+        : 'You will need to manually sync your schedule.'
+    );
+  };
 
   const loadSyncSettings = async () => {
     try {
