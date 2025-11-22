@@ -180,18 +180,26 @@ export default function ReportsView({ currentUser }: ReportsViewProps) {
         htmlContent = generateDetailedDailyHTML();
       }
       
-      const options = {
-        html: htmlContent,
-        fileName: `work_hours_report_${reportData.startDate}_to_${reportData.endDate}`,
-        directory: 'Documents',
-      };
+      // Generate PDF using expo-print
+      const { uri } = await Print.printToFileAsync({ html: htmlContent });
       
-      const file = await RNHTMLtoPDF.convert(options);
+      // Save with proper filename
+      const fileName = `work_hours_report_${reportData.startDate}_to_${reportData.endDate}.pdf`;
+      const newPath = FileSystem.documentDirectory + fileName;
       
+      await FileSystem.moveAsync({
+        from: uri,
+        to: newPath,
+      });
+      
+      // Share the PDF
       if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(file.filePath!);
+        await Sharing.shareAsync(newPath, {
+          mimeType: 'application/pdf',
+          dialogTitle: 'Share Work Hours Report',
+        });
       } else {
-        Alert.alert('Success', `PDF saved to ${file.filePath}`);
+        Alert.alert('Success', `PDF saved to ${newPath}`);
       }
     } catch (error) {
       console.error('Error exporting PDF:', error);
