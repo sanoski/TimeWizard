@@ -1,22 +1,14 @@
 <analysis>
-The trajectory documents a comprehensive development sprint on the VRS Time Wizard Expo application. The work began by fixing a critical bug in the History tab's calendar view where on-call data markers failed to appear for future months. The initial fix attempt created an infinite loop, which was diagnosed by the  and subsequently resolved by pre-loading a wider, three-month date range.
-
-Following the bug fix, the developer implemented a user request to clean up the On-Call tab, removing a test data button and making the CSV import function a developer-only feature, accessible via a hidden menu.
-
-A major feature, a Reports view, was then architected and built. This involved creating a new component, adding a third toggle to the history screen, and implementing date-range selection with data aggregation. This phase encountered and resolved several critical issues, including replacing an incompatible PDF library () with  and fixing deprecated  API calls for CSV/PDF exports.
-
-The next phase involved implementing an auto-sync feature for the Google Sheets-based on-call schedule. An issue with  in Expo Go was resolved by removing the non-essential badge feature. A key architectural improvement was made by hardcoding the master Google Sheet URL, making the app plug-and-play for new users.
-
-The final, and currently ongoing, phase is preparing the app for a production APK build. This has been fraught with An Expo user account is required to proceed.
+The trajectory details a complex debugging and synchronization journey for the VRS Time Wizard Expo application. The initial task was to fix critical An Expo user account is required to proceed.
 
 Log in to EAS with email or username (exit and run eas login --help to see other login options)
-Input is required, but stdin is not readable. Failed to display prompt: Email or username failures due to dependency conflicts, primarily between the Expo SDK, React Native, and . The user is highly frustrated. The last action taken was to run yarn upgrade v1.22.22
+Input is required, but stdin is not readable. Failed to display prompt: Email or username failures. The AI engineer first tackled dependency conflicts caused by yarn upgrade v1.22.22
 [1/4] Resolving packages...
 [2/4] Fetching packages...
 [3/4] Linking dependencies...
 [4/4] Rebuilding all packages...
 success Saved lockfile.
-success Saved 644 new dependencies.
+success Saved 647 new dependencies.
 info Direct dependencies
 ├─ @babel/core@7.28.5
 ├─ @expo/ngrok@4.1.3
@@ -57,7 +49,7 @@ info Direct dependencies
 ├─ react-native-svg@15.15.0
 ├─ react-native-web@0.21.2
 ├─ react-native-webview@13.16.0
-├─ react-native-worklets-core@1.6.2
+├─ react-native-worklets@0.6.1
 ├─ react-native@0.82.1
 ├─ react@19.2.0
 ├─ typescript@5.9.3
@@ -122,6 +114,7 @@ info All dependencies
 ├─ @babel/plugin-transform-shorthand-properties@7.27.1
 ├─ @babel/plugin-transform-spread@7.27.1
 ├─ @babel/plugin-transform-sticky-regex@7.27.1
+├─ @babel/plugin-transform-template-literals@7.27.1
 ├─ @babel/plugin-transform-typescript@7.28.5
 ├─ @babel/plugin-transform-unicode-regex@7.27.1
 ├─ @babel/preset-react@7.28.5
@@ -294,7 +287,7 @@ info All dependencies
 ├─ babel-preset-current-node-syntax@1.2.0
 ├─ babel-preset-expo@54.0.7
 ├─ babel-preset-jest@29.6.3
-├─ baseline-browser-mapping@2.8.30
+├─ baseline-browser-mapping@2.8.31
 ├─ better-opn@3.0.2
 ├─ bplist-parser@0.3.2
 ├─ brace-expansion@1.1.12
@@ -370,6 +363,7 @@ info All dependencies
 ├─ esprima@4.0.1
 ├─ esquery@1.6.0
 ├─ esrecurse@4.3.0
+├─ estraverse@5.3.0
 ├─ event-target-shim@5.0.1
 ├─ exec-async@2.2.0
 ├─ expo-asset@12.0.10
@@ -407,6 +401,7 @@ info All dependencies
 ├─ flat-cache@4.0.1
 ├─ flatted@3.3.3
 ├─ fontfaceobserver@2.3.0
+├─ for-each@0.3.5
 ├─ foreground-child@3.3.1
 ├─ framer-motion@6.5.1
 ├─ freeport-async@2.0.0
@@ -421,7 +416,6 @@ info All dependencies
 ├─ get-symbol-description@1.1.0
 ├─ get-tsconfig@4.13.0
 ├─ glob-parent@6.0.2
-├─ glob@10.5.0
 ├─ global-dirs@0.1.1
 ├─ globals@16.5.0
 ├─ got@11.8.6
@@ -440,12 +434,12 @@ info All dependencies
 ├─ ini@1.3.8
 ├─ inline-style-prefixer@7.0.1
 ├─ invariant@2.2.4
+├─ is-array-buffer@3.0.5
 ├─ is-arrayish@0.3.4
 ├─ is-async-function@2.1.1
 ├─ is-bigint@1.1.0
 ├─ is-boolean-object@1.2.2
 ├─ is-bun-module@2.0.0
-├─ is-data-view@1.0.2
 ├─ is-date-object@1.1.0
 ├─ is-extglob@2.1.1
 ├─ is-finalizationregistry@1.1.1
@@ -471,6 +465,7 @@ info All dependencies
 ├─ jest-haste-map@29.7.0
 ├─ jest-message-util@29.7.0
 ├─ jimp-compact@0.16.1
+├─ js-tokens@4.0.0
 ├─ jsesc@3.1.0
 ├─ json-buffer@3.0.1
 ├─ json-schema-traverse@0.4.1
@@ -508,6 +503,7 @@ info All dependencies
 ├─ moment@2.30.1
 ├─ moti@0.30.0
 ├─ mz@2.7.0
+├─ nanoid@3.3.11
 ├─ napi-postinstall@0.3.4
 ├─ negotiator@0.6.3
 ├─ nested-error-stacks@2.0.1
@@ -573,7 +569,7 @@ info All dependencies
 ├─ react-native-swipe-gestures@1.0.5
 ├─ react-native-web@0.21.2
 ├─ react-native-webview@13.16.0
-├─ react-native-worklets-core@1.6.2
+├─ react-native-worklets@0.6.1
 ├─ react-native@0.82.1
 ├─ react-remove-scroll-bar@2.3.8
 ├─ react-remove-scroll@2.7.1
@@ -618,7 +614,6 @@ info All dependencies
 ├─ simple-plist@1.3.1
 ├─ simple-swizzle@0.2.4
 ├─ sisteransi@1.0.5
-├─ slugify@1.6.6
 ├─ source-map-js@1.2.1
 ├─ source-map-support@0.5.21
 ├─ split-on-first@1.1.0
@@ -629,7 +624,6 @@ info All dependencies
 ├─ stop-iteration-iterator@1.1.0
 ├─ stream-buffers@2.2.0
 ├─ strict-uri-encode@2.0.0
-├─ string-hash-64@1.0.3
 ├─ string-width-cjs@4.2.3
 ├─ string.prototype.matchall@4.0.12
 ├─ string.prototype.repeat@1.0.0
@@ -679,6 +673,7 @@ info All dependencies
 ├─ update-browserslist-db@1.1.4
 ├─ uri-js@4.4.1
 ├─ use-callback-ref@1.3.3
+├─ use-latest-callback@0.2.6
 ├─ use-sidecar@1.1.3
 ├─ utils-merge@1.0.1
 ├─ uuid@3.4.0
@@ -707,1494 +702,88 @@ info All dependencies
 ├─ zod-to-json-schema@3.25.0
 ├─ zod@3.25.76
 └─ zustand@5.0.8
-Done in 46.33s. to resolve these conflicts. The user's primary language is English; the next agent must respond in English.
+Done in 21.42s., systematically resolving issues with , missing peer dependencies, and version mismatches, bringing the project to a near-buildable state.
+
+However, the user revealed a separate, successful local build configured with ChatGPT's help, which introduced new requirements: enabling Expo's New Architecture, using a minimal Babel config, and ensuring specific  settings. The focus then shifted from pure dependency fixing to synchronizing the development environment with the user's proven-working local copy.
+
+This led to a UI bug fix (a keyboard overlay issue using ) and a significant repository cleanup. The AI, following user-provided guardrails, created a new  branch, removed previously committed native folders () and build artifacts () from Git history, updated , and removed a corrupted file that was blocking checkouts.
+
+Finally, the version was bumped to , a comprehensive  was written, and to resolve a final sync issue, all changes were consolidated into a new  branch for the user to push to GitHub. The project is now in a clean, buildable, and well-documented state, awaiting user confirmation. The user's primary language is English; the next agent must respond in English.
 </analysis>
 
 <product_requirements>
-The VRS Time Wizard is an offline-first Expo mobile application designed for railroad workers to log their work hours locally.
+The VRS Time Wizard is an offline-first Expo mobile application for railroad MOW (maintenance-of-way) workers to track their work hours, replacing a paper-based system.
 
-**Core Functionality (Pre-session):**
-*   A weekly timesheet grid for logging hours.
-*   A Work Notes feature.
-*   An SQLite database for local data persistence.
+**Core Features:**
+*   **Timesheet Management:** A weekly grid to log Straight Time (ST) and Overtime (OT) hours with built-in business logic.
+*   **On-Call Schedule:** Displays on-call duties synced from a master Google Sheet. The sync can be manual or automatic (weekly on app open).
+*   **Unified History View:** A screen with three toggles: a list of past weeks, a calendar showing logged hours/notes/on-call duties, and a reports generator.
+*   **Reporting & Export:** Users can generate reports for custom date ranges, viewing aggregated hours (ST vs. OT). These reports can be exported as a CSV or a multi-format PDF.
+*   **Data Persistence:** All data is stored locally in an on-device SQLite database, ensuring full offline functionality.
+*   **Developer/Admin Features:** A hidden developer menu, activated by tapping the app version, allows for advanced configuration like overriding the Google Sheet URL.
 
-**Implemented Features (This Session):**
-*   **On-Call Schedule:** A new tab displays on-call duties synced from a master Google Sheet published as a CSV. Syncing is initiated manually or automatically.
-*   **Unified Calendar View:** The History tab now features a calendar that consolidates logged hours, work notes, and on-call assignments, with a modal for daily details.
-*   **Advanced Reporting:** A new Reports view within the History tab allows users to select a date range and generate a detailed report showing total hours, standard vs. overtime breakdowns, and daily notes.
-*   **Data Export:** The reports can be exported as either a CSV or a multi-format PDF (summarized for long ranges, detailed for short ranges).
-*   **Auto-Sync:** The app automatically checks for on-call schedule updates from the Google Sheet weekly when the app is opened.
-*   **Data Safety:** A non-destructive database migration system was verified to ensure that updating from v1.0 does not wipe existing user data.
+The project's goal has evolved from initial setup and feature implementation to stabilizing the build process and synchronizing disparate development versions into a single, clean source of truth on GitHub.
 </product_requirements>
 
 <key_technical_concepts>
-- **Framework:** Expo (React Native)
-- **Database:**  with a custom, non-destructive migration system ().
-- **Data Sync:** A hybrid model using a hardcoded Google Sheet CSV URL as a default master schedule, with an override option in a hidden developer menu. Sync logic runs on app open.
-- **UI Libraries:**  for the history view.
-- **Native APIs:**  and  for PDF/CSV export functionality compatible with Expo Go.
-- **Configuration:** A hidden developer menu (activated by tapping the app version) manages advanced settings.
+- **Framework:** Expo SDK 51+ with Expo Router for file-based routing.
+- **Build & Architecture:** EAS Build for production APKs. The project now requires Expo's New Architecture ().
+- **Database:**  for the local on-device database.
+- **UI:**  for the history view and  for handling keyboard overlays in modals.
+- **Native APIs:**  and  for PDF/CSV generation and export.
+- **Configuration:** Project configuration is managed via , , , and a minimal .
+- **Version Control:** Git, with a focus on repository cleanup (removing tracked artifacts, updating ) and branch management.
 </key_technical_concepts>
 
 <code_architecture>
-The application is a single-repository Expo project primarily contained within the  directory.
+The application is a standard Expo project contained within the  directory. The codebase is now synced to the user's locally-working version.
 
-**Directory Structure:**
+**Directory Structure (Cleaned):**
 
+---
+- ****
+  - **Importance:** Defines all dependencies and project metadata. It was the source of initial build failures and a key file in the synchronization process.
+  - **Summary of changes:** The file was updated to match the user's working version, which included , removed unnecessary dependencies like  and , and removed the  block. The version was bumped to .
 
 - ****
-  - **Importance:** This is a major user-facing screen that was heavily modified. It now manages three distinct views: List, Calendar, and Reports.
-  - **Changes:** A three-way toggle was added. The calendar logic was entirely reworked to fix a data loading bug by fetching a 3-month range. The new  component is conditionally rendered here.
+  - **Importance:** Main Expo configuration file. It contained a critical missing setting for the build to succeed.
+  - **Summary of changes:** A key change was adding  to support modern versions of . The  was updated to  and  was incremented to .
 
 - ****
-  - **Importance:** This new, self-contained component encapsulates all logic for the reporting feature.
-  - **Changes:** Created from scratch. It handles date range selection, data fetching from the database, aggregation of hours (standard vs. overtime), and invokes export functions for CSV and PDF using  and .
+  - **Importance:** This file was added at the user's request, based on a working configuration from ChatGPT. A minimal config is required to prevent conflicts with Expo's auto-configuration.
+  - **Summary of changes:** The file was created with the following content, which prevents duplicate plugin errors with Reanimated and Worklets:
+    
 
 - ****
-  - **Importance:** The main screen for viewing the on-call schedule.
-  - **Changes:** The Load Test Data button was removed. An Import CSV button was added, which is now conditionally rendered only when the developer menu is activated.
+  - **Importance:** This component contains the modal for adding/editing work notes, where a UI bug was reported.
+  - **Summary of changes:** The modal's content was wrapped with a  to prevent the software keyboard from covering the  field. The  was also wrapped in a  for better user experience.
 
 - ****
-  - **Importance:** The hub for user configuration and the entry point for the hidden developer menu.
-  - **Changes:** The Google Sheet URL is now displayed as a hardcoded default. An Auto-Sync toggle was added to enable/disable the weekly sync. Logic was added to persist the developer menu's visibility state in .
+  - **Importance:** This file was updated to enforce repository cleanliness as per user-defined guardrails.
+  - **Summary of changes:** Entries were added to explicitly ignore native build folders (, ), build artifacts (, , , ), and . This prevents generated code and large directories from being committed.
 
 - ****
-  - **Importance:** This new file contains the logic for the background schedule synchronization.
-  - **Changes:** Created from scratch. It defines a function that checks the last sync time, fetches the Google Sheet CSV, compares it to the local schedule, and updates the database if changes are detected. The notification feature was removed due to incompatibility with Expo Go.
-
-- ****
-    - **Importance:** Centralizes application constants.
-    - **Changes:** Created to store the default , decoupling it from the application logic and making it easily accessible.
-
-- ****
-  - **Importance:** Defines all project dependencies. It's the center of the current build issues.
-  - **Changes:** Multiple packages were added (, , ). The last action was running yarn upgrade v1.22.22
-[1/4] Resolving packages...
-[2/4] Fetching packages...
-[3/4] Linking dependencies...
-info Visit https://yarnpkg.com/en/docs/cli/upgrade for documentation about this command. which modified nearly all dependency versions in an attempt to fix native build errors.
+    - **Importance:** Serves as the primary documentation for the project.
+    - **Summary of changes:** The file was completely rewritten to reflect the project's current state (v1.2.0.1), including a full feature list, build instructions, version history, and developer guidelines.
 </code_architecture>
 
 <pending_tasks>
-- **Implement On-Call Enhancements:** Add statistics (e.g., days until next shift), and the ability for users to add personal notes to on-call shifts.
-- **Implement Shift Swap Feature:** This was explicitly de-prioritized by the user but remains a potential future feature.
-- **Final Testing:** A comprehensive end-to-end test of all features is required once a successful APK can be built.
+- **On-Call Enhancements:** Add statistics (e.g., days until next shift) and personal notes to on-call shifts.
+- **Shift Swap Feature:** A planned feature that was de-prioritized but remains in the backlog.
+- **End-to-End Testing:** The user needs to perform a full build and test on their local machine using the cleaned-up  branch to confirm all fixes and features work as expected.
 </pending_tasks>
 
 <current_work>
-The immediate and critical task is to resolve a series of An Expo user account is required to proceed.
+The most recent work was a comprehensive repository synchronization and cleanup operation to align the project with the user's successfully compiling local version and establish strict development guardrails.
 
-Log in to EAS with email or username (exit and run eas login --help to see other login options)
-Input is required, but stdin is not readable. Failed to display prompt: Email or username failures that are preventing the creation of a production APK. The user is extremely frustrated after multiple unsuccessful attempts to build the app locally.
-
-The root cause has been identified as a complex set of dependency version mismatches between the Expo SDK, React Native, , and their various peer dependencies.
-
-The previous engineer's final action was a significant one: running yarn upgrade v1.22.22
-[1/4] Resolving packages...
-[2/4] Fetching packages...
-[3/4] Linking dependencies...
-[4/4] Rebuilding all packages...
-success Saved lockfile.
-success Saved 649 new dependencies.
-info Direct dependencies
-├─ @babel/core@7.28.5
-├─ @expo/ngrok@4.1.3
-├─ @react-native-async-storage/async-storage@2.2.0
-├─ @react-native-community/datetimepicker@8.5.0
-├─ @react-navigation/bottom-tabs@7.8.6
-├─ @react-navigation/native@7.1.21
-├─ @shopify/flash-list@2.2.0
-├─ @tamagui/config@1.138.2
-├─ @tamagui/core@1.138.2
-├─ @types/react@19.2.6
-├─ date-fns@4.1.0
-├─ eslint-config-expo@10.0.0
-├─ eslint@9.39.1
-├─ expo-blur@15.0.7
-├─ expo-document-picker@14.0.7
-├─ expo-file-system@19.0.19
-├─ expo-haptics@15.0.7
-├─ expo-image@3.0.10
-├─ expo-linking@8.0.9
-├─ expo-print@15.0.7
-├─ expo-router@6.0.15
-├─ expo-sharing@14.0.7
-├─ expo-splash-screen@31.0.11
-├─ expo-sqlite@16.0.9
-├─ expo-status-bar@3.0.8
-├─ expo-symbols@1.0.7
-├─ expo-system-ui@6.0.8
-├─ expo-web-browser@15.0.9
-├─ expo@54.0.25
-├─ react-dom@19.2.0
-├─ react-native-calendars@1.1313.0
-├─ react-native-dotenv@3.4.11
-├─ react-native-gesture-handler@2.29.1
-├─ react-native-reanimated@4.1.5
-├─ react-native-safe-area-context@5.6.2
-├─ react-native-screens@4.18.0
-├─ react-native-svg@15.15.0
-├─ react-native-web@0.21.2
-├─ react-native-webview@13.16.0
-├─ react-native-worklets-core@1.6.2
-├─ react-native@0.82.1
-├─ react@19.2.0
-├─ typescript@5.9.3
-└─ zustand@5.0.8
-info All dependencies
-├─ @0no-co/graphql.web@1.2.0
-├─ @babel/code-frame@7.27.1
-├─ @babel/compat-data@7.28.5
-├─ @babel/core@7.28.5
-├─ @babel/helper-member-expression-to-functions@7.28.5
-├─ @babel/helper-module-transforms@7.28.3
-├─ @babel/helper-string-parser@7.27.1
-├─ @babel/helper-validator-identifier@7.28.5
-├─ @babel/helper-wrap-function@7.28.3
-├─ @babel/helpers@7.28.4
-├─ @babel/highlight@7.25.9
-├─ @babel/parser@7.28.5
-├─ @babel/plugin-proposal-decorators@7.28.0
-├─ @babel/plugin-syntax-async-generators@7.8.4
-├─ @babel/plugin-syntax-bigint@7.8.3
-├─ @babel/plugin-syntax-class-properties@7.12.13
-├─ @babel/plugin-syntax-class-static-block@7.14.5
-├─ @babel/plugin-syntax-decorators@7.27.1
-├─ @babel/plugin-syntax-dynamic-import@7.8.3
-├─ @babel/plugin-syntax-flow@7.27.1
-├─ @babel/plugin-syntax-import-attributes@7.27.1
-├─ @babel/plugin-syntax-import-meta@7.10.4
-├─ @babel/plugin-syntax-json-strings@7.8.3
-├─ @babel/plugin-syntax-logical-assignment-operators@7.10.4
-├─ @babel/plugin-syntax-numeric-separator@7.10.4
-├─ @babel/plugin-syntax-object-rest-spread@7.8.3
-├─ @babel/plugin-syntax-optional-catch-binding@7.8.3
-├─ @babel/plugin-syntax-private-property-in-object@7.14.5
-├─ @babel/plugin-syntax-top-level-await@7.14.5
-├─ @babel/plugin-syntax-typescript@7.27.1
-├─ @babel/plugin-transform-arrow-functions@7.27.1
-├─ @babel/plugin-transform-async-generator-functions@7.28.0
-├─ @babel/plugin-transform-async-to-generator@7.27.1
-├─ @babel/plugin-transform-block-scoping@7.28.5
-├─ @babel/plugin-transform-class-properties@7.27.1
-├─ @babel/plugin-transform-class-static-block@7.28.3
-├─ @babel/plugin-transform-classes@7.28.4
-├─ @babel/plugin-transform-computed-properties@7.27.1
-├─ @babel/plugin-transform-destructuring@7.28.5
-├─ @babel/plugin-transform-export-namespace-from@7.27.1
-├─ @babel/plugin-transform-for-of@7.27.1
-├─ @babel/plugin-transform-function-name@7.27.1
-├─ @babel/plugin-transform-literals@7.27.1
-├─ @babel/plugin-transform-logical-assignment-operators@7.28.5
-├─ @babel/plugin-transform-modules-commonjs@7.27.1
-├─ @babel/plugin-transform-named-capturing-groups-regex@7.27.1
-├─ @babel/plugin-transform-nullish-coalescing-operator@7.27.1
-├─ @babel/plugin-transform-numeric-separator@7.27.1
-├─ @babel/plugin-transform-optional-catch-binding@7.27.1
-├─ @babel/plugin-transform-optional-chaining@7.28.5
-├─ @babel/plugin-transform-parameters@7.27.7
-├─ @babel/plugin-transform-react-display-name@7.28.0
-├─ @babel/plugin-transform-react-jsx-development@7.27.1
-├─ @babel/plugin-transform-react-jsx-self@7.27.1
-├─ @babel/plugin-transform-react-jsx-source@7.27.1
-├─ @babel/plugin-transform-react-pure-annotations@7.27.1
-├─ @babel/plugin-transform-regenerator@7.28.4
-├─ @babel/plugin-transform-shorthand-properties@7.27.1
-├─ @babel/plugin-transform-spread@7.27.1
-├─ @babel/plugin-transform-sticky-regex@7.27.1
-├─ @babel/plugin-transform-typescript@7.28.5
-├─ @babel/plugin-transform-unicode-regex@7.27.1
-├─ @babel/preset-react@7.28.5
-├─ @babel/preset-typescript@7.28.5
-├─ @babel/runtime@7.28.4
-├─ @babel/template@7.27.2
-├─ @egjs/hammerjs@2.0.17
-├─ @emotion/is-prop-valid@0.8.8
-├─ @emotion/memoize@0.7.4
-├─ @eslint-community/eslint-utils@4.9.0
-├─ @eslint-community/regexpp@4.12.2
-├─ @eslint/config-array@0.21.1
-├─ @eslint/config-helpers@0.4.2
-├─ @eslint/eslintrc@3.3.1
-├─ @eslint/js@9.39.1
-├─ @eslint/object-schema@2.1.7
-├─ @eslint/plugin-kit@0.4.1
-├─ @expo/cli@54.0.16
-├─ @expo/code-signing-certificates@0.0.5
-├─ @expo/devcert@1.2.0
-├─ @expo/devtools@0.1.7
-├─ @expo/fingerprint@0.15.3
-├─ @expo/mcp-tunnel@0.1.0
-├─ @expo/metro-config@54.0.9
-├─ @expo/metro-runtime@6.1.2
-├─ @expo/ngrok-bin-linux-arm64@2.3.41
-├─ @expo/ngrok-bin@2.3.42
-├─ @expo/ngrok@4.1.3
-├─ @expo/osascript@2.3.7
-├─ @expo/package-manager@1.9.8
-├─ @expo/sdk-runtime-versions@1.0.0
-├─ @expo/sudo-prompt@9.3.2
-├─ @expo/ws-tunnel@1.0.6
-├─ @expo/xcpretty@4.3.2
-├─ @humanfs/core@0.19.1
-├─ @humanfs/node@0.16.7
-├─ @humanwhocodes/module-importer@1.0.1
-├─ @humanwhocodes/retry@0.4.3
-├─ @isaacs/cliui@8.0.2
-├─ @isaacs/fs-minipass@4.0.1
-├─ @istanbuljs/load-nyc-config@1.1.0
-├─ @jest/create-cache-key-function@29.7.0
-├─ @jest/environment@29.7.0
-├─ @jest/transform@29.7.0
-├─ @jridgewell/remapping@2.3.5
-├─ @jridgewell/resolve-uri@3.1.2
-├─ @jridgewell/source-map@0.3.11
-├─ @jridgewell/sourcemap-codec@1.5.5
-├─ @jridgewell/trace-mapping@0.3.31
-├─ @motionone/animation@10.18.0
-├─ @motionone/dom@10.12.0
-├─ @motionone/easing@10.18.0
-├─ @motionone/generators@10.18.0
-├─ @nodelib/fs.scandir@2.1.5
-├─ @nodelib/fs.stat@2.0.5
-├─ @nodelib/fs.walk@1.2.8
-├─ @nolyfill/is-core-module@1.0.39
-├─ @pkgjs/parseargs@0.11.0
-├─ @radix-ui/react-collection@1.1.7
-├─ @radix-ui/react-dialog@1.1.15
-├─ @radix-ui/react-dismissable-layer@1.1.11
-├─ @radix-ui/react-focus-guards@1.1.3
-├─ @radix-ui/react-focus-scope@1.1.7
-├─ @radix-ui/react-portal@1.1.9
-├─ @radix-ui/react-roving-focus@1.1.11
-├─ @radix-ui/react-tabs@1.1.13
-├─ @radix-ui/react-use-effect-event@0.0.2
-├─ @radix-ui/react-use-escape-keydown@1.1.1
-├─ @react-native-async-storage/async-storage@2.2.0
-├─ @react-native-community/datetimepicker@8.5.0
-├─ @react-native/assets-registry@0.82.1
-├─ @react-native/babel-plugin-codegen@0.81.5
-├─ @react-native/babel-preset@0.81.5
-├─ @react-native/codegen@0.82.1
-├─ @react-native/community-cli-plugin@0.82.1
-├─ @react-native/debugger-frontend@0.81.5
-├─ @react-native/debugger-shell@0.82.1
-├─ @react-native/dev-middleware@0.81.5
-├─ @react-native/gradle-plugin@0.82.1
-├─ @react-native/js-polyfills@0.82.1
-├─ @react-native/normalize-color@2.1.0
-├─ @react-native/virtualized-lists@0.82.1
-├─ @react-navigation/bottom-tabs@7.8.6
-├─ @react-navigation/core@7.13.2
-├─ @react-navigation/native-stack@7.7.0
-├─ @react-navigation/native@7.1.21
-├─ @react-navigation/routers@7.5.2
-├─ @rtsao/scc@1.1.0
-├─ @shopify/flash-list@2.2.0
-├─ @sinclair/typebox@0.27.8
-├─ @sindresorhus/is@4.6.0
-├─ @sinonjs/commons@3.0.1
-├─ @sinonjs/fake-timers@10.3.0
-├─ @szmarczak/http-timer@4.0.6
-├─ @tamagui/animations-css@1.138.2
-├─ @tamagui/animations-moti@1.138.2
-├─ @tamagui/animations-react-native@1.138.2
-├─ @tamagui/compose-refs@1.138.2
-├─ @tamagui/config@1.138.2
-├─ @tamagui/core@1.138.2
-├─ @tamagui/cubic-bezier-animator@1.138.2
-├─ @tamagui/font-inter@1.138.2
-├─ @tamagui/font-silkscreen@1.138.2
-├─ @tamagui/normalize-css-color@1.138.2
-├─ @tamagui/react-native-use-pressable@1.138.2
-├─ @tamagui/react-native-use-responder-events@1.138.2
-├─ @tamagui/shorthands@1.138.2
-├─ @tamagui/simple-hash@1.138.2
-├─ @tamagui/themes@1.138.2
-├─ @tamagui/timer@1.138.2
-├─ @tamagui/types@1.138.2
-├─ @tamagui/use-did-finish-ssr@1.138.2
-├─ @tamagui/use-element-layout@1.138.2
-├─ @tamagui/use-force-update@1.138.2
-├─ @types/babel__generator@7.27.0
-├─ @types/babel__template@7.4.4
-├─ @types/babel__traverse@7.28.0
-├─ @types/cacheable-request@6.0.3
-├─ @types/estree@1.0.8
-├─ @types/graceful-fs@4.1.9
-├─ @types/hammerjs@2.0.46
-├─ @types/http-cache-semantics@4.0.4
-├─ @types/istanbul-lib-coverage@2.0.6
-├─ @types/istanbul-lib-report@3.0.3
-├─ @types/istanbul-reports@3.0.4
-├─ @types/json-schema@7.0.15
-├─ @types/json5@0.0.29
-├─ @types/keyv@3.1.4
-├─ @types/react@19.2.6
-├─ @types/stack-utils@2.0.3
-├─ @types/yargs-parser@21.0.3
-├─ @types/yargs@17.0.35
-├─ @typescript-eslint/eslint-plugin@8.47.0
-├─ @typescript-eslint/parser@8.47.0
-├─ @typescript-eslint/project-service@8.47.0
-├─ @typescript-eslint/tsconfig-utils@8.47.0
-├─ @typescript-eslint/type-utils@8.47.0
-├─ @typescript-eslint/types@8.47.0
-├─ @ungap/structured-clone@1.3.0
-├─ @unrs/resolver-binding-linux-arm64-gnu@1.11.1
-├─ @unrs/resolver-binding-linux-arm64-musl@1.11.1
-├─ @urql/core@5.2.0
-├─ @urql/exchange-retry@1.3.2
-├─ abort-controller@3.0.0
-├─ acorn-jsx@5.3.2
-├─ agent-base@7.1.4
-├─ ansi-escapes@4.3.2
-├─ ansi-regex@5.0.1
-├─ anymatch@3.1.3
-├─ argparse@2.0.1
-├─ aria-hidden@1.2.6
-├─ array-buffer-byte-length@1.0.2
-├─ array-includes@3.1.9
-├─ array.prototype.findlast@1.2.5
-├─ array.prototype.findlastindex@1.2.6
-├─ array.prototype.flat@1.3.3
-├─ array.prototype.tosorted@1.1.4
-├─ arraybuffer.prototype.slice@1.0.4
-├─ asap@2.0.6
-├─ async-function@1.0.0
-├─ async-limiter@1.0.1
-├─ await-lock@2.2.2
-├─ babel-jest@29.7.0
-├─ babel-plugin-jest-hoist@29.6.3
-├─ babel-plugin-polyfill-corejs2@0.4.14
-├─ babel-plugin-polyfill-corejs3@0.13.0
-├─ babel-plugin-polyfill-regenerator@0.6.5
-├─ babel-plugin-react-compiler@1.0.0
-├─ babel-plugin-react-native-web@0.21.2
-├─ babel-plugin-syntax-hermes-parser@0.29.1
-├─ babel-preset-current-node-syntax@1.2.0
-├─ babel-preset-expo@54.0.7
-├─ babel-preset-jest@29.6.3
-├─ baseline-browser-mapping@2.8.30
-├─ better-opn@3.0.2
-├─ bplist-parser@0.3.2
-├─ brace-expansion@1.1.12
-├─ braces@3.0.3
-├─ browserslist@4.28.0
-├─ bser@2.1.1
-├─ buffer-from@1.1.2
-├─ buffer@5.7.1
-├─ bytes@3.1.2
-├─ cacheable-lookup@5.0.4
-├─ cacheable-request@7.0.4
-├─ call-bind-apply-helpers@1.0.2
-├─ callsites@3.1.0
-├─ camelcase@6.3.0
-├─ caniuse-lite@1.0.30001756
-├─ chownr@3.0.0
-├─ cli-cursor@2.1.0
-├─ cli-spinners@2.9.2
-├─ client-only@0.0.1
-├─ cliui@8.0.1
-├─ clone-response@1.0.3
-├─ clone@1.0.4
-├─ color-name@1.1.4
-├─ color-string@1.9.1
-├─ commander@12.1.0
-├─ compressible@2.0.18
-├─ compression@1.8.1
-├─ concat-map@0.0.1
-├─ core-js-compat@3.47.0
-├─ cross-fetch@3.2.0
-├─ crypto-random-string@2.0.0
-├─ css-in-js-utils@3.1.0
-├─ css-select@5.2.2
-├─ css-tree@1.1.3
-├─ css-what@6.2.2
-├─ csstype@3.2.3
-├─ data-view-buffer@1.0.2
-├─ data-view-byte-length@1.0.2
-├─ data-view-byte-offset@1.0.1
-├─ date-fns@4.1.0
-├─ decode-uri-component@0.2.2
-├─ decompress-response@6.0.0
-├─ deep-extend@0.6.0
-├─ deep-is@0.1.4
-├─ deepmerge@4.3.1
-├─ defaults@1.0.4
-├─ defer-to-connect@2.0.1
-├─ define-lazy-prop@2.0.0
-├─ detect-libc@2.1.2
-├─ detect-node-es@1.1.0
-├─ dom-serializer@2.0.0
-├─ domutils@3.2.2
-├─ eastasianwidth@0.2.0
-├─ electron-to-chromium@1.5.259
-├─ end-of-stream@1.4.5
-├─ entities@4.5.0
-├─ env-editor@0.4.2
-├─ es-iterator-helpers@1.2.1
-├─ es-set-tostringtag@2.1.0
-├─ es-to-primitive@1.3.0
-├─ escalade@3.2.0
-├─ eslint-config-expo@10.0.0
-├─ eslint-import-resolver-node@0.3.9
-├─ eslint-import-resolver-typescript@3.10.1
-├─ eslint-module-utils@2.12.1
-├─ eslint-plugin-expo@1.0.0
-├─ eslint-plugin-import@2.32.0
-├─ eslint-plugin-react-hooks@5.2.0
-├─ eslint-plugin-react@7.37.5
-├─ eslint-scope@8.4.0
-├─ eslint@9.39.1
-├─ espree@10.4.0
-├─ esprima@4.0.1
-├─ esquery@1.6.0
-├─ esrecurse@4.3.0
-├─ estraverse@5.3.0
-├─ event-target-shim@5.0.1
-├─ exec-async@2.2.0
-├─ expo-asset@12.0.10
-├─ expo-blur@15.0.7
-├─ expo-document-picker@14.0.7
-├─ expo-file-system@19.0.19
-├─ expo-haptics@15.0.7
-├─ expo-image@3.0.10
-├─ expo-keep-awake@15.0.7
-├─ expo-linking@8.0.9
-├─ expo-modules-autolinking@3.0.22
-├─ expo-modules-core@3.0.26
-├─ expo-print@15.0.7
-├─ expo-router@6.0.15
-├─ expo-sharing@14.0.7
-├─ expo-splash-screen@31.0.11
-├─ expo-sqlite@16.0.9
-├─ expo-status-bar@3.0.8
-├─ expo-symbols@1.0.7
-├─ expo-system-ui@6.0.8
-├─ expo-web-browser@15.0.9
-├─ expo@54.0.25
-├─ fast-deep-equal@3.1.3
-├─ fast-glob@3.3.3
-├─ fast-json-stable-stringify@2.1.0
-├─ fast-levenshtein@2.0.6
-├─ fastq@1.19.1
-├─ fb-dotslash@0.5.8
-├─ fbjs-css-vars@1.0.2
-├─ fbjs@3.0.5
-├─ file-entry-cache@8.0.0
-├─ fill-range@7.1.1
-├─ filter-obj@1.1.0
-├─ finalhandler@1.1.2
-├─ flat-cache@4.0.1
-├─ flatted@3.3.3
-├─ fontfaceobserver@2.3.0
-├─ for-each@0.3.5
-├─ foreground-child@3.3.1
-├─ framer-motion@6.5.1
-├─ freeport-async@2.0.0
-├─ fs.realpath@1.0.0
-├─ function.prototype.name@1.1.8
-├─ generator-function@2.0.1
-├─ gensync@1.0.0-beta.2
-├─ get-caller-file@2.0.5
-├─ get-nonce@1.0.1
-├─ get-package-type@0.1.0
-├─ get-stream@5.2.0
-├─ get-symbol-description@1.1.0
-├─ get-tsconfig@4.13.0
-├─ glob-parent@6.0.2
-├─ global-dirs@0.1.1
-├─ globals@16.5.0
-├─ got@11.8.6
-├─ graphemer@1.4.0
-├─ hermes-compiler@0.0.0
-├─ hermes-estree@0.32.0
-├─ hoist-non-react-statics@3.3.2
-├─ hosted-git-info@7.0.2
-├─ http-cache-semantics@4.2.0
-├─ http2-wrapper@1.0.3
-├─ hyphenate-style-name@1.1.0
-├─ ieee754@1.2.1
-├─ import-fresh@3.3.1
-├─ inflight@1.0.6
-├─ inherits@2.0.4
-├─ ini@1.3.8
-├─ inline-style-prefixer@7.0.1
-├─ invariant@2.2.4
-├─ is-array-buffer@3.0.5
-├─ is-arrayish@0.3.4
-├─ is-async-function@2.1.1
-├─ is-bigint@1.1.0
-├─ is-boolean-object@1.2.2
-├─ is-bun-module@2.0.0
-├─ is-data-view@1.0.2
-├─ is-date-object@1.1.0
-├─ is-extglob@2.1.1
-├─ is-finalizationregistry@1.1.1
-├─ is-generator-function@1.1.2
-├─ is-glob@4.0.3
-├─ is-map@2.0.3
-├─ is-negative-zero@2.0.3
-├─ is-number-object@1.1.1
-├─ is-number@7.0.0
-├─ is-plain-obj@2.1.0
-├─ is-shared-array-buffer@1.0.4
-├─ is-symbol@1.1.1
-├─ is-weakmap@2.0.2
-├─ is-weakref@1.1.1
-├─ is-weakset@2.0.4
-├─ isexe@2.0.0
-├─ istanbul-lib-coverage@3.2.2
-├─ istanbul-lib-instrument@5.2.1
-├─ iterator.prototype@1.1.5
-├─ jackspeak@3.4.3
-├─ jest-environment-node@29.7.0
-├─ jest-get-type@29.6.3
-├─ jest-haste-map@29.7.0
-├─ jest-message-util@29.7.0
-├─ jimp-compact@0.16.1
-├─ jsesc@3.1.0
-├─ json-buffer@3.0.1
-├─ json-schema-traverse@0.4.1
-├─ json-stable-stringify-without-jsonify@1.0.1
-├─ jsx-ast-utils@3.3.5
-├─ keyv@4.5.4
-├─ kleur@3.0.3
-├─ lan-network@0.1.7
-├─ leven@3.1.0
-├─ lightningcss-linux-arm64-gnu@1.30.2
-├─ lightningcss-linux-arm64-musl@1.30.2
-├─ lightningcss@1.30.2
-├─ lines-and-columns@1.2.4
-├─ locate-path@6.0.0
-├─ lodash.debounce@4.0.8
-├─ lodash.merge@4.6.2
-├─ lodash@4.17.21
-├─ log-symbols@2.2.0
-├─ lru-cache@10.4.3
-├─ makeerror@1.0.12
-├─ marky@1.3.0
-├─ mdn-data@2.0.14
-├─ memoize-one@5.2.1
-├─ merge-options@3.0.4
-├─ merge-stream@2.0.0
-├─ merge2@1.4.1
-├─ metro-minify-terser@0.83.2
-├─ micromatch@4.0.8
-├─ mime-db@1.52.0
-├─ mimic-fn@1.2.0
-├─ mimic-response@3.1.0
-├─ minizlib@3.1.0
-├─ mkdirp@1.0.4
-├─ moment@2.30.1
-├─ moti@0.30.0
-├─ mz@2.7.0
-├─ nanoid@3.3.11
-├─ napi-postinstall@0.3.4
-├─ negotiator@0.6.3
-├─ nested-error-stacks@2.0.1
-├─ node-fetch@2.7.0
-├─ node-forge@1.3.1
-├─ node-int64@0.4.0
-├─ node-releases@2.0.27
-├─ normalize-path@3.0.0
-├─ normalize-url@6.1.0
-├─ nth-check@2.1.1
-├─ ob1@0.83.2
-├─ object-assign@4.1.1
-├─ object.assign@4.1.7
-├─ object.entries@1.1.9
-├─ object.groupby@1.0.3
-├─ object.values@1.2.1
-├─ on-headers@1.1.0
-├─ onetime@2.0.1
-├─ optionator@0.9.4
-├─ own-keys@1.0.1
-├─ p-cancelable@2.1.1
-├─ p-limit@3.1.0
-├─ p-locate@5.0.0
-├─ p-try@2.2.0
-├─ package-json-from-dist@1.0.1
-├─ parent-module@1.0.1
-├─ parse-png@2.1.0
-├─ path-is-absolute@1.0.1
-├─ path-key@3.1.1
-├─ path-scurry@1.11.1
-├─ picomatch@2.3.1
-├─ pirates@4.0.7
-├─ plist@3.1.0
-├─ pngjs@3.4.0
-├─ popmotion@11.0.3
-├─ postcss-value-parser@4.2.0
-├─ postcss@8.4.49
-├─ pretty-bytes@5.6.0
-├─ proc-log@4.2.0
-├─ progress@2.0.3
-├─ promise@8.3.0
-├─ prompts@2.4.2
-├─ prop-types@15.8.1
-├─ pump@3.0.3
-├─ punycode@2.3.1
-├─ qrcode-terminal@0.11.0
-├─ queue-microtask@1.2.3
-├─ queue@6.0.2
-├─ quick-lru@5.1.1
-├─ rc@1.2.8
-├─ react-devtools-core@6.1.5
-├─ react-dom@19.2.0
-├─ react-fast-compare@3.2.2
-├─ react-freeze@1.0.4
-├─ react-is@16.13.1
-├─ react-native-calendars@1.1313.0
-├─ react-native-dotenv@3.4.11
-├─ react-native-gesture-handler@2.29.1
-├─ react-native-reanimated@4.1.5
-├─ react-native-safe-area-context@5.6.2
-├─ react-native-screens@4.18.0
-├─ react-native-svg@15.15.0
-├─ react-native-swipe-gestures@1.0.5
-├─ react-native-web@0.21.2
-├─ react-native-webview@13.16.0
-├─ react-native-worklets-core@1.6.2
-├─ react-native@0.82.1
-├─ react-remove-scroll-bar@2.3.8
-├─ react-remove-scroll@2.7.1
-├─ react-style-singleton@2.2.3
-├─ react@19.2.0
-├─ recyclerlistview@4.2.3
-├─ reflect.getprototypeof@1.0.10
-├─ regenerate-unicode-properties@10.2.2
-├─ regenerator-runtime@0.13.11
-├─ regexp.prototype.flags@1.5.4
-├─ regexpu-core@6.4.0
-├─ regjsgen@0.8.0
-├─ regjsparser@0.13.0
-├─ require-directory@2.1.1
-├─ requireg@0.2.2
-├─ resolve-alpn@1.2.1
-├─ resolve-global@1.0.0
-├─ resolve-pkg-maps@1.0.0
-├─ resolve.exports@2.0.3
-├─ resolve@1.22.11
-├─ restore-cursor@2.0.0
-├─ reusify@1.1.0
-├─ rimraf@3.0.2
-├─ run-parallel@1.2.0
-├─ safe-buffer@5.2.1
-├─ sax@1.4.3
-├─ scheduler@0.26.0
-├─ send@0.19.1
-├─ server-only@0.0.1
-├─ set-function-length@1.2.2
-├─ set-proto@1.0.0
-├─ setimmediate@1.0.5
-├─ setprototypeof@1.2.0
-├─ sf-symbols-typescript@2.1.0
-├─ shallowequal@1.1.0
-├─ shebang-command@2.0.0
-├─ shebang-regex@3.0.0
-├─ shell-quote@1.8.3
-├─ side-channel-list@1.0.0
-├─ side-channel-weakmap@1.0.2
-├─ signal-exit@3.0.7
-├─ simple-plist@1.3.1
-├─ simple-swizzle@0.2.4
-├─ sisteransi@1.0.5
-├─ slugify@1.6.6
-├─ source-map-js@1.2.1
-├─ source-map-support@0.5.21
-├─ split-on-first@1.1.0
-├─ sprintf-js@1.0.3
-├─ stable-hash@0.0.5
-├─ stack-utils@2.0.6
-├─ stackframe@1.3.4
-├─ stop-iteration-iterator@1.1.0
-├─ stream-buffers@2.2.0
-├─ strict-uri-encode@2.0.0
-├─ string-hash-64@1.0.3
-├─ string-width-cjs@4.2.3
-├─ string.prototype.matchall@4.0.12
-├─ string.prototype.repeat@1.0.0
-├─ string.prototype.trim@1.2.10
-├─ string.prototype.trimstart@1.0.8
-├─ strip-ansi-cjs@6.0.1
-├─ strip-bom@3.0.0
-├─ strip-json-comments@3.1.1
-├─ structured-headers@0.4.1
-├─ styleq@0.1.3
-├─ sucrase@3.35.0
-├─ supports-color@7.2.0
-├─ supports-hyperlinks@2.3.0
-├─ tar@7.5.2
-├─ temp-dir@2.0.0
-├─ terminal-link@2.1.1
-├─ test-exclude@6.0.0
-├─ thenify-all@1.6.0
-├─ thenify@3.3.1
-├─ tinyglobby@0.2.15
-├─ tmpl@1.0.5
-├─ to-regex-range@5.0.1
-├─ toidentifier@1.0.1
-├─ tr46@0.0.3
-├─ ts-interface-checker@0.1.13
-├─ ts-object-utils@0.0.5
-├─ tsconfig-paths@3.15.0
-├─ type-check@0.4.0
-├─ type-detect@4.0.8
-├─ type-fest@0.7.1
-├─ typed-array-buffer@1.0.3
-├─ typed-array-byte-length@1.0.3
-├─ typed-array-byte-offset@1.0.4
-├─ typed-array-length@1.0.7
-├─ typescript@5.9.3
-├─ ua-parser-js@1.0.41
-├─ unbox-primitive@1.1.0
-├─ undici-types@7.16.0
-├─ undici@6.22.0
-├─ unicode-canonical-property-names-ecmascript@2.0.1
-├─ unicode-match-property-ecmascript@2.0.0
-├─ unicode-match-property-value-ecmascript@2.2.1
-├─ unicode-property-aliases-ecmascript@2.2.0
-├─ unique-string@2.0.0
-├─ unpipe@1.0.0
-├─ unrs-resolver@1.11.1
-├─ update-browserslist-db@1.1.4
-├─ uri-js@4.4.1
-├─ use-callback-ref@1.3.3
-├─ use-latest-callback@0.2.6
-├─ use-sidecar@1.1.3
-├─ utils-merge@1.0.1
-├─ uuid@3.4.0
-├─ validate-npm-package-name@5.0.1
-├─ vary@1.1.2
-├─ vaul@1.1.2
-├─ walker@1.0.8
-├─ warn-once@0.1.1
-├─ wcwidth@1.0.1
-├─ webidl-conversions@5.0.0
-├─ whatwg-url-without-unicode@8.0.0-3
-├─ whatwg-url@5.0.0
-├─ which-boxed-primitive@1.1.1
-├─ which-builtin-type@1.2.1
-├─ which-collection@1.0.2
-├─ which@2.0.2
-├─ word-wrap@1.2.5
-├─ wrap-ansi-cjs@7.0.0
-├─ write-file-atomic@4.0.2
-├─ xcode@3.0.1
-├─ xdate@0.8.3
-├─ y18n@5.0.8
-├─ yallist@3.1.1
-├─ yargs-parser@21.1.1
-├─ yocto-queue@0.1.0
-├─ zod-to-json-schema@3.25.0
-├─ zod@3.25.76
-└─ zustand@5.0.8
-Done in 15.11s. in the  directory. This command updated all packages in  to their latest available versions. The intent was to resolve the dependency conflicts by forcing all packages onto a modern, compatible baseline. However, this is a major change and its side effects are not yet verified. The build has not been re-attempted since the upgrade. The most recent error log before this action pointed to a missing , a peer dependency of .
+This multi-step process involved:
+1.  **Code Sync:** The AI replaced its local files (, , , , etc.) with versions uploaded by the user to create a unified source of truth. A new  was also added.
+2.  **Repository Cleanup:** Following a user-provided blueprint, a new branch () was created. On this branch, previously committed native folders (), build artifacts (, build logs), and a corrupted non-UTF8 filename were removed from the Git history. The  file was updated to prevent these from being committed in the future.
+3.  **Versioning:** The application version was updated to  in  and , and the Android  was incremented to .
+4.  **Documentation:** A new, detailed  was written, documenting the current version (1.2.0.1), features, build instructions, and developer guidelines.
+5.  **Final Branch Creation:** Due to a sync issue with the user's Save to GitHub button, a new, clean branch named  was created. This branch consolidates all the cleanup, versioning, and documentation changes, ready for the user to push to their remote repository. The project is now in a clean, buildable, and well-documented state, pending user action.
 </current_work>
 
 <optional_next_step>
-Verify that  is still correctly listed as a dependency in  after the yarn upgrade v1.22.22
-[1/4] Resolving packages...
-[2/4] Fetching packages...
-[3/4] Linking dependencies...
-[4/4] Rebuilding all packages...
-success Saved lockfile.
-success Saved 648 new dependencies.
-info Direct dependencies
-├─ @babel/core@7.28.5
-├─ @expo/ngrok@4.1.3
-├─ @react-native-async-storage/async-storage@2.2.0
-├─ @react-native-community/datetimepicker@8.5.0
-├─ @react-navigation/bottom-tabs@7.8.6
-├─ @react-navigation/native@7.1.21
-├─ @shopify/flash-list@2.2.0
-├─ @tamagui/config@1.138.2
-├─ @tamagui/core@1.138.2
-├─ @types/react@19.2.6
-├─ date-fns@4.1.0
-├─ eslint-config-expo@10.0.0
-├─ eslint@9.39.1
-├─ expo-blur@15.0.7
-├─ expo-document-picker@14.0.7
-├─ expo-file-system@19.0.19
-├─ expo-haptics@15.0.7
-├─ expo-image@3.0.10
-├─ expo-linking@8.0.9
-├─ expo-print@15.0.7
-├─ expo-router@6.0.15
-├─ expo-sharing@14.0.7
-├─ expo-splash-screen@31.0.11
-├─ expo-sqlite@16.0.9
-├─ expo-status-bar@3.0.8
-├─ expo-symbols@1.0.7
-├─ expo-system-ui@6.0.8
-├─ expo-web-browser@15.0.9
-├─ expo@54.0.25
-├─ react-dom@19.2.0
-├─ react-native-calendars@1.1313.0
-├─ react-native-dotenv@3.4.11
-├─ react-native-gesture-handler@2.29.1
-├─ react-native-reanimated@4.1.5
-├─ react-native-safe-area-context@5.6.2
-├─ react-native-screens@4.18.0
-├─ react-native-svg@15.15.0
-├─ react-native-web@0.21.2
-├─ react-native-webview@13.16.0
-├─ react-native-worklets-core@1.6.2
-├─ react-native@0.82.1
-├─ react@19.2.0
-├─ typescript@5.9.3
-└─ zustand@5.0.8
-info All dependencies
-├─ @0no-co/graphql.web@1.2.0
-├─ @babel/code-frame@7.27.1
-├─ @babel/compat-data@7.28.5
-├─ @babel/core@7.28.5
-├─ @babel/helper-member-expression-to-functions@7.28.5
-├─ @babel/helper-module-transforms@7.28.3
-├─ @babel/helper-string-parser@7.27.1
-├─ @babel/helper-validator-identifier@7.28.5
-├─ @babel/helper-wrap-function@7.28.3
-├─ @babel/helpers@7.28.4
-├─ @babel/highlight@7.25.9
-├─ @babel/parser@7.28.5
-├─ @babel/plugin-proposal-decorators@7.28.0
-├─ @babel/plugin-syntax-async-generators@7.8.4
-├─ @babel/plugin-syntax-bigint@7.8.3
-├─ @babel/plugin-syntax-class-properties@7.12.13
-├─ @babel/plugin-syntax-class-static-block@7.14.5
-├─ @babel/plugin-syntax-decorators@7.27.1
-├─ @babel/plugin-syntax-dynamic-import@7.8.3
-├─ @babel/plugin-syntax-flow@7.27.1
-├─ @babel/plugin-syntax-import-attributes@7.27.1
-├─ @babel/plugin-syntax-import-meta@7.10.4
-├─ @babel/plugin-syntax-json-strings@7.8.3
-├─ @babel/plugin-syntax-logical-assignment-operators@7.10.4
-├─ @babel/plugin-syntax-numeric-separator@7.10.4
-├─ @babel/plugin-syntax-object-rest-spread@7.8.3
-├─ @babel/plugin-syntax-optional-catch-binding@7.8.3
-├─ @babel/plugin-syntax-private-property-in-object@7.14.5
-├─ @babel/plugin-syntax-top-level-await@7.14.5
-├─ @babel/plugin-syntax-typescript@7.27.1
-├─ @babel/plugin-transform-arrow-functions@7.27.1
-├─ @babel/plugin-transform-async-generator-functions@7.28.0
-├─ @babel/plugin-transform-async-to-generator@7.27.1
-├─ @babel/plugin-transform-block-scoping@7.28.5
-├─ @babel/plugin-transform-class-properties@7.27.1
-├─ @babel/plugin-transform-class-static-block@7.28.3
-├─ @babel/plugin-transform-classes@7.28.4
-├─ @babel/plugin-transform-computed-properties@7.27.1
-├─ @babel/plugin-transform-destructuring@7.28.5
-├─ @babel/plugin-transform-export-namespace-from@7.27.1
-├─ @babel/plugin-transform-for-of@7.27.1
-├─ @babel/plugin-transform-function-name@7.27.1
-├─ @babel/plugin-transform-literals@7.27.1
-├─ @babel/plugin-transform-logical-assignment-operators@7.28.5
-├─ @babel/plugin-transform-named-capturing-groups-regex@7.27.1
-├─ @babel/plugin-transform-nullish-coalescing-operator@7.27.1
-├─ @babel/plugin-transform-numeric-separator@7.27.1
-├─ @babel/plugin-transform-optional-catch-binding@7.27.1
-├─ @babel/plugin-transform-optional-chaining@7.28.5
-├─ @babel/plugin-transform-parameters@7.27.7
-├─ @babel/plugin-transform-react-display-name@7.28.0
-├─ @babel/plugin-transform-react-jsx-development@7.27.1
-├─ @babel/plugin-transform-react-jsx-self@7.27.1
-├─ @babel/plugin-transform-react-jsx-source@7.27.1
-├─ @babel/plugin-transform-react-pure-annotations@7.27.1
-├─ @babel/plugin-transform-regenerator@7.28.4
-├─ @babel/plugin-transform-shorthand-properties@7.27.1
-├─ @babel/plugin-transform-spread@7.27.1
-├─ @babel/plugin-transform-sticky-regex@7.27.1
-├─ @babel/plugin-transform-typescript@7.28.5
-├─ @babel/plugin-transform-unicode-regex@7.27.1
-├─ @babel/preset-react@7.28.5
-├─ @babel/preset-typescript@7.28.5
-├─ @babel/runtime@7.28.4
-├─ @babel/template@7.27.2
-├─ @egjs/hammerjs@2.0.17
-├─ @emotion/is-prop-valid@0.8.8
-├─ @emotion/memoize@0.7.4
-├─ @eslint-community/eslint-utils@4.9.0
-├─ @eslint-community/regexpp@4.12.2
-├─ @eslint/config-array@0.21.1
-├─ @eslint/config-helpers@0.4.2
-├─ @eslint/eslintrc@3.3.1
-├─ @eslint/js@9.39.1
-├─ @eslint/object-schema@2.1.7
-├─ @eslint/plugin-kit@0.4.1
-├─ @expo/cli@54.0.16
-├─ @expo/code-signing-certificates@0.0.5
-├─ @expo/devcert@1.2.0
-├─ @expo/devtools@0.1.7
-├─ @expo/fingerprint@0.15.3
-├─ @expo/mcp-tunnel@0.1.0
-├─ @expo/metro-config@54.0.9
-├─ @expo/metro-runtime@6.1.2
-├─ @expo/ngrok-bin-linux-arm64@2.3.41
-├─ @expo/ngrok-bin@2.3.42
-├─ @expo/ngrok@4.1.3
-├─ @expo/osascript@2.3.7
-├─ @expo/package-manager@1.9.8
-├─ @expo/sdk-runtime-versions@1.0.0
-├─ @expo/sudo-prompt@9.3.2
-├─ @expo/ws-tunnel@1.0.6
-├─ @expo/xcpretty@4.3.2
-├─ @humanfs/core@0.19.1
-├─ @humanfs/node@0.16.7
-├─ @humanwhocodes/module-importer@1.0.1
-├─ @humanwhocodes/retry@0.4.3
-├─ @isaacs/cliui@8.0.2
-├─ @isaacs/fs-minipass@4.0.1
-├─ @istanbuljs/load-nyc-config@1.1.0
-├─ @jest/create-cache-key-function@29.7.0
-├─ @jest/environment@29.7.0
-├─ @jest/transform@29.7.0
-├─ @jridgewell/remapping@2.3.5
-├─ @jridgewell/resolve-uri@3.1.2
-├─ @jridgewell/source-map@0.3.11
-├─ @jridgewell/sourcemap-codec@1.5.5
-├─ @jridgewell/trace-mapping@0.3.31
-├─ @motionone/animation@10.18.0
-├─ @motionone/dom@10.12.0
-├─ @motionone/easing@10.18.0
-├─ @motionone/generators@10.18.0
-├─ @nodelib/fs.scandir@2.1.5
-├─ @nodelib/fs.stat@2.0.5
-├─ @nodelib/fs.walk@1.2.8
-├─ @nolyfill/is-core-module@1.0.39
-├─ @pkgjs/parseargs@0.11.0
-├─ @radix-ui/react-collection@1.1.7
-├─ @radix-ui/react-dialog@1.1.15
-├─ @radix-ui/react-dismissable-layer@1.1.11
-├─ @radix-ui/react-focus-guards@1.1.3
-├─ @radix-ui/react-focus-scope@1.1.7
-├─ @radix-ui/react-portal@1.1.9
-├─ @radix-ui/react-roving-focus@1.1.11
-├─ @radix-ui/react-tabs@1.1.13
-├─ @radix-ui/react-use-effect-event@0.0.2
-├─ @radix-ui/react-use-escape-keydown@1.1.1
-├─ @react-native-async-storage/async-storage@2.2.0
-├─ @react-native-community/datetimepicker@8.5.0
-├─ @react-native/assets-registry@0.82.1
-├─ @react-native/babel-plugin-codegen@0.81.5
-├─ @react-native/babel-preset@0.81.5
-├─ @react-native/codegen@0.82.1
-├─ @react-native/community-cli-plugin@0.82.1
-├─ @react-native/debugger-frontend@0.81.5
-├─ @react-native/debugger-shell@0.82.1
-├─ @react-native/dev-middleware@0.81.5
-├─ @react-native/gradle-plugin@0.82.1
-├─ @react-native/js-polyfills@0.82.1
-├─ @react-native/normalize-color@2.1.0
-├─ @react-native/virtualized-lists@0.82.1
-├─ @react-navigation/bottom-tabs@7.8.6
-├─ @react-navigation/core@7.13.2
-├─ @react-navigation/native-stack@7.7.0
-├─ @react-navigation/native@7.1.21
-├─ @react-navigation/routers@7.5.2
-├─ @rtsao/scc@1.1.0
-├─ @shopify/flash-list@2.2.0
-├─ @sinclair/typebox@0.27.8
-├─ @sindresorhus/is@4.6.0
-├─ @sinonjs/commons@3.0.1
-├─ @sinonjs/fake-timers@10.3.0
-├─ @szmarczak/http-timer@4.0.6
-├─ @tamagui/animations-css@1.138.2
-├─ @tamagui/animations-moti@1.138.2
-├─ @tamagui/animations-react-native@1.138.2
-├─ @tamagui/compose-refs@1.138.2
-├─ @tamagui/config@1.138.2
-├─ @tamagui/core@1.138.2
-├─ @tamagui/cubic-bezier-animator@1.138.2
-├─ @tamagui/font-inter@1.138.2
-├─ @tamagui/font-silkscreen@1.138.2
-├─ @tamagui/normalize-css-color@1.138.2
-├─ @tamagui/react-native-use-pressable@1.138.2
-├─ @tamagui/react-native-use-responder-events@1.138.2
-├─ @tamagui/shorthands@1.138.2
-├─ @tamagui/simple-hash@1.138.2
-├─ @tamagui/themes@1.138.2
-├─ @tamagui/timer@1.138.2
-├─ @tamagui/types@1.138.2
-├─ @tamagui/use-did-finish-ssr@1.138.2
-├─ @tamagui/use-element-layout@1.138.2
-├─ @tamagui/use-force-update@1.138.2
-├─ @types/babel__generator@7.27.0
-├─ @types/babel__template@7.4.4
-├─ @types/babel__traverse@7.28.0
-├─ @types/cacheable-request@6.0.3
-├─ @types/estree@1.0.8
-├─ @types/graceful-fs@4.1.9
-├─ @types/hammerjs@2.0.46
-├─ @types/http-cache-semantics@4.0.4
-├─ @types/istanbul-lib-coverage@2.0.6
-├─ @types/istanbul-lib-report@3.0.3
-├─ @types/istanbul-reports@3.0.4
-├─ @types/json-schema@7.0.15
-├─ @types/json5@0.0.29
-├─ @types/keyv@3.1.4
-├─ @types/react@19.2.6
-├─ @types/stack-utils@2.0.3
-├─ @types/yargs-parser@21.0.3
-├─ @types/yargs@17.0.35
-├─ @typescript-eslint/eslint-plugin@8.47.0
-├─ @typescript-eslint/parser@8.47.0
-├─ @typescript-eslint/project-service@8.47.0
-├─ @typescript-eslint/tsconfig-utils@8.47.0
-├─ @typescript-eslint/type-utils@8.47.0
-├─ @typescript-eslint/types@8.47.0
-├─ @ungap/structured-clone@1.3.0
-├─ @unrs/resolver-binding-linux-arm64-gnu@1.11.1
-├─ @unrs/resolver-binding-linux-arm64-musl@1.11.1
-├─ @urql/core@5.2.0
-├─ @urql/exchange-retry@1.3.2
-├─ abort-controller@3.0.0
-├─ acorn-jsx@5.3.2
-├─ agent-base@7.1.4
-├─ ansi-escapes@4.3.2
-├─ ansi-regex@5.0.1
-├─ anymatch@3.1.3
-├─ argparse@2.0.1
-├─ aria-hidden@1.2.6
-├─ array-buffer-byte-length@1.0.2
-├─ array-includes@3.1.9
-├─ array.prototype.findlast@1.2.5
-├─ array.prototype.findlastindex@1.2.6
-├─ array.prototype.flat@1.3.3
-├─ array.prototype.tosorted@1.1.4
-├─ arraybuffer.prototype.slice@1.0.4
-├─ asap@2.0.6
-├─ async-function@1.0.0
-├─ async-limiter@1.0.1
-├─ await-lock@2.2.2
-├─ babel-jest@29.7.0
-├─ babel-plugin-jest-hoist@29.6.3
-├─ babel-plugin-polyfill-corejs2@0.4.14
-├─ babel-plugin-polyfill-corejs3@0.13.0
-├─ babel-plugin-polyfill-regenerator@0.6.5
-├─ babel-plugin-react-compiler@1.0.0
-├─ babel-plugin-react-native-web@0.21.2
-├─ babel-plugin-syntax-hermes-parser@0.29.1
-├─ babel-preset-current-node-syntax@1.2.0
-├─ babel-preset-expo@54.0.7
-├─ babel-preset-jest@29.6.3
-├─ baseline-browser-mapping@2.8.30
-├─ better-opn@3.0.2
-├─ bplist-parser@0.3.2
-├─ brace-expansion@1.1.12
-├─ braces@3.0.3
-├─ browserslist@4.28.0
-├─ bser@2.1.1
-├─ buffer-from@1.1.2
-├─ buffer@5.7.1
-├─ bytes@3.1.2
-├─ cacheable-lookup@5.0.4
-├─ cacheable-request@7.0.4
-├─ call-bind-apply-helpers@1.0.2
-├─ callsites@3.1.0
-├─ camelcase@6.3.0
-├─ caniuse-lite@1.0.30001756
-├─ chownr@3.0.0
-├─ cli-cursor@2.1.0
-├─ cli-spinners@2.9.2
-├─ client-only@0.0.1
-├─ cliui@8.0.1
-├─ clone-response@1.0.3
-├─ clone@1.0.4
-├─ color-name@1.1.4
-├─ color-string@1.9.1
-├─ commander@12.1.0
-├─ compressible@2.0.18
-├─ compression@1.8.1
-├─ concat-map@0.0.1
-├─ core-js-compat@3.47.0
-├─ cross-fetch@3.2.0
-├─ crypto-random-string@2.0.0
-├─ css-in-js-utils@3.1.0
-├─ css-select@5.2.2
-├─ css-tree@1.1.3
-├─ css-what@6.2.2
-├─ csstype@3.2.3
-├─ data-view-buffer@1.0.2
-├─ data-view-byte-length@1.0.2
-├─ data-view-byte-offset@1.0.1
-├─ date-fns@4.1.0
-├─ decode-uri-component@0.2.2
-├─ decompress-response@6.0.0
-├─ deep-extend@0.6.0
-├─ deep-is@0.1.4
-├─ deepmerge@4.3.1
-├─ defaults@1.0.4
-├─ defer-to-connect@2.0.1
-├─ define-lazy-prop@2.0.0
-├─ detect-libc@2.1.2
-├─ detect-node-es@1.1.0
-├─ dom-serializer@2.0.0
-├─ domutils@3.2.2
-├─ eastasianwidth@0.2.0
-├─ electron-to-chromium@1.5.259
-├─ end-of-stream@1.4.5
-├─ entities@4.5.0
-├─ env-editor@0.4.2
-├─ es-iterator-helpers@1.2.1
-├─ es-set-tostringtag@2.1.0
-├─ es-to-primitive@1.3.0
-├─ escalade@3.2.0
-├─ eslint-config-expo@10.0.0
-├─ eslint-import-resolver-node@0.3.9
-├─ eslint-import-resolver-typescript@3.10.1
-├─ eslint-module-utils@2.12.1
-├─ eslint-plugin-expo@1.0.0
-├─ eslint-plugin-import@2.32.0
-├─ eslint-plugin-react-hooks@5.2.0
-├─ eslint-plugin-react@7.37.5
-├─ eslint-scope@8.4.0
-├─ eslint@9.39.1
-├─ espree@10.4.0
-├─ esprima@4.0.1
-├─ esquery@1.6.0
-├─ esrecurse@4.3.0
-├─ estraverse@5.3.0
-├─ event-target-shim@5.0.1
-├─ exec-async@2.2.0
-├─ expo-asset@12.0.10
-├─ expo-blur@15.0.7
-├─ expo-document-picker@14.0.7
-├─ expo-file-system@19.0.19
-├─ expo-haptics@15.0.7
-├─ expo-image@3.0.10
-├─ expo-keep-awake@15.0.7
-├─ expo-linking@8.0.9
-├─ expo-modules-autolinking@3.0.22
-├─ expo-modules-core@3.0.26
-├─ expo-print@15.0.7
-├─ expo-router@6.0.15
-├─ expo-sharing@14.0.7
-├─ expo-splash-screen@31.0.11
-├─ expo-sqlite@16.0.9
-├─ expo-status-bar@3.0.8
-├─ expo-symbols@1.0.7
-├─ expo-system-ui@6.0.8
-├─ expo-web-browser@15.0.9
-├─ expo@54.0.25
-├─ fast-deep-equal@3.1.3
-├─ fast-glob@3.3.3
-├─ fast-json-stable-stringify@2.1.0
-├─ fast-levenshtein@2.0.6
-├─ fastq@1.19.1
-├─ fb-dotslash@0.5.8
-├─ fbjs-css-vars@1.0.2
-├─ fbjs@3.0.5
-├─ file-entry-cache@8.0.0
-├─ fill-range@7.1.1
-├─ filter-obj@1.1.0
-├─ finalhandler@1.1.2
-├─ flat-cache@4.0.1
-├─ flatted@3.3.3
-├─ fontfaceobserver@2.3.0
-├─ for-each@0.3.5
-├─ foreground-child@3.3.1
-├─ framer-motion@6.5.1
-├─ freeport-async@2.0.0
-├─ fs.realpath@1.0.0
-├─ function.prototype.name@1.1.8
-├─ generator-function@2.0.1
-├─ gensync@1.0.0-beta.2
-├─ get-caller-file@2.0.5
-├─ get-nonce@1.0.1
-├─ get-package-type@0.1.0
-├─ get-stream@5.2.0
-├─ get-symbol-description@1.1.0
-├─ get-tsconfig@4.13.0
-├─ glob-parent@6.0.2
-├─ global-dirs@0.1.1
-├─ globals@16.5.0
-├─ got@11.8.6
-├─ graphemer@1.4.0
-├─ hermes-compiler@0.0.0
-├─ hermes-estree@0.32.0
-├─ hoist-non-react-statics@3.3.2
-├─ hosted-git-info@7.0.2
-├─ http-cache-semantics@4.2.0
-├─ http2-wrapper@1.0.3
-├─ hyphenate-style-name@1.1.0
-├─ ieee754@1.2.1
-├─ import-fresh@3.3.1
-├─ inflight@1.0.6
-├─ inherits@2.0.4
-├─ ini@1.3.8
-├─ inline-style-prefixer@7.0.1
-├─ invariant@2.2.4
-├─ is-array-buffer@3.0.5
-├─ is-arrayish@0.3.4
-├─ is-async-function@2.1.1
-├─ is-bigint@1.1.0
-├─ is-boolean-object@1.2.2
-├─ is-bun-module@2.0.0
-├─ is-date-object@1.1.0
-├─ is-extglob@2.1.1
-├─ is-finalizationregistry@1.1.1
-├─ is-generator-function@1.1.2
-├─ is-glob@4.0.3
-├─ is-map@2.0.3
-├─ is-negative-zero@2.0.3
-├─ is-number-object@1.1.1
-├─ is-number@7.0.0
-├─ is-plain-obj@2.1.0
-├─ is-shared-array-buffer@1.0.4
-├─ is-symbol@1.1.1
-├─ is-weakmap@2.0.2
-├─ is-weakref@1.1.1
-├─ is-weakset@2.0.4
-├─ isexe@2.0.0
-├─ istanbul-lib-coverage@3.2.2
-├─ istanbul-lib-instrument@5.2.1
-├─ iterator.prototype@1.1.5
-├─ jackspeak@3.4.3
-├─ jest-environment-node@29.7.0
-├─ jest-get-type@29.6.3
-├─ jest-haste-map@29.7.0
-├─ jest-message-util@29.7.0
-├─ jimp-compact@0.16.1
-├─ jsesc@3.1.0
-├─ json-buffer@3.0.1
-├─ json-schema-traverse@0.4.1
-├─ json-stable-stringify-without-jsonify@1.0.1
-├─ jsx-ast-utils@3.3.5
-├─ keyv@4.5.4
-├─ kleur@3.0.3
-├─ lan-network@0.1.7
-├─ leven@3.1.0
-├─ lightningcss-linux-arm64-gnu@1.30.2
-├─ lightningcss-linux-arm64-musl@1.30.2
-├─ lightningcss@1.30.2
-├─ lines-and-columns@1.2.4
-├─ locate-path@6.0.0
-├─ lodash.debounce@4.0.8
-├─ lodash.merge@4.6.2
-├─ lodash@4.17.21
-├─ log-symbols@2.2.0
-├─ lru-cache@10.4.3
-├─ makeerror@1.0.12
-├─ marky@1.3.0
-├─ mdn-data@2.0.14
-├─ memoize-one@5.2.1
-├─ merge-options@3.0.4
-├─ merge-stream@2.0.0
-├─ merge2@1.4.1
-├─ metro-minify-terser@0.83.2
-├─ micromatch@4.0.8
-├─ mime-db@1.52.0
-├─ mimic-fn@1.2.0
-├─ mimic-response@3.1.0
-├─ minipass@7.1.2
-├─ minizlib@3.1.0
-├─ mkdirp@1.0.4
-├─ moment@2.30.1
-├─ moti@0.30.0
-├─ mz@2.7.0
-├─ nanoid@3.3.11
-├─ napi-postinstall@0.3.4
-├─ negotiator@0.6.3
-├─ nested-error-stacks@2.0.1
-├─ node-fetch@2.7.0
-├─ node-forge@1.3.1
-├─ node-int64@0.4.0
-├─ node-releases@2.0.27
-├─ normalize-path@3.0.0
-├─ normalize-url@6.1.0
-├─ nth-check@2.1.1
-├─ ob1@0.83.2
-├─ object-assign@4.1.1
-├─ object.assign@4.1.7
-├─ object.entries@1.1.9
-├─ object.groupby@1.0.3
-├─ object.values@1.2.1
-├─ on-headers@1.1.0
-├─ onetime@2.0.1
-├─ optionator@0.9.4
-├─ own-keys@1.0.1
-├─ p-cancelable@2.1.1
-├─ p-limit@3.1.0
-├─ p-locate@5.0.0
-├─ p-try@2.2.0
-├─ package-json-from-dist@1.0.1
-├─ parent-module@1.0.1
-├─ parse-png@2.1.0
-├─ path-is-absolute@1.0.1
-├─ path-key@3.1.1
-├─ path-scurry@1.11.1
-├─ picomatch@2.3.1
-├─ pirates@4.0.7
-├─ plist@3.1.0
-├─ pngjs@3.4.0
-├─ popmotion@11.0.3
-├─ postcss-value-parser@4.2.0
-├─ postcss@8.4.49
-├─ pretty-bytes@5.6.0
-├─ proc-log@4.2.0
-├─ progress@2.0.3
-├─ promise@8.3.0
-├─ prompts@2.4.2
-├─ prop-types@15.8.1
-├─ pump@3.0.3
-├─ punycode@2.3.1
-├─ qrcode-terminal@0.11.0
-├─ queue-microtask@1.2.3
-├─ queue@6.0.2
-├─ quick-lru@5.1.1
-├─ rc@1.2.8
-├─ react-devtools-core@6.1.5
-├─ react-dom@19.2.0
-├─ react-fast-compare@3.2.2
-├─ react-freeze@1.0.4
-├─ react-is@16.13.1
-├─ react-native-calendars@1.1313.0
-├─ react-native-dotenv@3.4.11
-├─ react-native-gesture-handler@2.29.1
-├─ react-native-reanimated@4.1.5
-├─ react-native-safe-area-context@5.6.2
-├─ react-native-screens@4.18.0
-├─ react-native-svg@15.15.0
-├─ react-native-swipe-gestures@1.0.5
-├─ react-native-web@0.21.2
-├─ react-native-webview@13.16.0
-├─ react-native-worklets-core@1.6.2
-├─ react-native@0.82.1
-├─ react-remove-scroll-bar@2.3.8
-├─ react-remove-scroll@2.7.1
-├─ react-style-singleton@2.2.3
-├─ react@19.2.0
-├─ recyclerlistview@4.2.3
-├─ reflect.getprototypeof@1.0.10
-├─ regenerate-unicode-properties@10.2.2
-├─ regenerator-runtime@0.13.11
-├─ regexp.prototype.flags@1.5.4
-├─ regexpu-core@6.4.0
-├─ regjsgen@0.8.0
-├─ regjsparser@0.13.0
-├─ require-directory@2.1.1
-├─ requireg@0.2.2
-├─ resolve-alpn@1.2.1
-├─ resolve-global@1.0.0
-├─ resolve-pkg-maps@1.0.0
-├─ resolve.exports@2.0.3
-├─ resolve@1.22.11
-├─ restore-cursor@2.0.0
-├─ reusify@1.1.0
-├─ rimraf@3.0.2
-├─ run-parallel@1.2.0
-├─ safe-buffer@5.2.1
-├─ sax@1.4.3
-├─ scheduler@0.26.0
-├─ send@0.19.1
-├─ server-only@0.0.1
-├─ set-function-length@1.2.2
-├─ set-proto@1.0.0
-├─ setimmediate@1.0.5
-├─ setprototypeof@1.2.0
-├─ sf-symbols-typescript@2.1.0
-├─ shallowequal@1.1.0
-├─ shebang-command@2.0.0
-├─ shebang-regex@3.0.0
-├─ shell-quote@1.8.3
-├─ side-channel-list@1.0.0
-├─ side-channel-weakmap@1.0.2
-├─ signal-exit@3.0.7
-├─ simple-plist@1.3.1
-├─ simple-swizzle@0.2.4
-├─ sisteransi@1.0.5
-├─ slugify@1.6.6
-├─ source-map-js@1.2.1
-├─ source-map-support@0.5.21
-├─ split-on-first@1.1.0
-├─ sprintf-js@1.0.3
-├─ stable-hash@0.0.5
-├─ stack-utils@2.0.6
-├─ stackframe@1.3.4
-├─ stop-iteration-iterator@1.1.0
-├─ stream-buffers@2.2.0
-├─ strict-uri-encode@2.0.0
-├─ string-hash-64@1.0.3
-├─ string-width-cjs@4.2.3
-├─ string.prototype.matchall@4.0.12
-├─ string.prototype.repeat@1.0.0
-├─ string.prototype.trim@1.2.10
-├─ string.prototype.trimstart@1.0.8
-├─ strip-ansi-cjs@6.0.1
-├─ strip-bom@3.0.0
-├─ strip-json-comments@3.1.1
-├─ structured-headers@0.4.1
-├─ styleq@0.1.3
-├─ sucrase@3.35.0
-├─ supports-color@7.2.0
-├─ supports-hyperlinks@2.3.0
-├─ tar@7.5.2
-├─ temp-dir@2.0.0
-├─ terminal-link@2.1.1
-├─ test-exclude@6.0.0
-├─ thenify-all@1.6.0
-├─ thenify@3.3.1
-├─ tinyglobby@0.2.15
-├─ tmpl@1.0.5
-├─ to-regex-range@5.0.1
-├─ toidentifier@1.0.1
-├─ tr46@0.0.3
-├─ ts-interface-checker@0.1.13
-├─ ts-object-utils@0.0.5
-├─ tsconfig-paths@3.15.0
-├─ type-check@0.4.0
-├─ type-detect@4.0.8
-├─ type-fest@0.7.1
-├─ typed-array-buffer@1.0.3
-├─ typed-array-byte-length@1.0.3
-├─ typed-array-byte-offset@1.0.4
-├─ typed-array-length@1.0.7
-├─ typescript@5.9.3
-├─ ua-parser-js@1.0.41
-├─ unbox-primitive@1.1.0
-├─ undici-types@7.16.0
-├─ undici@6.22.0
-├─ unicode-canonical-property-names-ecmascript@2.0.1
-├─ unicode-match-property-ecmascript@2.0.0
-├─ unicode-match-property-value-ecmascript@2.2.1
-├─ unicode-property-aliases-ecmascript@2.2.0
-├─ unique-string@2.0.0
-├─ unpipe@1.0.0
-├─ unrs-resolver@1.11.1
-├─ update-browserslist-db@1.1.4
-├─ uri-js@4.4.1
-├─ use-callback-ref@1.3.3
-├─ use-latest-callback@0.2.6
-├─ use-sidecar@1.1.3
-├─ utils-merge@1.0.1
-├─ uuid@3.4.0
-├─ validate-npm-package-name@5.0.1
-├─ vary@1.1.2
-├─ vaul@1.1.2
-├─ walker@1.0.8
-├─ warn-once@0.1.1
-├─ wcwidth@1.0.1
-├─ webidl-conversions@5.0.0
-├─ whatwg-url-without-unicode@8.0.0-3
-├─ whatwg-url@5.0.0
-├─ which-boxed-primitive@1.1.1
-├─ which-builtin-type@1.2.1
-├─ which-collection@1.0.2
-├─ which@2.0.2
-├─ word-wrap@1.2.5
-├─ wrap-ansi-cjs@7.0.0
-├─ write-file-atomic@4.0.2
-├─ xcode@3.0.1
-├─ xdate@0.8.3
-├─ y18n@5.0.8
-├─ yallist@3.1.1
-├─ yargs-parser@21.1.1
-├─ yocto-queue@0.1.0
-├─ zod-to-json-schema@3.25.0
-├─ zod@3.25.76
-└─ zustand@5.0.8
-Done in 13.49s. command, add it if it is missing, install dependencies, and then re-attempt the production build.
+Await user confirmation that the new  branch has been successfully saved/pushed to GitHub and that they can see all the latest changes, including the updated .
 </optional_next_step>

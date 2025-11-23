@@ -11,7 +11,7 @@ import sys
 import traceback
 
 # Base URL from frontend .env
-BASE_URL = "https://railroad-hours.preview.emergentagent.com/api"
+BASE_URL = "https://rail-timekeeper.preview.emergentagent.com/api"
 
 class VRSTimeWizardTester:
     def __init__(self):
