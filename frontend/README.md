@@ -1,6 +1,7 @@
 # VRS Time Wizard 🚂
 
-**Version 1.2.0.1** | Railroad Timesheet & On-Call Tracking App
+**Version 1.2.0.1** | Railroad Timesheet & On-Call Tracking App  
+*Enhanced with Visual Documentation*
 
 An offline-first mobile application built with Expo for railroad workers to log work hours, track on-call schedules, and generate detailed reports.
 
