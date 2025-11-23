@@ -39,7 +39,9 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-font",
+      "expo-web-browser"
     ],
     "splash": {
       "image": "./assets/images/splash-image.png",
