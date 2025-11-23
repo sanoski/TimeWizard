@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Modal, ScrollView, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Modal, ScrollView, TextInput, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { db } from '../services/databaseWrapper';
 import type { WorkNote } from '../services/database';
