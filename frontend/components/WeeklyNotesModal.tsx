@@ -46,7 +46,7 @@ export default function WeeklyNotesModal({ visible, onClose, weekEnding, entries
     try {
       const weekNotes = await db.getNotesByWeek(weekEnding);
       const notesMap: Record<string, WorkNote> = {};
-      weekNotes.forEach(note => {
+      weekNotes.forEach((note: WorkNote) => {
         const key = `${note.work_date}-${note.line_code}`;
         notesMap[key] = note;
       });
@@ -231,65 +231,65 @@ export default function WeeklyNotesModal({ visible, onClose, weekEnding, entries
       </Modal>
 
       {/* Note Edit Modal */}
-      <Modal
-        visible={modalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardAvoidingView}
+     <Modal
+  visible={modalVisible}
+  transparent
+  animationType="slide"
+  onRequestClose={() => setModalVisible(false)}
+>
+  <KeyboardAvoidingView 
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    style={{ flex: 1 }}
+  >
+    <View style={styles.modalOverlay}>
+      <View style={styles.modalContent}>
+        <View style={styles.modalHeader}>
+          <Text style={styles.modalTitle}>
+            {notes[`${selectedDate}-${selectedLine}`] ? 'Edit Note' : 'Add Note'}
+          </Text>
+          <Pressable onPress={() => setModalVisible(false)}>
+            <Ionicons name="close" size={24} color="#6b7280" />
+          </Pressable>
+        </View>
+        
+        <Text style={styles.modalSubtitle}>
+          {selectedLine} - {selectedDate}
+        </Text>
+
+        <ScrollView 
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>
-                  {notes[`${selectedDate}-${selectedLine}`] ? 'Edit Note' : 'Add Note'}
-                </Text>
-                <Pressable onPress={() => setModalVisible(false)}>
-                  <Ionicons name="close" size={24} color="#6b7280" />
-                </Pressable>
-              </View>
-              
-              <Text style={styles.modalSubtitle}>
-                {selectedLine} - {selectedDate}
-              </Text>
+          <TextInput
+            style={styles.textInput}
+            value={noteText}
+            onChangeText={setNoteText}
+            placeholder="Enter your notes here..."
+            multiline
+            numberOfLines={10}
+            textAlignVertical="top"
+            autoFocus
+          />
+        </ScrollView>
 
-              <ScrollView 
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
-              >
-                <TextInput
-                  style={styles.textInput}
-                  value={noteText}
-                  onChangeText={setNoteText}
-                  placeholder="Enter your notes here..."
-                  multiline
-                  numberOfLines={10}
-                  textAlignVertical="top"
-                  autoFocus
-                />
-              </ScrollView>
-
-              <View style={styles.modalActions}>
-                <Pressable 
-                  style={[styles.button, styles.cancelButton]}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.cancelButtonText}>Cancel</Text>
-                </Pressable>
-                <Pressable 
-                  style={[styles.button, styles.saveButton]}
-                  onPress={handleSaveNote}
-                >
-                  <Text style={styles.saveButtonText}>Save Note</Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+        <View style={styles.modalActions}>
+          <Pressable 
+            style={[styles.button, styles.cancelButton]}
+            onPress={() => setModalVisible(false)}
+          >
+            <Text style={styles.cancelButtonText}>Cancel</Text>
+          </Pressable>
+          <Pressable 
+            style={[styles.button, styles.saveButton]}
+            onPress={handleSaveNote}
+          >
+            <Text style={styles.saveButtonText}>Save Note</Text>
+          </Pressable>
+        </View>
+      </View>
+    </View>
+  </KeyboardAvoidingView>
+</Modal>
     </>
   );
 }
