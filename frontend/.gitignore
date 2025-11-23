@@ -6,8 +6,11 @@ node_modules/
 # Expo
 .expo/
 dist/
+build/
 web-build/
 expo-env.d.ts
+*.apk
+*.aab
 
 # Native
 android/
