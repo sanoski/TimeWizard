@@ -1,555 +1,557 @@
-# VRS Time Wizard
+# VRS Time Wizard 🚂
 
-**Version 1.2.0** - Railroad Timesheet Tracking Application
+**Version 1.2.0.1** | Railroad Timesheet & On-Call Tracking App  
+*Enhanced with Visual Documentation*
 
-## Overview
-
-VRS Time Wizard is an offline-first mobile timesheet application designed for railroad maintenance-of-way (MOW) workers. It replaces paper-based systems with a local SQLite database, allowing workers to track hours, lines worked, notes, and on-call schedules without requiring internet connectivity.
-
----
-
-## Features
-
-### Core Timesheet Management
-- **Weekly Timesheet Grid**: Log Straight Time (ST) and Overtime (OT) hours
-- **Business Logic**: Enforces 8-hour ST cap per line, 40-hour ST cap per week
-- **Line Code Management**: Support for standard lines (VTR, CLP, etc.) and project-specific codes
-- **Bi-Weekly Pay Periods**: Automatic detection and calculation
-- **Work Notes**: Add detailed notes to specific lines and dates
-
-### On-Call Schedule (v1.2.0)
-- **Weekend Tracking**: View and manage on-call assignments
-- **Google Sheets Sync**: Import master schedule from shared spreadsheet (URL hardcoded)
-- **Auto-Sync**: Weekly automatic schedule updates when app opens
-- **Visual Indicators**: Highlights your on-call weekends in calendar
-- **User Identification**: Set your name to filter relevant shifts
-- **Zero Configuration**: Works out of the box with pre-configured sync URL
-
-### Unified Calendar & Reports (v1.2.0)
-- **Toggle View**: Switch between list, calendar, and reports views in History tab
-- **Multi-Dot Markers**: Shows hours logged, notes, and on-call status
-- **Day Details**: Tap any date to see hours, lines, notes, and on-call info
-- **Reports Feature**: Generate detailed work hour reports with date range selection
-- **PDF Export**: Professional PDF reports (monthly summary or detailed daily)
-- **CSV Export**: Complete data export for spreadsheet analysis
-- **Statistics**: Total hours, ST/OT breakdown, days worked, averages
-
-### Data Management
-- **100% Offline**: All data stored locally with SQLite
-- **Backup/Restore**: Export and import timesheet data as JSON
-- **Database Migration**: Safe schema updates without data loss
-- **Google Sheets Integration**: Sync on-call schedules from master list
+An offline-first mobile application built with Expo for railroad workers to log work hours, track on-call schedules, and generate detailed reports.
 
 ---
 
-## Tech Stack
+## 📸 Screenshots
 
-### Frontend (Mobile App)
-- **Framework**: Expo (React Native)
-- **Language**: TypeScript
-- **Database**: expo-sqlite (SQLite on device)
-- **State Management**: Zustand
-- **Date Handling**: date-fns
-- **UI Components**: 
-  - react-native core components
-  - react-native-calendars (calendar view)
-  - expo-haptics (button feedback)
-- **Storage**: @react-native-async-storage/async-storage
-- **Reports**: 
-  - expo-print (PDF generation)
-  - expo-sharing (file sharing)
-  - @react-native-community/datetimepicker (date selection)
-- **Utilities**:
-  - expo-document-picker (CSV import)
-  - expo-file-system (file operations)
+<div align="center">
+  ### Dashboard
+![dashboard](https://github.com/user-attachments/assets/170eb5b8-4b48-41b6-9595-56706476329d)
 
-### Backend (Dormant)
-- **Framework**: FastAPI (Python) - Not used in v1.2.0
-- **Database**: MongoDB - Not used in v1.2.0
-- **Note**: App is fully client-side, backend reserved for future server features
+</div>
 
 ---
 
-## Installation
+## 📋 Features
+
+### Core Functionality
+- **📅 Weekly Timesheet Grid** - Log hours across multiple work lines with simple tap controls
+- **📝 Work Notes** - Add detailed notes to specific work days and lines
+- **🔄 On-Call Schedule Sync** - Automatic sync from Google Sheets master schedule
+- **📊 Advanced Reports** - Generate reports with standard/overtime breakdowns
+- **📱 Offline-First** - Works completely offline with SQLite database
+- **🗓️ Unified Calendar View** - See logged hours, notes, and on-call duties in one place
+- **📤 Export Options** - CSV and PDF export for reports and documentation
+
+### Business Logic
+- **8-hour ST cap per day per line** - Prevents over-logging straight time
+- **40-hour ST cap per week** - Automatically enforces weekly straight time limits
+- **Unlimited OT tracking** - No restrictions on overtime hours
+- **Bi-weekly pay periods** - Configurable base pay week for accurate period tracking
+- **Multiple work lines** - Support for VTR, CLP, and custom project codes
+
+### Recent Additions (v1.2.0.1)
+- ✅ Fixed keyboard covering text input in note modal (KeyboardAvoidingView)
+- ✅ Custom MOW-themed branding and icons
+- ✅ Repository cleanup (removed corrupted files and build artifacts)
+- ✅ Improved build compatibility with Expo SDK 54
+- ✅ Enhanced documentation with visual examples
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- Yarn
+- Node.js 18+ 
+- Yarn or npm
 - Expo CLI
-- Android Studio (for APK builds) or EAS CLI
-- Physical Android device or emulator
+- Android Studio (for local builds) or EAS CLI (for cloud builds)
 
-### Development Setup
+### Installation
 
-1. **Clone Repository** (if applicable)
-```bash
-git clone <repo-url>
-cd vrs-time-wizard
-```
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd frontend
 
-2. **Install Dependencies**
-```bash
-cd frontend
-yarn install
-```
+    Install dependencies
 
-3. **Start Development Server**
-```bash
+    yarn install
+    # or
+    npm install
+
+    Start development server
+
+    npx expo start
+
+    Test the app
+        Scan QR code with Expo Go (iOS/Android)
+        Press a for Android emulator
+        Press i for iOS simulator
+        Press w for web browser (limited functionality)
+
+🔨 Building for Production
+Option 1: EAS Build (Recommended)
+
+# Preview build (APK for testing)
+npx expo prebuild --clean
+eas build -p android --profile preview
+
+# Production build (signed APK/AAB)
+eas build -p android --profile production
+
+Option 2: Local Build
+
+# Generate native Android project
+npx expo prebuild --clean
+
+# Build APK
+cd android
+./gradlew assembleRelease
+
+APK Location: android/app/build/outputs/apk/release/app-release.apk
+📱 Feature Guide
+Dashboard
+
+The home screen provides a quick overview of your current week:
+
+    Weekly Summary - Total ST and OT hours at a glance
+    Quick Actions - Jump to timesheet, reports, or on-call schedule
+    Recent Activity - See your last logged entries
+
+Timesheet Management
+
+Track your work hours with an intuitive weekly grid:
+
+    Tap + / - buttons to increment/decrement hours
+    Multiple Lines - Log hours across VTR, CLP, and project codes
+    Real-time Validation - Automatic enforcement of hour caps
+    Week Navigation - Easily switch between past and future weeks
+    Pay Period Indicator - Visual marker for bi-weekly periods
+
+Work Notes
+
+Add context to your logged hours:
+
+    Daily Notes - General notes for specific work days
+    Line-Specific Notes - Detailed notes tied to particular work lines
+    Tabbed Interface - Easy navigation between days of the week
+    Persistent Storage - Notes saved offline in SQLite
+
+History Views
+List View
+
+Browse past weeks with expandable details:
+
+    8 Weeks Back - Quick access to recent work history
+    Expand/Collapse - Tap to see daily breakdowns
+    ST/OT Totals - Weekly summaries for each period
+
+Calendar View
+
+Visual representation of your work history:
+
+    Color-Coded Dots - Blue for hours logged, orange for notes, green for on-call
+    Month Navigation - Swipe between months
+    Tap for Details - View full day information in a modal
+
+Reports
+
+Generate professional documentation:
+
+    Date Range Selection - Presets (30/90/180/365 days) or custom ranges
+    Statistics - Total hours, ST/OT breakdown, days worked, averages
+    Export Formats:
+        CSV - Full data export for spreadsheet analysis
+        PDF - Professional reports with two formats:
+            Detailed daily (ranges ≤ 90 days)
+            Monthly summary (ranges > 90 days)
+
+On-Call Schedule
+
+Track your duty weekends:
+
+    Google Sheets Sync - Automatic import from master schedule
+    Auto-Sync - Weekly updates when app opens (configurable)
+    Manual Sync - Force sync anytime from Settings
+    Visual Calendar - See all upcoming on-call assignments
+    User Filtering - Only shows your shifts (set name in Settings)
+
+Settings
+
+Customize your experience:
+
+    User Name - For on-call schedule filtering
+    Base Pay Week - Configure bi-weekly pay period start
+    Work Lines - Add/hide project codes and custom lines
+    Sync Configuration - Toggle auto-sync, view last sync time
+    Backup & Restore - Export/import complete database as JSON
+    Developer Menu - Hidden menu (tap version 5x) for admin configuration
+    About - Version info and app details
+
+📦 Version History
+v1.2.0.1 (Current - November 2025)
+
+🔧 Patch Release - Repository Cleanup & UX Improvements
+
+    Fixed keyboard covering text input in note modal (KeyboardAvoidingView added)
+    Removed corrupted UTF-8 filename blocking git checkout
+    Cleaned up repository (removed android/, metro-cache/, build artifacts)
+    Updated .gitignore to follow Expo best practices
+    Added custom MOW-themed app icons and splash screens
+    Synced with working local build configuration
+    Updated Android versionCode from 3 to 4
+    Enhanced documentation with screenshots
+
+v1.2.0 (November 2025)
+
+🎉 Major Release - Full Feature Set
+
+    Weekly timesheet with multiple work lines
+    On-call schedule sync from Google Sheets
+    Unified calendar view with color-coded indicators
+    Advanced reporting with date range selection
+    CSV and PDF export functionality
+    Auto-sync feature for schedule updates
+    Work notes with daily and line-specific entries
+    Non-destructive database migrations
+    SQLite offline storage
+
+v1.1.0 (November 2025)
+
+📝 Notes Feature
+
+    Added work notes functionality
+    Weekly notes modal with tabbed day view
+    Notes visible in weekly summary and history
+    Bug fixes for pay week calculation and grid alignment
+
+v1.0.0 (November 2025)
+
+🎉 Initial Release
+
+    Offline-first SQLite database
+    Weekly timesheet grid with ST/OT tracking
+    Business logic enforcement (hour caps)
+    History view and weekly summaries
+    Backup/restore functionality
+
+🏗️ Project Structure
+
+frontend/
+├── app/                    # Expo Router screens (file-based routing)
+│   ├── (tabs)/            # Tab navigation screens
+│   │   ├── index.tsx      # Dashboard (home screen)
+│   │   ├── timesheet.tsx  # Weekly timesheet grid
+│   │   ├── history.tsx    # Calendar, list view, and reports
+│   │   ├── oncall.tsx     # On-call schedule viewer
+│   │   └── settings.tsx   # App settings and configuration
+│   ├── weekly-summary.tsx # Detailed weekly summary screen
+│   └── _layout.tsx        # Root layout with tab navigation
+├── components/            # Reusable UI components
+│   ├── ReportsView.tsx           # Reports generation and export
+│   ├── WeeklyNotesModal.tsx      # Notes entry modal (with keyboard fix)
+│   └── NotesFloatingButton.tsx   # Floating action button for notes
+├── services/              # Business logic and data layer
+│   ├── database.ts        # SQLite operations (native)
+│   ├── database.web.ts    # Mock database for web preview
+│   ├── databaseWrapper.ts # Platform-specific DB selector
+│   ├── migrations.ts      # Database schema migrations
+│   └── autoSync.ts        # Google Sheets sync service
+├── store/                 # State management
+│   └── timesheetStore.ts  # Zustand store for timesheet state
+├── constants/             # App configuration
+│   └── config.ts          # Hardcoded URLs and constants
+├── assets/                # Static resources
+│   ├── images/           # App icons and splash screens
+│   └── screenshots/      # Documentation images
+├── app.json              # Expo configuration (version, build settings)
+├── package.json          # NPM dependencies
+├── eas.json              # EAS Build profiles (preview, production)
+├── babel.config.js       # Minimal Babel config (Expo presets only)
+└── README.md             # This file
+
+⚙️ Configuration
+Environment Variables
+
+No environment variables required - the app is fully self-contained and offline-first.
+Google Sheet Integration
+
+The app syncs on-call schedules from a hardcoded Google Sheet URL.
+
+For regular users: No setup needed - sync works automatically.
+
+For administrators: To customize the master schedule URL:
+
+    Publish your Google Sheet as CSV
+    Go to Settings → About
+    Tap "Version 1.2.0.1" exactly 5 times (unlocks developer menu)
+    Paste your custom URL in "Master Schedule URL"
+    Tap "Save URL"
+
+Sheet Format Requirements:
+
+    Columns: start_date, end_date, user, notes
+    Dates in YYYY-MM-DD format
+    Published as CSV (File → Share → Publish to web → CSV)
+
+🧪 Testing
+Development Testing
+
+# Start Expo development server
 npx expo start
-```
-
-4. **Run on Device**
-- Scan QR code with Expo Go app (Android/iOS)
-- Or run on emulator: `npx expo run:android`
-
-### Building Production APK
-
-**Using EAS Build (Recommended):**
-```bash
-cd frontend
-eas build --platform android --profile production
-```
-
-**Local Build:**
-```bash
-cd frontend
-npx expo build:android
-```
-
----
-
-## Database Schema
-
-### Version 1.0 (Initial)
-```sql
-time_entries (
-  id INTEGER PRIMARY KEY,
-  work_date TEXT,
-  line_code TEXT,
-  st_hours INTEGER,
-  ot_hours INTEGER,
-  week_ending_date TEXT
-)
-
-line_codes (
-  line_code TEXT PRIMARY KEY,
-  is_visible INTEGER,
-  created_at TEXT
-)
-
-settings (
-  key TEXT PRIMARY KEY,
-  value TEXT
-)
-
-work_notes (
-  id INTEGER PRIMARY KEY,
-  work_date TEXT,
-  line_code TEXT,
-  note_text TEXT,
-  created_at TEXT
-)
-```
-
-### Version 2.0 (On-Call Feature)
-```sql
-schema_version (
-  id INTEGER PRIMARY KEY,
-  version INTEGER,
-  name TEXT,
-  applied_at TEXT
-)
-
-on_call_users (
-  id INTEGER PRIMARY KEY,
-  user_name TEXT UNIQUE,
-  is_current_user INTEGER,
-  created_at TEXT
-)
-
-on_call_schedule (
-  id INTEGER PRIMARY KEY,
-  start_date TEXT,
-  end_date TEXT,
-  user_name TEXT,
-  notes TEXT,
-  is_swapped INTEGER,
-  original_user_name TEXT,
-  created_at TEXT,
-  updated_at TEXT,
-  UNIQUE(start_date, end_date, user_name)
-)
-```
-
----
-
-## Usage
-
-### First Time Setup
-
-1. **Launch App**
-2. **Enter Your Name** (On-Call tab prompts)
-3. **Configure Base Pay Week** (Settings → typically biweekly Friday)
-4. **Add Project Lines** (Settings → enter project numbers as needed)
-
-### Daily Workflow
-
-1. **Navigate to Timesheet Tab**
-2. **Select Current Week** (automatically shown)
-3. **Tap +/- Buttons** to log hours
-   - ST (Straight Time): Max 8 hours per day per line
-   - OT (Overtime): No limit
-4. **Add Work Notes** (Tap notes button, select day, enter details)
-5. **View Weekly Summary** at top of screen
-
-### On-Call Schedule Management
-
-#### For Regular Users (Zero Setup):
-1. **App auto-syncs weekly** - Schedule updates automatically when app opens
-2. **Manual sync** - Go to Settings → On-Call Schedule → "Sync Now"
-3. **View shifts** - On-Call tab shows your upcoming weekends
-4. **Calendar view** - History tab displays all on-call assignments
-5. **Toggle auto-sync** - Settings → Auto-Sync toggle (weekly updates)
-
-#### For Administrators:
-**Master Schedule URL is hardcoded** - No user setup needed!
-
-**To Update Master Schedule:**
-1. **Edit Google Sheet** with columns: `start_date`, `end_date`, `user`, `notes`
-2. **Already published as CSV** - URL hardcoded in app
-3. **Users auto-sync** - Changes appear within 7 days (or manual sync)
-
-**To Use Custom URL (Testing):**
-1. Go to Settings → About section
-2. Tap "Version 1.2.0" **5 times** (unlocks developer menu)
-3. Paste test URL in "Master Schedule URL" field
-4. Tap "Save URL"
-
-### Generating Reports
-
-1. **Navigate to History Tab** → Tap "Reports"
-2. **Select Date Range**:
-   - Quick presets: Last 30 days, 3 months, 6 months, year, YTD, all time
-   - Custom range: Select specific start/end dates
-3. **Optional**: Enter your name for PDF header
-4. **Tap "Generate Report"** → View summary statistics
-5. **Export Options**:
-   - **CSV**: Complete data export (all days with details)
-   - **PDF**: 
-     - Ranges ≤ 90 days: Detailed daily breakdown
-     - Ranges > 90 days: Monthly summary format
-
-**Use Cases:**
-- Tax records (overtime tracking)
-- Raise negotiations (prove hours worked)
-- Dispute resolution (comprehensive records)
-- Year-end summaries
-
-### Viewing History
-
-1. **Go to History Tab**
-2. **Toggle Between Views**:
-   - **List View**: Past 8 weeks with expandable details
-   - **Calendar View**: Month-by-month with dots and highlights
-3. **Tap Any Date** (in calendar) to see full details:
-   - Hours worked
-   - Lines used
-   - Notes added
-   - On-call assignments
-
-### Backup & Restore
-
-**Export Data:**
-1. Settings → Backup & Restore → Export Data
-2. Save JSON file to device
-3. Copy to computer/cloud for safekeeping
-
-**Import Data:**
-1. Settings → Backup & Restore → Import Data
-2. Select JSON file from device
-3. Confirm import (merges with existing data)
-
----
-
-## Configuration
-
-### Environment Variables
-
-**Frontend (.env):**
-```bash
-EXPO_PUBLIC_API_URL=<reserved-for-future>
-EXPO_PACKAGER_PROXY_URL=<auto-configured>
-EXPO_PACKAGER_HOSTNAME=<auto-configured>
-```
-
-**Backend (.env):**
-```bash
-MONGO_URL=<not-used-in-v1.2.0>
-```
-
-### App Configuration (app.json)
-
-```json
-{
-  "expo": {
-    "name": "VRS Time Wizard",
-    "slug": "vrs-time-wizard",
-    "version": "1.2.0",
-    "android": {
-      "package": "com.vrstimewizard.app",
-      "versionCode": 3
-    }
-  }
-}
-```
-
----
-
-## Project Structure
-
-```
-/app
-├── frontend/
-│   ├── app/
-│   │   ├── (tabs)/
-│   │   │   ├── _layout.tsx          # Tab navigation
-│   │   │   ├── index.tsx            # Dashboard
-│   │   │   ├── timesheet.tsx        # Timesheet grid
-│   │   │   ├── history.tsx          # History + Calendar
-│   │   │   ├── oncall.tsx           # On-call schedule (NEW)
-│   │   │   └── settings.tsx         # Settings + Sync
-│   │   ├── weekly-summary.tsx       # Weekly summary screen
-│   │   └── _layout.tsx              # Root layout
-│   ├── components/
-│   │   ├── NotesFloatingButton.tsx  # Notes button
-│   │   ├── WeeklyNotesModal.tsx     # Notes modal
-│   │   └── ReportsView.tsx          # Reports feature (NEW)
-│   ├── services/
-│   │   ├── database.ts              # SQLite operations
-│   │   ├── database.web.ts          # Mock DB for web
-│   │   ├── databaseWrapper.ts       # Platform selector
-│   │   ├── migrations.ts            # Schema migrations (NEW)
-│   │   └── autoSync.ts              # Auto-sync service (NEW)
-│   ├── constants/
-│   │   └── config.ts                # App configuration (NEW)
-│   ├── store/
-│   │   └── timesheetStore.ts        # Zustand state
-│   ├── app.json                     # Expo config
-│   ├── package.json                 # Dependencies
-│   └── eas.json                     # EAS Build config
-├── backend/                                  # Dormant
-├── PRODUCTION_READINESS_CHECKLIST.md        # Testing checklist
-├── DATA_MIGRATION_SAFETY.md                 # Migration safety
-├── SESSION_NOTES_NOV22_2025.md              # Development notes
-├── PHASE_1_MIGRATION_COMPLETE.md            # Phase 1 docs
-├── APK_UPDATE_GUIDE.md                      # Update guide
-├── QUICK_START_TOMORROW.md                  # Quick reference
-└── README.md                                # This file
-```
-
----
-
-## Migration Guide
-
-### Updating from v1.1.0 to v1.2.0
-
-**What Happens:**
-1. Install new APK over existing app (do NOT uninstall first)
-2. App detects schema version 1
-3. Automatically runs migration to version 2
-4. Adds 3 new tables (schema_version, on_call_users, on_call_schedule)
-5. All existing data preserved (time_entries, work_notes, settings)
-
-**Data Safety:**
-- Migration verifies row counts before and after
-- Aborts if any data is lost
-- Only adds new tables, never modifies existing ones
-- Rollback capability available if needed
-
-**See:** `/app/APK_UPDATE_GUIDE.md` for detailed instructions
-
----
-
-## Testing
-
-### Manual Testing
-
-**On Expo Go:**
-1. Scan QR code with Expo Go app
-2. Test on physical device (preferred) or emulator
-3. Check console logs for migration messages
-4. Verify all features work
-
-**On Production APK:**
-1. Build APK with EAS Build
-2. Install on test device
-3. Verify migration runs successfully
-4. Test all features thoroughly
-5. Install on main device (update over v1.1.0)
-
-### Test Checklist
-- [ ] Database migration runs without errors
-- [ ] Existing timesheet data intact
-- [ ] On-call tab displays correctly
-- [ ] Google Sheets sync works
-- [ ] Calendar view shows dots and highlights
-- [ ] Day detail modal displays all data
-- [ ] Timesheet buttons work with haptics
-- [ ] Developer menu accessible (tap 5x)
-- [ ] Backup/restore still works
-- [ ] App doesn't crash on any action
-
----
-
-## Troubleshooting
-
-### Common Issues
-
-**Issue:** Buttons don't save data
-**Solution:** Database not initialized. Check console for errors, restart app.
-
-**Issue:** Migration doesn't run
-**Solution:** Force close Expo Go, rescan QR code. Check console logs.
-
-**Issue:** Calendar modal shows only header
-**Solution:** Fixed in v1.2.0. Update to latest version.
-
-**Issue:** Sync adds duplicate data
-**Solution:** Fixed in v1.2.0 (clearOnCallSchedule bug). Re-sync to replace.
-
-**Issue:** Can't access developer menu
-**Solution:** Tap "Version 1.2.0" exactly 5 times in Settings → About.
-
-### Debug Commands
-
-**View Database Contents:**
-```typescript
+
+# Test on physical device with Expo Go
+# Scan QR code from terminal or Metro bundler
+
+# Test on Android emulator
+npx expo start --android
+
+# Test on iOS simulator (macOS only)
+npx expo start --ios
+
+Production Testing
+
+# Generate preview APK with EAS
+eas build -p android --profile preview
+
+# Install on Android device via ADB
+adb install app-preview.apk
+
+# Or download from EAS build page and install manually
+
+Testing Checklist
+
+    Database migration runs successfully on first launch
+    Existing timesheet data intact after update
+    Timesheet buttons (+/-) work with proper validation
+    Work notes modal keyboard doesn't cover input
+    On-call sync retrieves data from Google Sheets
+    Calendar view displays dots for hours/notes/on-call
+    Day detail modal shows complete information
+    Reports generate correctly for various date ranges
+    CSV export creates valid comma-separated file
+    PDF export produces readable documents
+    Backup/restore preserves all data
+    Developer menu accessible (tap version 5x)
+    App doesn't crash on any normal user action
+
+🛠️ Tech Stack
+Core Technologies
+
+    Framework: Expo SDK 54 with React Native 0.81
+    Language: TypeScript
+    Routing: Expo Router (file-based routing)
+    Database: expo-sqlite (SQLite on device)
+    State Management: Zustand + React hooks
+
+UI & UX
+
+    UI Components: React Native core components (View, Text, ScrollView, etc.)
+    Calendar: react-native-calendars
+    Date Pickers: @react-native-community/datetimepicker
+    Haptics: expo-haptics (tactile feedback)
+    Safe Areas: react-native-safe-area-context
+
+Data & Export
+
+    Date Handling: date-fns
+    Storage: @react-native-async-storage/async-storage
+    PDF Generation: expo-print
+    File Sharing: expo-sharing
+    File System: expo-file-system
+    Document Picker: expo-document-picker
+
+Build & Deployment
+
+    Build System: EAS Build
+    Architecture: New Architecture enabled (newArchEnabled: true)
+    Babel: Minimal config (expo-preset only)
+
+📱 Device Support
+Android
+
+    Minimum Version: Android 7.0 (API 24)
+    Target Version: Android 14 (API 34)
+    Tested Devices: Pixel 6, Samsung Galaxy S21, OnePlus 9
+    Screen Sizes: Phones (5"-7") and tablets (8"-11")
+
+iOS (Planned)
+
+    Minimum Version: iOS 13+
+    Target Version: iOS 17+
+    Status: Not yet tested but compatible
+
+🚨 Important Notes
+For Developers
+
+⚠️ DO NOT commit the following:
+
+    android/ or ios/ folders (regenerated during build)
+    .metro-cache/ or .expo/ folders (build artifacts)
+    node_modules/ (dependency folder)
+    Build outputs (*.apk, *.aab, *.ipa)
+    Log files (*.log)
+
+✅ Follow these guidelines:
+
+    Native folders are disposable - regenerated with npx expo prebuild --clean
+    All configuration lives in app.json, package.json, eas.json, babel.config.js
+    Never manually edit Android/Kotlin or iOS/Swift files
+    Never add plugins manually to babel.config.js - Expo handles this automatically
+    Use git checkout carefully - corrupted filenames were removed in v1.2.0.1
+
+For Building
+
+EAS Build (Cloud - Recommended):
+
+    Builds happen in Expo's cloud infrastructure
+    No local Android Studio / Xcode setup needed
+    Automatic signing and versioning
+    Download APK/AAB directly
+
+Local Build (Advanced):
+
+    Requires Android Studio + NDK installed
+    Run npx expo prebuild --clean before every build
+    Manually manage signing keys
+    Ensure New Architecture is enabled (newArchEnabled: true)
+
+For Repository Management
+
+Branch Strategy:
+
+    main - Stable production releases
+    1.2.0 - Current development branch
+    v1.2.0.1-release - Tagged release with cleanup
+    Feature branches - Use for new development
+
+Git Best Practices:
+
+    Use .gitignore to prevent committing build artifacts
+    Don't force push to shared branches
+    Tag releases with semantic versioning (v1.2.0.1)
+    Write clear commit messages
+
+🐛 Troubleshooting
+Common Issues
+
+Issue: Buttons don't save data
+Solution: Database not initialized. Check console for errors, force close and restart app.
+
+Issue: "Cannot resolve entry file" error
+Solution: Don't modify metro.config.js or package.json main field. Restore from git.
+
+Issue: Migration doesn't run on app update
+Solution: Don't uninstall old version first. Install new APK over existing to trigger migration.
+
+Issue: Calendar modal shows only header
+Solution: Fixed in v1.2.0. Update to latest version.
+
+Issue: Sync adds duplicate on-call data
+Solution: Fixed in v1.2.0 (clearOnCallSchedule bug). Sync again to replace.
+
+Issue: Keyboard covers text input in notes
+Solution: Fixed in v1.2.0.1 with KeyboardAvoidingView. Update to latest version.
+
+Issue: Can't access developer menu
+Solution: Tap "Version 1.2.0.1" exactly 5 times in Settings → About section.
+
+Issue: Build fails with Reanimated error
+Solution: Ensure newArchEnabled: true in app.json. Don't add Reanimated plugin manually.
+Debug Commands
+
+View Database Contents:
+
 import { db } from './services/databaseWrapper';
 
 await db.initialize();
 const entries = await db.database.getAllAsync('SELECT * FROM time_entries');
 console.log(entries);
-```
 
-**Check Schema Version:**
-```typescript
+Check Schema Version:
+
 const version = await db.database.getAllAsync('SELECT * FROM schema_version');
 console.log('Current version:', version);
-```
 
-**Clear Test Data:**
-```typescript
+Clear Test Data:
+
 await db.clearOnCallSchedule(); // Clears all on-call data
-```
 
----
+View App Logs:
 
-## Roadmap
+# Android
+adb logcat | grep -i "expo\|react"
 
-### Completed (v1.2.0)
-- ✅ Database migration system
-- ✅ On-call schedule tables
-- ✅ Google Sheets sync (hardcoded URL)
-- ✅ Auto-sync (weekly, on app open)
-- ✅ Developer menu
-- ✅ Unified calendar view
-- ✅ Reports feature (PDF/CSV export)
-- ✅ Date range selection with presets
-- ✅ Day detail modal
-- ✅ Performance improvements
+# iOS (if using physical device)
+idevicesyslog | grep -i "expo\|react"
 
-### Planned (v1.3.0)
-- ⏸️ Shift swap functionality (postponed)
-- ⏸️ Enhanced on-call statistics
-- ⏸️ Personal notes on shifts
-- ⏸️ Background auto-sync notifications
-- ⏸️ On-call reminders
+🗺️ Roadmap
+Completed Features ✅
 
-### Future Considerations
-- 📋 Multi-location support (Rutland, Burlington, etc.)
-- 📋 Offline peer-to-peer schedule sharing
-- 📋 On-call analytics and trends
-- 📋 Integration with payroll systems
-- 📋 Shift swap tracking
+    ✅ Database migration system (v2.0 schema)
+    ✅ On-call schedule tables and sync
+    ✅ Google Sheets integration (hardcoded URL)
+    ✅ Auto-sync (weekly, on app open)
+    ✅ Developer menu for admin config
+    ✅ Unified calendar view (list/calendar/reports toggle)
+    ✅ Reports feature with PDF/CSV export
+    ✅ Date range selection with presets
+    ✅ Day detail modal
+    ✅ Performance improvements (haptics, debouncing)
+    ✅ Keyboard handling fix for note modal
+    ✅ Repository cleanup and documentation
 
----
+Planned Features (v1.3.0+)
 
-## Contributing
+    ⏸️ Shift swap functionality (postponed to v1.3.0)
+    ⏸️ Enhanced on-call statistics (days until next shift, total days this year)
+    ⏸️ Personal notes on shifts (add notes to specific on-call assignments)
+    ⏸️ Background auto-sync notifications (notify when schedule changes)
+    ⏸️ On-call reminders (alert 24h before shift starts)
 
-### Development Guidelines
+Future Considerations
 
-1. **Never modify existing migrations** - Only add new ones
-2. **Always test on physical device** - Emulator may not catch all issues
-3. **Preserve user data** - Migrations must include data verification
-4. **Document breaking changes** - Update this README
-5. **Follow offline-first principle** - App must work without internet
+    📋 Multi-location support (Rutland, Burlington, White River)
+    📋 Offline peer-to-peer schedule sharing
+    📋 On-call analytics and trends dashboard
+    📋 Integration with payroll systems
+    📋 Shift swap request/approval workflow
+    📋 iOS App Store release
+    📋 Dark mode support
+    📋 Widget support for quick hour logging
 
-### Code Style
-- TypeScript for type safety
-- Functional components with hooks
-- Zustand for global state
-- SQLite for local storage
-- Expo APIs for native features
+🤝 Contributing
 
----
+This is a private project for Vermont Railway internal use.
+Development Guidelines
 
-## License
+    Never modify existing migrations - Only add new migration files
+    Always test on physical device - Emulator may not catch all issues
+    Preserve user data - Migrations must include data verification
+    Document breaking changes - Update this README and changelog
+    Follow offline-first principle - App must work without internet
+
+Code Style
+
+    TypeScript for type safety
+    Functional components with hooks (no class components)
+    Zustand for global state (minimal state in components)
+    SQLite for all persistent data (no AsyncStorage for structured data)
+    Expo APIs for native features (no third-party native modules)
+
+📄 License
+
+Copyright © 2025 Vermont Railway System. All rights reserved.
 
 Proprietary - Vermont Railway (VRS) Internal Use Only
 
----
-
-## Support
+This software is private and confidential. Unauthorized copying, distribution, or use of this software, via any medium, is strictly prohibited.
+📞 Support
 
 For issues, questions, or feature requests:
-1. Check this README
-2. Review session notes in `/app/SESSION_NOTES_*.md`
-3. Check console logs for errors
-4. Contact project maintainer
 
----
+    Check Documentation - Review this README and docs in /docs folder
+    Check Console Logs - Most errors are logged in Expo console
+    Review Session Notes - Check /app/SESSION_NOTES_*.md files
+    Contact Maintainer - Reach out to the project maintainer
 
-## Version History
+🙏 Acknowledgments
 
-### v1.2.0 (November 22, 2025)
-**Major Release: On-Call & Reports**
-- Added on-call schedule feature with Google Sheets sync
-- Auto-sync (weekly, on app open) with toggle control
-- Hardcoded master schedule URL (zero user setup)
-- Unified calendar view (list/calendar/reports toggle)
-- **Reports feature** with PDF/CSV export
-  - Date range selection (presets + custom)
-  - Monthly summary or detailed daily formats
-  - Professional PDF output for documentation
-- Developer menu for admin configuration
-- Database migration system (v2.0 schema)
-- Performance improvements (haptics, debouncing)
-- Bug fixes (buttons, modal, sync, calendar navigation)
+    Built for: Vermont Railway MOW crews
+    Purpose: Replace paper timesheet systems with reliable digital tracking
+    Design Focus: Offline reliability, simplicity, and ease of use
+    Tested by: Real railroad workers in real field conditions
 
-### v1.1.0 (November 19, 2025)
-- Added work notes feature
-- Weekly notes modal with tabbed view
-- Notes visible in weekly summary
-- Bug fixes (pay week, grid alignment)
+Built with ❤️ for railroad workers 🚂
 
-### v1.0.0 (November 2025)
-- Initial release
-- Offline-first SQLite database
-- Weekly timesheet grid
-- Business logic (hour caps)
-- History and weekly summaries
-- Backup/restore functionality
+Last Updated: November 23, 2025
+Current Version: 1.2.0.1
+Status: Production Ready (Offline-First)
 
----
-
-## Acknowledgments
-
-- Built for Vermont Railway MOW crews
-- Designed to replace paper timesheets
-- Focused on offline reliability and ease of use
-
----
-
-**Last Updated:** November 22, 2025  
-**Current Version:** 1.2.0  
-**Status:** Production Ready (Offline-First)
+Screenshots included for comprehensive visual documentation
