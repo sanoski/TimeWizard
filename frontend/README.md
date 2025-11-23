@@ -589,6 +589,10 @@ For issues, questions, or feature requests:
 
 **Built with ❤️ for railroad workers** 🚂
 
+---
+
 *Last Updated: November 23, 2025*  
 *Current Version: 1.2.0.1*  
 *Status: Production Ready (Offline-First)*
+
+**Screenshots included for comprehensive visual documentation**
