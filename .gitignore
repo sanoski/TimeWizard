@@ -77,15 +77,12 @@ agenthub/agents/youtube/db
 .cache/
 
 # Mobile development
-android-sdk/ -e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
+android-sdk/
+
+# Scaffolding artifacts
+.emergent/
+.claude/settings.local.json
+
 # Environment files
 *.env
 *.env.*
